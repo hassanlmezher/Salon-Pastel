@@ -1,5 +1,4 @@
 import { Link, Outlet } from "react-router-dom";
-import { Button } from "../components/ui/Button";
 
 export function AppShell() {
   return (
@@ -32,18 +31,6 @@ export function AppShell() {
           </nav>
         </div>
       </header>
-
-      <div className="pointer-events-none fixed inset-x-0 top-28 z-50 flex justify-center px-4 sm:top-32 lg:top-36">
-        <Button
-          type="button"
-          onClick={() => {
-            document.getElementById("services")?.scrollIntoView({ behavior: "smooth", block: "start" });
-          }}
-          className="pointer-events-auto min-h-11 rotate-[-12deg] rounded-none border border-[#7f2478] bg-[#7f2478] px-5 text-white shadow-[0_16px_34px_rgba(86,22,82,0.28)]"
-        >
-          Book Appointment
-        </Button>
-      </div>
 
       <main id="main-content">
         <Outlet />

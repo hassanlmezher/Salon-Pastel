@@ -1,8 +1,9 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { Button } from "../../../components/ui/Button";
 import heroVideo from "../../../images/Luxury_Nail_Salon_Hero_Banner_Silent.mp4";
 import manicureImage from "../../../images/image1.png";
-import pedicureImage from "../../../images/image2.png";
+import pedicureImage from "../../../images/image3.png";
 import skinCareImage from "../../../images/image3.png";
 
 const services = [
@@ -31,7 +32,9 @@ const services = [
 
 export function LandingPage() {
   const heroRef = useRef<HTMLElement | null>(null);
+  const ctaRef = useRef<HTMLDivElement | null>(null);
   const reduceMotion = useReducedMotion();
+  const [isCtaPinned, setIsCtaPinned] = useState(false);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start end", "end start"],
@@ -49,19 +52,44 @@ export function LandingPage() {
   const bubbleY = useTransform(smoothProgress, [0, 1], [70, -54]);
   const quoteOpacity = useTransform(smoothProgress, [0.1, 0.32, 0.9], [0, 1, 1]);
 
+  useEffect(() => {
+    const node = ctaRef.current;
+    if (!node) {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsCtaPinned(!entry.isIntersecting);
+      },
+      {
+        threshold: 0.01,
+      },
+    );
+
+    observer.observe(node);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
+  const scrollToServices = () => {
+    document.getElementById("services")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
     <>
       <section
         ref={heroRef}
         id="hero"
-        className="relative h-[76vh] min-h-[34rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[82vh] lg:h-[88vh]"
+        className="relative h-[30vh] min-h-[16rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[34vh] lg:h-[38vh]"
       >
         <motion.video
-          className="absolute left-0 top-[-16%] h-[142%] w-full object-cover will-change-transform"
+          className="absolute left-0 top-[-8%] h-[116%] w-full object-cover will-change-transform"
           autoPlay
           loop
           muted
-          defaultMuted
           playsInline
           preload="auto"
           aria-hidden="true"
@@ -90,7 +118,39 @@ export function LandingPage() {
             </p>
           </motion.div>
         </div>
+
+        <div
+          ref={ctaRef}
+          className="absolute left-1/2 top-8 z-20 flex -translate-x-1/2 justify-center px-4"
+        >
+          <Button
+            type="button"
+            onClick={scrollToServices}
+            whileHover={reduceMotion ? undefined : { y: -2 }}
+            whileTap={reduceMotion ? undefined : { scale: 0.985 }}
+            className="min-h-11 rounded-none border border-[#7f2478] bg-[#7f2478] px-5 text-white shadow-[0_16px_34px_rgba(86,22,82,0.28)]"
+          >
+            Book Appointment
+          </Button>
+        </div>
       </section>
+
+      <div
+        className={`pointer-events-none fixed left-1/2 top-4 z-40 flex -translate-x-1/2 justify-center px-4 transition-all duration-300 sm:top-6 lg:top-8 ${
+          isCtaPinned ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"
+        }`}
+        aria-hidden={!isCtaPinned}
+      >
+        <Button
+          type="button"
+          onClick={scrollToServices}
+          whileHover={reduceMotion ? undefined : { y: -2 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.985 }}
+          className="pointer-events-auto min-h-11 rounded-none border border-[#7f2478] bg-[#7f2478] px-5 text-white shadow-[0_16px_34px_rgba(86,22,82,0.28)]"
+        >
+          Book Appointment
+        </Button>
+      </div>
 
       <section id="services" className="w-full bg-white">
         <div className="flex flex-col">
