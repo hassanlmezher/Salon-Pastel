@@ -23,31 +23,27 @@ export function AppShell() {
             <Link to="/" className="transition hover:text-text">
               Home
             </Link>
-            <Link to="/book/service" className="transition hover:text-text">
-              Book Online
-            </Link>
-            <Link to="/manage/PSTL88N" className="transition hover:text-text">
-              Manage Booking
-            </Link>
+            <a href="#hero" className="transition hover:text-text">
+              Hero
+            </a>
             <a href="mailto:hello@salonpastel.co.uk" className="transition hover:text-text">
               Contact
             </a>
           </nav>
-
-          <div className="flex items-center gap-3">
-            <Link to="/manage/PSTL88N" className="hidden md:block">
-              <Button type="button" variant="secondary" className="min-h-11 px-4">
-                Manage
-              </Button>
-            </Link>
-            <Link to="/book/service">
-              <Button type="button" className="min-h-11 px-5">
-                Book Now
-              </Button>
-            </Link>
-          </div>
         </div>
       </header>
+
+      <div className="pointer-events-none fixed inset-x-0 top-28 z-50 flex justify-center px-4 sm:top-32 lg:top-36">
+        <Button
+          type="button"
+          onClick={() => {
+            document.getElementById("services")?.scrollIntoView({ behavior: "smooth", block: "start" });
+          }}
+          className="pointer-events-auto min-h-11 rotate-[-12deg] rounded-none border border-[#7f2478] bg-[#7f2478] px-5 text-white shadow-[0_16px_34px_rgba(86,22,82,0.28)]"
+        >
+          Book Appointment
+        </Button>
+      </div>
 
       <main id="main-content">
         <Outlet />
