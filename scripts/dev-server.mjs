@@ -30,8 +30,10 @@ const mimeTypes = {
 
 const indexHtmlPath = join(distDir, "index.html");
 
-if (!serveOnly && !existsSync(indexHtmlPath)) {
-  execSync("npm run build", { cwd: rootDir, stdio: "inherit" });
+if (!serveOnly) {
+  execSync("npx vite build", { cwd: rootDir, stdio: "inherit" });
+} else if (!existsSync(indexHtmlPath)) {
+  execSync("npx vite build", { cwd: rootDir, stdio: "inherit" });
 }
 
 await mkdir(distDir, { recursive: true });

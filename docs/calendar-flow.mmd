@@ -1,0 +1,15 @@
+flowchart TD
+    A[Choose service] --> B[Choose add-ons]
+    B --> C[Filter staff]
+    C --> D[Choose date]
+    D --> E[Load availability]
+    E --> F{Slots available?}
+    F -- Yes --> G[Choose time]
+    F -- No --> H[Show nearby days and alternative staff]
+    H --> D
+    G --> I[Review booking]
+    I --> J[Confirm appointment]
+    J --> K[Success]
+    K --> L[Manage booking]
+    L --> M[Reschedule]
+    L --> N[Cancel]
