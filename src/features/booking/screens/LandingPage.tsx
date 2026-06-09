@@ -2,32 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Button } from "../../../components/ui/Button";
 import heroVideo from "../../../images/Luxury_Nail_Salon_Hero_Banner_Silent.mp4";
-import manicureImage from "../../../images/image1.png";
-import pedicureImage from "../../../images/image3.png";
-import skinCareImage from "../../../images/image3.png";
+import pricesImage from "../../../images/prices.png";
 
-const services = [
-  {
-    title: "Manicure",
-    subtitle: "Cuticle work, shaping, and clean finishes",
-    image: manicureImage,
-    imageAlt: "Manicure service close-up",
-    tone: "peach",
-  },
-  {
-    title: "Pedicure",
-    subtitle: "Soft care, polish refresh, and detailed treatment",
-    image: pedicureImage,
-    imageAlt: "Pedicure treatment in progress",
-    tone: "cream",
-  },
-  {
-    title: "Skin Care",
-    subtitle: "Facials and skin rituals with a softer touch",
-    image: skinCareImage,
-    imageAlt: "Skin care facial treatment",
-    tone: "peach",
-  },
+const seasonalSpecials = [
+  { name: "MANICURE", price: "$15.00" },
+  { name: "PEDICURE", price: "$25.00" },
+  { name: "FACIAL", price: "$50.00" },
+  { name: "LASER SERVICE", price: "$35.00" },
+  { name: "WAXING full body", price: "$60.00" },
+  { name: "MASSAGE body therapy", price: "$40.00" },
 ] as const;
 
 export function LandingPage() {
@@ -49,8 +32,20 @@ export function LandingPage() {
   const videoY = useTransform(smoothProgress, [0, 1], [-150, 140]);
   const videoScale = useTransform(smoothProgress, [0, 1], [1.16, 1.04]);
   const overlayY = useTransform(smoothProgress, [0, 1], [-24, 44]);
-  const bubbleY = useTransform(smoothProgress, [0, 1], [70, -54]);
+  const bubbleY = useTransform(smoothProgress, [0, 1], [18, -12]);
   const quoteOpacity = useTransform(smoothProgress, [0.1, 0.32, 0.9], [0, 1, 1]);
+  const pricingRef = useRef<HTMLElement | null>(null);
+  const { scrollYProgress: pricingScrollYProgress } = useScroll({
+    target: pricingRef,
+    offset: ["start end", "end start"],
+  });
+  const pricingSmoothProgress = useSpring(pricingScrollYProgress, {
+    stiffness: 70,
+    damping: 22,
+    mass: 0.24,
+  });
+  const pricingBgY = useTransform(pricingSmoothProgress, [0, 1], ["-8%", "8%"]);
+  const pricingBgScale = useTransform(pricingSmoothProgress, [0, 1], [1.08, 1.16]);
 
   useEffect(() => {
     const node = ctaRef.current;
@@ -83,7 +78,7 @@ export function LandingPage() {
       <section
         ref={heroRef}
         id="hero"
-        className="relative h-[30vh] min-h-[16rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[34vh] lg:h-[38vh]"
+        className="relative h-[46vh] min-h-[24rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[50vh] lg:h-[56vh]"
       >
         <motion.video
           className="absolute left-0 top-[-8%] h-[116%] w-full object-cover will-change-transform"
@@ -108,12 +103,17 @@ export function LandingPage() {
           style={reduceMotion ? undefined : { y: overlayY }}
         />
 
-        <div className="relative flex h-full items-center justify-center px-4 sm:px-6">
+        <div className="relative flex h-full items-center px-4 sm:px-6">
           <motion.div
-            className="hero-note max-w-[48rem] rounded-[2.25rem] bg-white/96 px-6 py-5 text-[#2d221d] shadow-[0_20px_60px_rgba(48,30,19,0.14)] backdrop-blur-md sm:px-8 sm:py-7"
+            className="max-w-[32rem] bg-transparent px-0 py-0 text-[#f6c9b8]/70 shadow-none backdrop-blur-0 mix-blend-screen sm:max-w-[38rem] lg:max-w-[42rem]"
             style={reduceMotion ? undefined : { y: bubbleY, opacity: quoteOpacity }}
           >
-            <p className="text-[1.25rem] leading-[1.55] sm:text-[1.8rem]">
+            <p
+              className="text-left font-body text-[1.9rem] font-black leading-[0.96] tracking-[-0.08em] text-[#f6c9b8]/70 sm:text-[2.7rem] lg:text-[3.6rem]"
+              style={{
+                WebkitTextStroke: "1px rgba(255, 244, 238, 0.12)",
+              }}
+            >
               Welcome to Pastel Nail Salon.
             </p>
           </motion.div>
@@ -152,34 +152,65 @@ export function LandingPage() {
         </Button>
       </div>
 
-      <section id="services" className="w-full bg-white">
-        <div className="flex flex-col">
-          {services.map((service, index) => (
-            <div
-              key={service.title}
-              className={`grid min-h-[24rem] w-full overflow-hidden md:min-h-[30rem] lg:min-h-[34rem] lg:grid-cols-2 ${
-                index % 2 === 1 ? "lg:[&>*:first-child]:order-2 lg:[&>*:last-child]:order-1" : ""
-              }`}
-            >
-              <div
-                className={`flex flex-col items-center justify-center px-8 py-12 text-center sm:px-12 lg:px-16 ${
-                  service.tone === "peach" ? "bg-[#f9ccba]" : "bg-[#fbf8f4]"
-                }`}
-              >
-                <span className="mb-8 block h-[6px] w-16 bg-black" />
-                <h2 className="font-display text-[3rem] leading-none text-black sm:text-[4rem] lg:text-[5rem]">
-                  {service.title}
-                </h2>
-                <p className="mt-8 max-w-[24rem] text-lg leading-8 text-black/75 sm:text-[1.65rem] sm:leading-10 lg:text-[2rem] lg:leading-[1.45]">
-                  {service.subtitle}
-                </p>
-              </div>
+      <section
+        ref={pricingRef}
+        id="services"
+        className="relative isolate w-full overflow-hidden bg-[#e7d8ce] py-16 sm:py-20 lg:min-h-[90vh] lg:py-0"
+      >
+        <motion.div
+          className="absolute inset-0 will-change-transform"
+          style={{
+            backgroundImage: `url(${pricesImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            ...(reduceMotion ? {} : { y: pricingBgY, scale: pricingBgScale }),
+          }}
+        />
 
-              <div className="min-h-[24rem] bg-[#f3ece6] md:min-h-[30rem] lg:min-h-[34rem]">
-                <img src={service.image} alt={service.imageAlt} className="h-full w-full object-cover" />
-              </div>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.05)_38%,rgba(42,24,19,0.18)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_100%,rgba(201,95,156,0.12),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.18),transparent_18%)]" />
+
+        <div className="relative mx-auto flex min-h-[34rem] items-center justify-center px-4 sm:px-6 lg:min-h-[90vh] lg:px-12">
+          <motion.div
+            className="w-full max-w-[620px] border border-white/12 bg-[rgba(41,30,24,0.78)] px-6 py-8 text-white shadow-[0_24px_80px_rgba(33,20,25,0.22)] backdrop-blur-[4px] sm:px-10 sm:py-10 lg:px-14 lg:py-14"
+            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+            whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.35 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <div className="flex flex-col items-center text-center">
+              <span className="mb-5 block h-[2px] w-14 bg-[#f5dccd]/70 sm:mb-6" />
+              <h2 className="font-display text-[2.8rem] italic leading-none tracking-[-0.03em] text-[#fff8f3] sm:text-[4rem] lg:text-[4.8rem]">
+                Seasonal Specials
+              </h2>
             </div>
-          ))}
+
+            <div className="mt-8 space-y-0 sm:mt-10">
+              {seasonalSpecials.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex items-baseline justify-between gap-4 border-b border-white/10 py-4 last:border-b-0 sm:py-5"
+                >
+                  <p className="text-[0.9rem] font-medium uppercase tracking-[0.18em] text-[#fff8f3]/90 sm:text-[1rem] sm:tracking-[0.22em]">
+                    {item.name}
+                  </p>
+                  <p className="whitespace-nowrap text-[0.9rem] text-[#f7e4d7]/82 sm:text-[1rem]">
+                    Starting from {item.price}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-8 flex justify-center sm:mt-10">
+              <button
+                type="button"
+                className="text-[0.78rem] font-medium uppercase tracking-[0.26em] text-[#f7e4d7]/78 transition hover:text-[#fff8f3]"
+              >
+                Discover Offers
+              </button>
+            </div>
+          </motion.div>
         </div>
       </section>
     </>

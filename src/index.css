@@ -55,21 +55,6 @@ video {
   max-width: 100%;
 }
 
-.hero-note {
-  position: relative;
-}
-
-.hero-note::after {
-  content: "";
-  position: absolute;
-  left: 2.75rem;
-  bottom: -40px;
-  height: 44px;
-  width: 44px;
-  background: #fff;
-  clip-path: polygon(0 0, 100% 0, 0 100%);
-}
-
 .surface-overlay {
   background: rgba(255, 253, 249, 0.86);
 }
