@@ -92,7 +92,7 @@ export function LandingPage() {
       <section
         ref={heroRef}
         id="hero"
-        className="relative h-[64vh] min-h-[32rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[72vh] lg:h-[80vh]"
+        className="relative h-[46vh] min-h-[24rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[54vh] lg:h-[62vh]"
       >
         <motion.video
           className="absolute left-0 top-[-8%] h-[116%] w-full object-cover will-change-transform"
@@ -229,48 +229,50 @@ export function LandingPage() {
         </div>
       </section>
 
-      <footer className="relative isolate overflow-hidden border-t border-[#dccab8]/70 bg-[#f7efe6] px-4 py-12 sm:px-6 sm:py-14 lg:px-8">
+      <footer className="relative isolate overflow-hidden border-t border-[#dccab8]/70 bg-[#f7efe6] px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(141,79,140,0.08),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(201,95,156,0.08),transparent_22%)]" />
-        <div className="relative mx-auto grid max-w-[88rem] gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,0.8fr)] lg:items-start">
-          <div>
-            <p className="font-display text-[44px] leading-none text-[#8d4f8c] sm:text-[56px]">Pastel</p>
-            <p className="mt-1 text-xs uppercase tracking-[0.32em] text-[#cdb99f]">
+        <div className="relative mx-auto grid max-w-[88rem] gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,0.8fr)] lg:items-start">
+          <div className="border-b border-[#dccab8]/70 pb-5 sm:border-b-0 sm:pb-0">
+            <p className="font-display text-[38px] leading-none text-[#8d4f8c] sm:text-[56px]">Pastel</p>
+            <p className="mt-1 text-[10px] uppercase tracking-[0.26em] text-[#cdb99f] sm:text-xs sm:tracking-[0.32em]">
               Nail and beauty lounge
             </p>
-            <p className="mt-4 max-w-md text-sm leading-7 text-[#6d5648]">
-              Luxury salon care with a soft pastel feel, simple booking, and a calm experience from start to finish.
+            <p className="mt-3 max-w-md text-sm leading-6 text-[#6d5648] sm:mt-4 sm:leading-7">
+              Luxury pastel salon care with simple booking and calm appointments.
             </p>
           </div>
 
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8b6b58]">
-              Contact
-            </p>
-            <ul className="mt-4 space-y-3 text-sm leading-6 text-[#6d5648]">
-              <li>hello@pastelnailsalon.com</li>
-              <li>+1 (000) 000-0000</li>
-              <li>Mon-Sat, 9:00 AM - 7:00 PM</li>
-            </ul>
-          </div>
+          <div className="grid grid-cols-2 gap-5 lg:contents">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
+                Contact
+              </p>
+              <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
+                <li>hello@pastelnailsalon.com</li>
+                <li>+1 (000) 000-0000</li>
+                <li>Mon-Sat, 9-7</li>
+              </ul>
+            </div>
 
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#8b6b58]">
-              Quick Links
-            </p>
-            <ul className="mt-4 space-y-3 text-sm leading-6 text-[#6d5648]">
-              <li>
-                <button type="button" onClick={goToBooking} className="transition hover:text-[#8d4f8c]">
-                  Book Appointment
-                </button>
-              </li>
-              <li>Seasonal Specials</li>
-              <li>About the salon</li>
-            </ul>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
+                Links
+              </p>
+              <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
+                <li>
+                  <button type="button" onClick={goToBooking} className="transition hover:text-[#8d4f8c]">
+                    Book
+                  </button>
+                </li>
+                <li>Specials</li>
+                <li>About</li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div className="relative mx-auto mt-10 flex max-w-[88rem] items-center justify-between border-t border-[#dccab8]/70 pt-4 text-xs uppercase tracking-[0.24em] text-[#a78b74]">
-          <span>Pastel Nail and Beauty Lounge</span>
+        <div className="relative mx-auto mt-6 flex max-w-[88rem] items-center justify-between border-t border-[#dccab8]/70 pt-3 text-[10px] uppercase tracking-[0.18em] text-[#a78b74] sm:mt-10 sm:pt-4 sm:text-xs sm:tracking-[0.24em]">
+          <span>Pastel Salon</span>
           <span>© 2026</span>
         </div>
       </footer>
