@@ -7,7 +7,7 @@ import { execSync } from "node:child_process";
 
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
 const distDir = join(rootDir, "dist");
-const preferredPort = Number(process.env.PORT || 5173);
+const preferredPort = Number(process.env.PORT || 3000);
 const host = process.env.HOST || "0.0.0.0";
 const serveOnly = process.argv.includes("--serve-only");
 
@@ -122,6 +122,7 @@ const server = createServer(async (req, res) => {
     res.end(error instanceof Error ? error.message : "Internal server error");
   }
 });
+server.setMaxListeners(0);
 
 async function listen(port) {
   return new Promise((resolve, reject) => {
@@ -134,38 +135,42 @@ async function listen(port) {
 }
 
 let activePort = preferredPort;
+const fallbackPorts = [
+  ...Array.from({ length: 100 }, (_, index) => preferredPort + index),
+  ...Array.from({ length: 50 }, (_, index) => 5173 + index),
+  ...Array.from({ length: 50 }, (_, index) => 8080 + index),
+];
 
 try {
   await listen(activePort);
 } catch (error) {
-  if (error && typeof error === "object" && "code" in error && error.code === "EADDRINUSE") {
-    clearOwnListener(activePort);
-    for (let attempt = 0; attempt < 10; attempt += 1) {
+  if (
+    error &&
+    typeof error === "object" &&
+    "code" in error &&
+    (error.code === "EADDRINUSE" || error.code === "EPERM")
+  ) {
+    for (const port of fallbackPorts) {
+      const listeners = getListeners(port);
+      if (listeners.length > 0) {
+        clearOwnListener(port);
+      }
+
       try {
+        activePort = port;
         await listen(activePort);
         break;
       } catch (retryError) {
-        if (attempt === 9) {
-          for (let port = activePort + 1; port < activePort + 20; port += 1) {
-            const listeners = getListeners(port);
-            if (listeners.length === 0) {
-              activePort = port;
-              await listen(activePort);
-              break;
-            }
-          }
-        } else if (
+        if (
           retryError &&
           typeof retryError === "object" &&
           "code" in retryError &&
-          retryError.code === "EADDRINUSE"
+          (retryError.code === "EADDRINUSE" || retryError.code === "EPERM")
         ) {
-          await sleep(150);
-          clearOwnListener(activePort);
+          await sleep(100);
           continue;
-        } else {
-          throw retryError;
         }
+        throw retryError;
       }
     }
   } else {

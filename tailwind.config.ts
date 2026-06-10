@@ -5,16 +5,16 @@ export default {
   theme: {
     extend: {
       colors: {
-        canvas: "#F7F1EA",
-        surface: "#FFFDF9",
-        "surface-muted": "#F2E8DD",
-        "surface-raised": "#E5D7C8",
-        text: "#181311",
-        "text-secondary": "#62564C",
-        stroke: "#D4C4B2",
-        "gold-soft": "#C9A27B",
-        "gold-deep": "#8A6340",
-        "gold-rich": "#3D2B1F",
+        canvas: "#F7EFE6",
+        surface: "#FFF9F4",
+        "surface-muted": "#F3E4D6",
+        "surface-raised": "#E6D1BD",
+        text: "#221814",
+        "text-secondary": "#6E5C4F",
+        stroke: "#D7C6B4",
+        "gold-soft": "#D2B0CC",
+        "gold-deep": "#A35A9D",
+        "gold-rich": "#8D4F8C",
         success: "#355B4B",
         error: "#8A4545",
       },
@@ -28,13 +28,13 @@ export default {
         soft: "0 12px 26px rgba(48, 30, 19, 0.07)"
       },
       backgroundImage: {
-        "button-gradient": "linear-gradient(135deg, #2B1D14 0%, #6B4A32 55%, #B7895F 100%)",
+        "button-gradient": "linear-gradient(135deg, #8D4F8C 0%, #B06CA9 55%, #D8C0AF 100%)",
         "editorial-panel":
           "linear-gradient(180deg, rgba(255,253,249,0.98) 0%, rgba(247,241,234,0.98) 100%)",
         "dark-panel":
           "linear-gradient(180deg, rgba(30,22,17,0.98) 0%, rgba(56,38,27,0.96) 100%)",
         "shell-wash":
-          "radial-gradient(circle at top left, rgba(201,162,123,0.2), transparent 28%), radial-gradient(circle at top right, rgba(255,255,255,0.88), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.24), transparent 42%)"
+          "radial-gradient(circle at top left, rgba(141,79,140,0.12), transparent 28%), radial-gradient(circle at top right, rgba(255,255,255,0.9), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.24), transparent 42%)"
       },
     },
   },
