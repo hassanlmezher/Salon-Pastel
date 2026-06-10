@@ -23,6 +23,14 @@ const wordmarkStyle = {
   textShadow: "0 1px 0 rgba(255, 242, 220, 0.34), 0 10px 24px rgba(97, 58, 24, 0.16)",
 };
 
+const sectionTitleStyle = {
+  backgroundImage: "linear-gradient(135deg, #4d2a16 0%, #8a4f24 45%, #b78643 100%)",
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  color: "transparent",
+  textShadow: "0 1px 0 rgba(255, 246, 229, 0.6), 0 10px 24px rgba(61, 36, 18, 0.18)",
+};
+
 export function LandingPage() {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLElement | null>(null);
@@ -177,16 +185,16 @@ export function LandingPage() {
           }}
         />
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.05)_38%,rgba(42,24,19,0.18)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_100%,rgba(183,134,67,0.14),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.18),transparent_18%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(247,239,230,0.62)_0%,rgba(247,239,230,0.56)_45%,rgba(232,194,170,0.62)_100%)] backdrop-blur-[8px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_100%,rgba(183,134,67,0.16),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.28),transparent_18%)]" />
 
         <div className="relative mx-auto flex min-h-[34rem] items-center justify-center px-4 sm:px-6 lg:min-h-[90vh] lg:px-12">
           <div
-            className="w-full max-w-[620px] border border-white/12 bg-[rgba(41,30,24,0.78)] px-6 py-8 text-white shadow-[0_24px_80px_rgba(33,20,25,0.22)] backdrop-blur-[4px] sm:px-10 sm:py-10 lg:px-14 lg:py-14"
+            className="w-full max-w-[620px] border border-[#d8bd95]/80 bg-[#f7efe6]/96 px-6 py-8 text-[#3c2412] shadow-[0_24px_80px_rgba(97,58,24,0.18)] backdrop-blur-[12px] sm:px-10 sm:py-10 lg:px-14 lg:py-14"
           >
             <div className="flex flex-col items-center text-center">
-              <span className="mb-5 block h-[2px] w-14 bg-[#f5dccd]/70 sm:mb-6" />
-              <h2 className="font-display text-[2.8rem] italic leading-none tracking-[-0.03em] text-[#fff8f3] sm:text-[4rem] lg:text-[4.8rem]">
+              <span className="mb-5 block h-[2px] w-14 bg-[#b78643]/60 sm:mb-6" />
+              <h2 className="font-display text-[2.8rem] font-semibold italic leading-none tracking-[-0.03em] sm:text-[4rem] lg:text-[4.8rem]" style={sectionTitleStyle}>
                 Seasonal Specials
               </h2>
             </div>
@@ -195,12 +203,12 @@ export function LandingPage() {
               {seasonalSpecials.map((item) => (
                 <div
                   key={item.name}
-                  className="flex items-baseline justify-between gap-4 border-b border-white/10 py-4 last:border-b-0 sm:py-5"
+                  className="flex items-baseline justify-between gap-4 border-b border-[#d8bd95]/45 py-4 last:border-b-0 sm:py-5"
                 >
-                  <p className="text-[0.9rem] font-medium uppercase tracking-[0.18em] text-[#fff8f3]/90 sm:text-[1rem] sm:tracking-[0.22em]">
+                  <p className="text-[0.9rem] font-semibold uppercase tracking-[0.18em] text-[#6d3f1f] sm:text-[1rem] sm:tracking-[0.22em]">
                     {item.name}
                   </p>
-                  <p className="whitespace-nowrap text-[0.9rem] text-[#f7e4d7]/82 sm:text-[1rem]">
+                  <p className="whitespace-nowrap text-[0.9rem] font-medium text-[#7a5540] sm:text-[1rem]">
                     Starting from {item.price}
                   </p>
                 </div>
@@ -211,7 +219,7 @@ export function LandingPage() {
               <button
                 type="button"
                 onClick={goToBooking}
-                className="text-[0.78rem] font-medium uppercase tracking-[0.26em] text-[#f7e4d7]/78 transition hover:text-[#fff8f3]"
+                className="text-[0.78rem] font-semibold uppercase tracking-[0.26em] text-[#b78643] transition hover:text-[#6d3f1f]"
               >
                 Discover Offers
               </button>

@@ -1,4 +1,4 @@
-import { addDays, format } from "date-fns";
+import { addMonths, eachDayOfInterval, endOfMonth, format, isAfter, startOfMonth, startOfToday } from "date-fns";
 import {
   ArrowLeft,
   CalendarDays,
@@ -110,6 +110,7 @@ export function BookAppointmentScreen() {
   const autoAdvanceTimer = useRef<number | null>(null);
   const [step, setStep] = useState<BookingStep>(1);
   const [selectedServiceId, setSelectedServiceId] = useState<BookingServiceId | null>(null);
+  const [selectedMonthIso, setSelectedMonthIso] = useState(() => format(new Date(), "yyyy-MM"));
   const [selectedDateIso, setSelectedDateIso] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<TimeSlot | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -122,12 +123,29 @@ export function BookAppointmentScreen() {
     };
   }, []);
 
-  const days = useMemo(
+  const monthOptions = useMemo(
     () =>
-      Array.from({ length: 14 }, (_, index) => {
-        const date = addDays(new Date(), index + 1);
+      Array.from({ length: 6 }, (_, index) => {
+        const date = addMonths(new Date(), index);
+
+        return {
+          value: format(date, "yyyy-MM"),
+          label: format(date, "MMMM yyyy"),
+        };
+      }),
+    [],
+  );
+
+  const days = useMemo(() => {
+    const selectedMonth = new Date(`${selectedMonthIso}-01T12:00:00`);
+    const today = startOfToday();
+
+    return eachDayOfInterval({
+      start: startOfMonth(selectedMonth),
+      end: endOfMonth(selectedMonth),
+    }).map((date) => {
         const weekdayIndex = date.getDay();
-        const isAvailable = weekdayIndex !== 0 && index !== 4 && index !== 10;
+        const isAvailable = isAfter(date, today) && weekdayIndex !== 0 && date.getDate() % 10 !== 5;
 
         return {
           iso: format(date, "yyyy-MM-dd"),
@@ -137,9 +155,8 @@ export function BookAppointmentScreen() {
           full: format(date, "EEEE, MMM d"),
           available: isAvailable,
         };
-      }),
-    [],
-  );
+      });
+  }, [selectedMonthIso]);
 
   const timeSlots = useMemo(() => {
     const dateOffset = selectedDateIso ? days.findIndex((day) => day.iso === selectedDateIso) : 0;
@@ -171,6 +188,13 @@ export function BookAppointmentScreen() {
     setSelectedTime(null);
     setSubmitted(false);
     scheduleAutoAdvance(2);
+  };
+
+  const selectMonth = (monthIso: string) => {
+    setSelectedMonthIso(monthIso);
+    setSelectedDateIso(null);
+    setSelectedTime(null);
+    setSubmitted(false);
   };
 
   const selectDay = (dateIso: string) => {
@@ -281,18 +305,32 @@ export function BookAppointmentScreen() {
                     />
 
                     <div className="rounded-[1.5rem] border border-[#e3d0c0] bg-white/58 p-4 sm:p-5">
-                      <div className="mb-4 flex items-center justify-between gap-4">
+                      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-3">
                           <span className="grid size-11 place-items-center rounded-full bg-[#b78643] text-white shadow-[0_14px_30px_rgba(109,63,31,0.22)]">
                             <CalendarDays className="size-5" />
                           </span>
                           <div>
                             <p className="text-xs uppercase tracking-[0.24em] text-[#8b6b58]">
-                              Next two weeks
+                              Choose month
                             </p>
                             <p className="mt-1 text-sm text-[#6d5648]">Tap an available day to continue.</p>
                           </div>
                         </div>
+                        <label className="min-w-[11rem]">
+                          <span className="sr-only">Choose appointment month</span>
+                          <select
+                            value={selectedMonthIso}
+                            onChange={(event) => selectMonth(event.target.value)}
+                            className="min-h-11 w-full border border-[#ddcdbd] bg-white/80 px-3 text-sm font-semibold uppercase tracking-[0.12em] text-[#5f4a3c] outline-none transition focus:border-[#b78643] focus:ring-2 focus:ring-[#b78643]/20"
+                          >
+                            {monthOptions.map((month) => (
+                              <option key={month.value} value={month.value}>
+                                {month.label}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
                       </div>
 
                       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
