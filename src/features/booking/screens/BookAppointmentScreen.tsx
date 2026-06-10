@@ -9,7 +9,6 @@ import {
   Hand,
   Leaf,
   Smile,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -199,7 +198,7 @@ export function BookAppointmentScreen() {
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <section className="relative mx-auto max-w-[92rem] px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+      <section className="relative mx-auto w-full px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
         <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
           <div className="max-w-3xl">
             <p className="text-xs uppercase tracking-[0.34em] text-[#8b6b58]">Appointment journey</p>
@@ -220,7 +219,7 @@ export function BookAppointmentScreen() {
           </Link>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.55fr)]">
+        <div className="grid gap-6">
           <motion.div
             className="rounded-[2rem] border border-white/70 bg-[rgba(255,251,247,0.84)] p-5 shadow-[0_24px_80px_rgba(74,50,36,0.10)] backdrop-blur-xl sm:p-7 lg:p-8"
             initial={reduceMotion ? false : { opacity: 0, y: 18 }}
@@ -252,7 +251,7 @@ export function BookAppointmentScreen() {
                       description="Pick the treatment first. The selected card glows softly, then the flow moves to day selection."
                     />
 
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
                       {bookingServices.map((service, index) => (
                         <ServiceCard
                           key={service.id}
@@ -399,11 +398,22 @@ export function BookAppointmentScreen() {
                           exit={reduceMotion ? undefined : { opacity: 0, y: 10 }}
                           className="rounded-[1.5rem] border border-[#7f2478]/20 bg-[#7f2478]/[0.08] p-5"
                         >
-                          <p className="text-base font-semibold text-[#2f241e]">Ready to confirm.</p>
+                          <p className="text-base font-semibold text-[#2f241e]">
+                            {submitted ? "Appointment request confirmed." : "Ready to confirm."}
+                          </p>
                           <p className="mt-2 text-sm leading-6 text-[#6d5648]">
                             Your {selectedService?.name.toLowerCase()} is set for {selectedDay?.full} at {selectedTime}.
-                            Use the summary card to confirm the appointment.
+                            {selectedService ? ` ${selectedService.price} · ${selectedService.duration}.` : ""}
                           </p>
+                          {!submitted ? (
+                            <Button
+                              type="button"
+                              onClick={() => setSubmitted(true)}
+                              className="mt-5 bg-[#7f2478] px-7 shadow-[0_18px_38px_rgba(127,36,120,0.24)]"
+                            >
+                              Confirm appointment
+                            </Button>
+                          ) : null}
                         </motion.div>
                       ) : null}
                     </AnimatePresence>
@@ -422,19 +432,10 @@ export function BookAppointmentScreen() {
                   ? "Selecting a service moves you forward automatically."
                   : step === 2
                     ? "Pick an available day to continue."
-                    : "Choose a time, then confirm from the summary."}
+                    : "Choose a time, then confirm below."}
               </p>
             </div>
           </motion.div>
-
-          <BookingSummary
-            selectedService={selectedService}
-            selectedDay={selectedDay}
-            selectedTime={selectedTime}
-            allStepsComplete={allStepsComplete}
-            submitted={submitted}
-            onConfirm={() => setSubmitted(true)}
-          />
         </div>
       </section>
     </div>
@@ -603,115 +604,5 @@ function ServiceCard({
         style={{ transformOrigin: "left" }}
       />
     </motion.button>
-  );
-}
-
-function BookingSummary({
-  selectedService,
-  selectedDay,
-  selectedTime,
-  allStepsComplete,
-  submitted,
-  onConfirm,
-}: {
-  selectedService: (typeof bookingServices)[number] | null;
-  selectedDay: { full: string } | null;
-  selectedTime: TimeSlot | null;
-  allStepsComplete: boolean;
-  submitted: boolean;
-  onConfirm: () => void;
-}) {
-  return (
-    <aside className="rounded-[2rem] border border-white/12 bg-[linear-gradient(145deg,rgba(35,26,24,0.95),rgba(61,34,49,0.91))] p-6 text-[#fff8f3] shadow-[0_24px_80px_rgba(39,26,19,0.26)] backdrop-blur-xl sm:p-7 lg:sticky lg:top-8 lg:h-fit">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.34em] text-[#f0d6c7]/75">Booking summary</p>
-          <h2 className="mt-3 font-display text-4xl leading-none tracking-[-0.04em] text-[#fff8f3]">
-            {submitted ? "Confirmed" : "Your ritual"}
-          </h2>
-        </div>
-        <span className="grid size-12 place-items-center rounded-full border border-white/10 bg-white/10 text-[#f0d6c7]">
-          <Sparkles className="size-5" />
-        </span>
-      </div>
-      <p className="mt-4 text-sm leading-6 text-[#f5e8dd]/78">
-        Review the chosen service, day, and hour before finalising the appointment request.
-      </p>
-
-      <div className="mt-6 space-y-4 rounded-[1.65rem] border border-white/10 bg-white/[0.07] p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-        <SummaryLine
-          label="Service"
-          value={selectedService?.name ?? "Choose service"}
-          meta={selectedService ? `${selectedService.price} · ${selectedService.duration}` : "Price and duration appear here"}
-        />
-        <SummaryLine label="Day" value={selectedDay?.full ?? "Choose day"} meta="Available salon calendar" />
-        <SummaryLine label="Hour" value={selectedTime ?? "Choose hour"} meta="Salon local time" />
-      </div>
-
-      <AnimatePresence mode="wait">
-        {submitted ? (
-          <motion.div
-            key="submitted"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mt-6 rounded-[1.5rem] border border-[#f0d6c7]/18 bg-[#f0d6c7]/10 p-5"
-          >
-            <p className="text-base font-semibold text-[#fff8f3]">Appointment request confirmed.</p>
-            <p className="mt-2 text-sm leading-6 text-[#f5e8dd]/76">
-              The selected service, day, and hour are ready for the salon team.
-            </p>
-          </motion.div>
-        ) : allStepsComplete ? (
-          <motion.div
-            key="confirm"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mt-6"
-          >
-            <Button
-              type="button"
-              fullWidth
-              onClick={onConfirm}
-              className="border-[#f0d6c7]/20 bg-[#7f2478] shadow-[0_18px_38px_rgba(127,36,120,0.32)]"
-            >
-              Confirm appointment
-            </Button>
-          </motion.div>
-        ) : (
-          <motion.div
-            key="pending"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="mt-6 rounded-[1.5rem] border border-[#f0d6c7]/18 bg-[#f0d6c7]/10 p-5"
-          >
-            <p className="text-base font-semibold text-[#fff8f3]">Three-step booking</p>
-            <p className="mt-2 text-sm leading-6 text-[#f5e8dd]/76">
-              Complete service, day, and hour to unlock final confirmation.
-            </p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </aside>
-  );
-}
-
-function SummaryLine({
-  label,
-  value,
-  meta,
-}: {
-  label: string;
-  value: string;
-  meta: string;
-}) {
-  return (
-    <div className="border-b border-white/10 pb-4 last:border-b-0 last:pb-0">
-      <p className="text-xs uppercase tracking-[0.24em] text-[#f0d6c7]/70">{label}</p>
-      <p className="mt-2 text-lg font-medium text-white">{value}</p>
-      <p className="mt-1 text-sm text-[#f5e8dd]/68">{meta}</p>
-    </div>
   );
 }

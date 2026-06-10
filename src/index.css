@@ -32,6 +32,12 @@ body {
   box-sizing: border-box;
 }
 
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
