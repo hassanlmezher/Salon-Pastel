@@ -189,7 +189,7 @@ export function BookAppointmentScreen() {
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#f3e7dc] text-[#1f1814]">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.78),transparent_28%),radial-gradient(circle_at_top_right,rgba(246,197,211,0.34),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(127,36,120,0.12),transparent_26%),linear-gradient(180deg,#fbf5ef_0%,#f3e7dc_58%,#ead8ca_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.78),transparent_28%),radial-gradient(circle_at_top_right,rgba(242,211,154,0.28),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(183,134,67,0.14),transparent_26%),linear-gradient(180deg,#fbf5ef_0%,#f3e7dc_58%,#ead8ca_100%)]" />
       <div className="absolute inset-0 opacity-[0.35] [background-image:linear-gradient(rgba(127,92,70,0.055)_1px,transparent_1px),linear-gradient(90deg,rgba(127,92,70,0.055)_1px,transparent_1px)] [background-size:72px_72px]" />
       <motion.div
         aria-hidden="true"
@@ -198,8 +198,8 @@ export function BookAppointmentScreen() {
         transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
       />
 
-      <section className="relative mx-auto w-full px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
-        <div className="mb-8 flex flex-col gap-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between">
+      <section className="relative mx-auto w-full px-0 py-8 lg:py-10">
+        <div className="mb-8 flex flex-col gap-4 px-4 sm:mb-10 sm:flex-row sm:items-end sm:justify-between sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             <p className="text-xs uppercase tracking-[0.34em] text-[#8b6b58]">Appointment journey</p>
             <h1 className="mt-3 font-display text-[2.65rem] leading-[0.9] tracking-[-0.045em] text-[#241812] sm:text-[4.2rem] lg:text-[5rem]">
@@ -221,7 +221,7 @@ export function BookAppointmentScreen() {
 
         <div className="grid gap-6">
           <motion.div
-            className="rounded-[2rem] border border-white/70 bg-[rgba(255,251,247,0.84)] p-5 shadow-[0_24px_80px_rgba(74,50,36,0.10)] backdrop-blur-xl sm:p-7 lg:p-8"
+            className="border-y border-white/70 bg-[rgba(255,251,247,0.84)] p-4 shadow-[0_24px_80px_rgba(74,50,36,0.10)] backdrop-blur-xl sm:p-6 lg:p-8"
             initial={reduceMotion ? false : { opacity: 0, y: 18 }}
             animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
@@ -234,7 +234,7 @@ export function BookAppointmentScreen() {
               onStepChange={setStep}
             />
 
-            <div className="mt-8 overflow-hidden rounded-[1.75rem] border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.76)_0%,rgba(249,242,235,0.86)_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:p-6">
+            <div className="mt-8 overflow-hidden border border-white/75 bg-[linear-gradient(180deg,rgba(255,255,255,0.76)_0%,rgba(249,242,235,0.86)_100%)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.62)] sm:p-6">
               <AnimatePresence mode="wait">
                 {step === 1 ? (
                   <motion.div
@@ -251,7 +251,7 @@ export function BookAppointmentScreen() {
                       description="Pick the treatment first. The selected card glows softly, then the flow moves to day selection."
                     />
 
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
                       {bookingServices.map((service, index) => (
                         <ServiceCard
                           key={service.id}
@@ -283,7 +283,7 @@ export function BookAppointmentScreen() {
                     <div className="rounded-[1.5rem] border border-[#e3d0c0] bg-white/58 p-4 sm:p-5">
                       <div className="mb-4 flex items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <span className="grid size-11 place-items-center rounded-full bg-[#7f2478] text-white shadow-[0_14px_30px_rgba(127,36,120,0.22)]">
+                          <span className="grid size-11 place-items-center rounded-full bg-[#b78643] text-white shadow-[0_14px_30px_rgba(109,63,31,0.22)]">
                             <CalendarDays className="size-5" />
                           </span>
                           <div>
@@ -308,12 +308,12 @@ export function BookAppointmentScreen() {
                             whileHover={day.available && !reduceMotion ? { y: -4 } : undefined}
                             whileTap={day.available && !reduceMotion ? { scale: 0.985 } : undefined}
                             className={cn(
-                              "rounded-[1.35rem] border px-4 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7f2478]",
+                              "rounded-[1.35rem] border px-4 py-4 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b78643]",
                               day.iso === selectedDateIso &&
-                                "border-[#7f2478] bg-[#7f2478] text-white shadow-[0_18px_34px_rgba(127,36,120,0.20)]",
+                                "border-[#b78643] bg-[#b78643] text-white shadow-[0_18px_34px_rgba(109,63,31,0.20)]",
                               day.available &&
                                 day.iso !== selectedDateIso &&
-                                "border-[#ddcdbd] bg-white/78 text-[#2f241e] hover:border-[#9e6d8e] hover:shadow-[0_16px_32px_rgba(74,50,36,0.10)]",
+                                "border-[#ddcdbd] bg-white/78 text-[#2f241e] hover:border-[#b78643] hover:shadow-[0_16px_32px_rgba(74,50,36,0.10)]",
                               !day.available &&
                                 "cursor-not-allowed border-[#e5d8cb]/70 bg-[#eee0d3]/50 text-[#9a8778] opacity-45",
                             )}
@@ -348,7 +348,7 @@ export function BookAppointmentScreen() {
 
                     <div className="rounded-[1.5rem] border border-[#e3d0c0] bg-white/58 p-4 sm:p-5">
                       <div className="mb-4 flex items-center gap-3">
-                        <span className="grid size-11 place-items-center rounded-full bg-[#7f2478] text-white shadow-[0_14px_30px_rgba(127,36,120,0.22)]">
+                        <span className="grid size-11 place-items-center rounded-full bg-[#b78643] text-white shadow-[0_14px_30px_rgba(109,63,31,0.22)]">
                           <Clock3 className="size-5" />
                         </span>
                         <div>
@@ -372,13 +372,13 @@ export function BookAppointmentScreen() {
                             whileHover={slot.available && selectedDay && !reduceMotion ? { y: -3 } : undefined}
                             whileTap={slot.available && selectedDay && !reduceMotion ? { scale: 0.985 } : undefined}
                             className={cn(
-                              "rounded-[1.2rem] border px-4 py-4 text-center text-sm font-semibold tracking-[0.16em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7f2478]",
+                              "rounded-[1.2rem] border px-4 py-4 text-center text-sm font-semibold tracking-[0.16em] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b78643]",
                               slot.time === selectedTime &&
-                                "border-[#7f2478] bg-[#7f2478] text-white shadow-[0_18px_34px_rgba(127,36,120,0.20)]",
+                                "border-[#b78643] bg-[#b78643] text-white shadow-[0_18px_34px_rgba(109,63,31,0.20)]",
                               slot.available &&
                                 selectedDay &&
                                 slot.time !== selectedTime &&
-                                "border-[#ddcdbd] bg-white/80 text-[#2f241e] hover:border-[#9e6d8e]",
+                                "border-[#ddcdbd] bg-white/80 text-[#2f241e] hover:border-[#b78643]",
                               (!slot.available || !selectedDay) &&
                                 "cursor-not-allowed border-[#e5d8cb]/70 bg-[#eee0d3]/48 text-[#9a8778] opacity-45",
                             )}
@@ -396,7 +396,7 @@ export function BookAppointmentScreen() {
                           initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                           animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                           exit={reduceMotion ? undefined : { opacity: 0, y: 10 }}
-                          className="rounded-[1.5rem] border border-[#7f2478]/20 bg-[#7f2478]/[0.08] p-5"
+                          className="rounded-[1.5rem] border border-[#b78643]/25 bg-[#b78643]/[0.08] p-5"
                         >
                           <p className="text-base font-semibold text-[#2f241e]">
                             {submitted ? "Appointment request confirmed." : "Ready to confirm."}
@@ -409,7 +409,7 @@ export function BookAppointmentScreen() {
                             <Button
                               type="button"
                               onClick={() => setSubmitted(true)}
-                              className="mt-5 bg-[#7f2478] px-7 shadow-[0_18px_38px_rgba(127,36,120,0.24)]"
+                              className="mt-5 bg-[linear-gradient(135deg,#b78643_0%,#e0b85f_48%,#f7e1a4_100%)] px-7 text-[#3c2412] shadow-[0_18px_38px_rgba(183,134,67,0.28)]"
                             >
                               Confirm appointment
                             </Button>
@@ -469,7 +469,7 @@ function LuxuryProgressStepper({
       <div className="relative">
         <div className="absolute left-[12%] right-[12%] top-5 h-px bg-[#d8c8ba]" />
         <motion.div
-          className="absolute left-[12%] top-5 h-px origin-left bg-[#7f2478]"
+          className="absolute left-[12%] top-5 h-px origin-left bg-[#b78643]"
           initial={false}
           animate={{ width: `${finalProgress * 0.76}%` }}
           transition={{ duration: 0.45, ease: "easeInOut" }}
@@ -497,8 +497,8 @@ function LuxuryProgressStepper({
                     className={cn(
                       "relative grid size-10 place-items-center rounded-full border text-xs font-semibold transition",
                       isActive &&
-                        "border-[#7f2478] bg-[#7f2478] text-white shadow-[0_12px_28px_rgba(127,36,120,0.28)]",
-                      isComplete && "border-[#7f2478] bg-[#7f2478] text-white",
+                        "border-[#b78643] bg-[#b78643] text-white shadow-[0_12px_28px_rgba(109,63,31,0.28)]",
+                      isComplete && "border-[#b78643] bg-[#b78643] text-white",
                       !isActive && !isComplete && "border-[#d8c8ba] bg-[#e7ded5] text-[#9a8778]",
                       canVisit && !isActive && "group-hover:border-[#9e6d8e]",
                     )}
@@ -506,7 +506,7 @@ function LuxuryProgressStepper({
                     {isActive ? (
                       <motion.span
                         layoutId="active-step-dot"
-                        className="absolute inset-[-5px] rounded-full border border-[#7f2478]/24 bg-[#7f2478]/10"
+                        className="absolute inset-[-5px] rounded-full border border-[#b78643]/25 bg-[#b78643]/10"
                         transition={{ type: "spring", stiffness: 320, damping: 30 }}
                       />
                     ) : null}
@@ -517,7 +517,7 @@ function LuxuryProgressStepper({
                   <span
                     className={cn(
                       "text-[11px] font-semibold uppercase tracking-[0.22em]",
-                      isActive ? "text-[#7f2478]" : "text-[#8b6b58]",
+                      isActive ? "text-[#b78643]" : "text-[#8b6b58]",
                     )}
                   >
                     {item.label}
@@ -575,29 +575,29 @@ function ServiceCard({
       whileHover={{ y: -5 }}
       whileTap={{ scale: 0.985 }}
       className={cn(
-        "group relative overflow-hidden rounded-[1.55rem] border p-5 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7f2478]",
+        "group relative overflow-hidden rounded-[1.55rem] border p-3 text-left transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#b78643] sm:p-5",
         selected
-          ? "border-[#7f2478] bg-[#7f2478]/10 shadow-[0_20px_42px_rgba(127,36,120,0.16)]"
-          : "border-[#ddcdbd] bg-white/76 shadow-[0_14px_30px_rgba(74,50,36,0.06)] hover:border-[#9e6d8e] hover:bg-white/92 hover:shadow-[0_22px_44px_rgba(74,50,36,0.11)]",
+          ? "border-[#b78643] bg-[#b78643]/10 shadow-[0_20px_42px_rgba(109,63,31,0.16)]"
+          : "border-[#ddcdbd] bg-white/76 shadow-[0_14px_30px_rgba(74,50,36,0.06)] hover:border-[#b78643] hover:bg-white/92 hover:shadow-[0_22px_44px_rgba(74,50,36,0.11)]",
       )}
     >
-      <div className="absolute right-[-2.5rem] top-[-2.5rem] size-24 rounded-full bg-[#f4d6df]/45 transition group-hover:scale-125" />
-      <div className="relative flex items-start justify-between gap-4">
-        <div className="grid size-12 shrink-0 place-items-center rounded-[1.1rem] bg-[#f3e3d7] text-[#7f2478] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)]">
-          <Icon className="size-5" />
+      <div className="absolute right-[-2.5rem] top-[-2.5rem] size-20 rounded-full bg-[#f4d6df]/45 transition group-hover:scale-125 sm:size-24" />
+      <div className="relative flex items-start justify-between gap-3 sm:gap-4">
+        <div className="grid size-10 shrink-0 place-items-center rounded-[1.1rem] bg-[#f3e3d7] text-[#b78643] shadow-[inset_0_1px_0_rgba(255,255,255,0.55)] sm:size-12">
+          <Icon className="size-4 sm:size-5" />
         </div>
         <div className="text-right">
-          <p className="text-sm font-semibold text-[#7f2478]">{service.price}</p>
-          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-[#8b6b58]">{service.duration}</p>
+          <p className="text-xs font-semibold text-[#b78643] sm:text-sm">{service.price}</p>
+          <p className="mt-1 text-[10px] uppercase tracking-[0.16em] text-[#8b6b58] sm:text-xs sm:tracking-[0.18em]">{service.duration}</p>
         </div>
       </div>
-      <div className="relative mt-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#9b7a66]">{service.accent}</p>
-        <p className="mt-2 text-lg font-semibold text-[#2f241e]">{service.name}</p>
-        <p className="mt-2 text-sm leading-6 text-[#6d5648]">{service.description}</p>
+      <div className="relative mt-4 sm:mt-5">
+        <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#9b7a66] sm:text-[11px] sm:tracking-[0.24em]">{service.accent}</p>
+        <p className="mt-2 text-base font-semibold leading-tight text-[#2f241e] sm:text-lg">{service.name}</p>
+        <p className="mt-2 text-xs leading-5 text-[#6d5648] sm:text-sm sm:leading-6">{service.description}</p>
       </div>
       <motion.div
-        className="relative mt-5 h-px bg-[#7f2478]/25"
+        className="relative mt-4 h-px bg-[#b78643]/30 sm:mt-5"
         initial={false}
         animate={{ scaleX: selected ? 1 : 0.34 }}
         transition={{ duration: 0.25 }}

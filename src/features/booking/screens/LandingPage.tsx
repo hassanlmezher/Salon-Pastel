@@ -15,6 +15,14 @@ const seasonalSpecials = [
   { name: "MASSAGE body therapy", price: "$40.00" },
 ] as const;
 
+const wordmarkStyle = {
+  backgroundImage: "linear-gradient(135deg, #6d3f1f 0%, #b78643 42%, #f2d39a 58%, #8a4f24 100%)",
+  backgroundClip: "text",
+  WebkitBackgroundClip: "text",
+  color: "transparent",
+  textShadow: "0 1px 0 rgba(255, 242, 220, 0.34), 0 10px 24px rgba(97, 58, 24, 0.16)",
+};
+
 export function LandingPage() {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLElement | null>(null);
@@ -37,19 +45,6 @@ export function LandingPage() {
   const overlayY = useTransform(smoothProgress, [0, 1], [-24, 44]);
   const bubbleY = useTransform(smoothProgress, [0, 1], [18, -12]);
   const quoteOpacity = useTransform(smoothProgress, [0.1, 0.32, 0.9], [0, 1, 1]);
-  const pricingRef = useRef<HTMLElement | null>(null);
-  const { scrollYProgress: pricingScrollYProgress } = useScroll({
-    target: pricingRef,
-    offset: ["start end", "end start"],
-  });
-  const pricingSmoothProgress = useSpring(pricingScrollYProgress, {
-    stiffness: 70,
-    damping: 22,
-    mass: 0.24,
-  });
-  const pricingBgY = useTransform(pricingSmoothProgress, [0, 1], ["-8%", "8%"]);
-  const pricingBgScale = useTransform(pricingSmoothProgress, [0, 1], [1.08, 1.16]);
-
   useEffect(() => {
     const node = ctaRef.current;
     if (!node) {
@@ -81,8 +76,10 @@ export function LandingPage() {
       <header className="relative z-30 border-b border-black/5 bg-[#f7efe6]/92 backdrop-blur-xl">
         <div className="mx-auto flex max-w-[88rem] items-center px-4 py-4 sm:px-6 lg:px-8">
           <button type="button" onClick={() => navigate("/")} className="shrink-0 text-left">
-            <p className="font-display text-[42px] leading-none text-[#8d4f8c] sm:text-[56px]">Pastel</p>
-            <p className="-mt-1 pl-1 text-[10px] uppercase tracking-[0.26em] text-[#cdb99f] sm:text-[11px]">
+            <p className="font-display text-[42px] font-semibold leading-none sm:text-[56px]" style={wordmarkStyle}>
+              Pastel
+            </p>
+            <p className="-mt-1 pl-1 text-[10px] uppercase tracking-[0.26em] text-[#b89a7c] sm:text-[11px]">
               Nail and beauty lounge
             </p>
           </button>
@@ -113,7 +110,7 @@ export function LandingPage() {
         />
 
         <motion.div
-          className="absolute inset-0 will-change-transform bg-[radial-gradient(circle_at_18%_100%,rgba(201,95,156,0.26),transparent_20%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.22),transparent_18%)]"
+          className="absolute inset-0 will-change-transform bg-[radial-gradient(circle_at_18%_100%,rgba(183,134,67,0.24),transparent_20%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.22),transparent_18%)]"
           style={reduceMotion ? undefined : { y: overlayY }}
         />
 
@@ -142,7 +139,7 @@ export function LandingPage() {
             onClick={goToBooking}
             whileHover={reduceMotion ? undefined : { y: -2 }}
             whileTap={reduceMotion ? undefined : { scale: 0.985 }}
-            className="min-h-11 rounded-none border border-[#7f2478] bg-[#7f2478] px-5 text-white shadow-[0_16px_34px_rgba(86,22,82,0.28)]"
+            className="min-h-11 rounded-none border border-[#f2d39a] bg-[linear-gradient(135deg,#b78643_0%,#e0b85f_48%,#f7e1a4_100%)] px-5 text-[#3c2412] shadow-[0_16px_34px_rgba(183,134,67,0.34)]"
           >
             Book Appointment
           </Button>
@@ -160,38 +157,32 @@ export function LandingPage() {
           onClick={goToBooking}
           whileHover={reduceMotion ? undefined : { y: -2 }}
           whileTap={reduceMotion ? undefined : { scale: 0.985 }}
-          className="pointer-events-auto min-h-11 rounded-none border border-[#7f2478] bg-[#7f2478] px-5 text-white shadow-[0_16px_34px_rgba(86,22,82,0.28)]"
+          className="pointer-events-auto min-h-11 rounded-none border border-[#f2d39a] bg-[linear-gradient(135deg,#b78643_0%,#e0b85f_48%,#f7e1a4_100%)] px-5 text-[#3c2412] shadow-[0_16px_34px_rgba(183,134,67,0.34)]"
         >
           Book Appointment
         </Button>
       </div>
 
       <section
-        ref={pricingRef}
         id="services"
         className="relative isolate w-full overflow-hidden bg-[#e7d8ce] py-16 sm:py-20 lg:min-h-[90vh] lg:py-0"
       >
-        <motion.div
-          className="absolute inset-0 will-change-transform"
+        <div
+          className="absolute inset-0"
           style={{
             backgroundImage: `url(${pricesImage})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
-            ...(reduceMotion ? {} : { y: pricingBgY, scale: pricingBgScale }),
           }}
         />
 
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.05)_38%,rgba(42,24,19,0.18)_100%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_100%,rgba(201,95,156,0.12),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.18),transparent_18%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_100%,rgba(183,134,67,0.14),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.18),transparent_18%)]" />
 
         <div className="relative mx-auto flex min-h-[34rem] items-center justify-center px-4 sm:px-6 lg:min-h-[90vh] lg:px-12">
-          <motion.div
+          <div
             className="w-full max-w-[620px] border border-white/12 bg-[rgba(41,30,24,0.78)] px-6 py-8 text-white shadow-[0_24px_80px_rgba(33,20,25,0.22)] backdrop-blur-[4px] sm:px-10 sm:py-10 lg:px-14 lg:py-14"
-            initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-            whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.35 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
           >
             <div className="flex flex-col items-center text-center">
               <span className="mb-5 block h-[2px] w-14 bg-[#f5dccd]/70 sm:mb-6" />
@@ -225,16 +216,18 @@ export function LandingPage() {
                 Discover Offers
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       <footer className="relative isolate overflow-hidden border-t border-[#dccab8]/70 bg-[#f7efe6] px-4 py-7 sm:px-6 sm:py-10 lg:px-8 lg:py-14">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(141,79,140,0.08),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(201,95,156,0.08),transparent_22%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(183,134,67,0.12),transparent_24%),radial-gradient(circle_at_bottom_right,rgba(242,211,154,0.18),transparent_22%)]" />
         <div className="relative mx-auto grid max-w-[88rem] gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)_minmax(0,0.8fr)] lg:items-start">
           <div className="border-b border-[#dccab8]/70 pb-5 sm:border-b-0 sm:pb-0">
-            <p className="font-display text-[38px] leading-none text-[#8d4f8c] sm:text-[56px]">Pastel</p>
-            <p className="mt-1 text-[10px] uppercase tracking-[0.26em] text-[#cdb99f] sm:text-xs sm:tracking-[0.32em]">
+            <p className="font-display text-[38px] font-semibold leading-none sm:text-[56px]" style={wordmarkStyle}>
+              Pastel
+            </p>
+            <p className="mt-1 text-[10px] uppercase tracking-[0.26em] text-[#b89a7c] sm:text-xs sm:tracking-[0.32em]">
               Nail and beauty lounge
             </p>
             <p className="mt-3 max-w-md text-sm leading-6 text-[#6d5648] sm:mt-4 sm:leading-7">
@@ -260,7 +253,7 @@ export function LandingPage() {
               </p>
               <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
                 <li>
-                  <button type="button" onClick={goToBooking} className="transition hover:text-[#8d4f8c]">
+                  <button type="button" onClick={goToBooking} className="transition hover:text-[#b78643]">
                     Book
                   </button>
                 </li>
