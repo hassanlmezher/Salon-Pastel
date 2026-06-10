@@ -78,10 +78,21 @@ export function LandingPage() {
 
   return (
     <>
+      <header className="relative z-30 border-b border-black/5 bg-[#f7efe6]/92 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[88rem] items-center px-4 py-4 sm:px-6 lg:px-8">
+          <button type="button" onClick={() => navigate("/")} className="shrink-0 text-left">
+            <p className="font-display text-[42px] leading-none text-[#8d4f8c] sm:text-[56px]">Pastel</p>
+            <p className="-mt-1 pl-1 text-[10px] uppercase tracking-[0.26em] text-[#cdb99f] sm:text-[11px]">
+              Nail and beauty lounge
+            </p>
+          </button>
+        </div>
+      </header>
+
       <section
         ref={heroRef}
         id="hero"
-        className="relative h-[70vh] min-h-[34rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[78vh] lg:h-[86vh]"
+        className="relative h-[64vh] min-h-[32rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[72vh] lg:h-[80vh]"
       >
         <motion.video
           className="absolute left-0 top-[-8%] h-[116%] w-full object-cover will-change-transform"
