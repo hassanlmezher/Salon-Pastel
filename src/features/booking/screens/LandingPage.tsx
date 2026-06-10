@@ -81,7 +81,7 @@ export function LandingPage() {
       <section
         ref={heroRef}
         id="hero"
-        className="relative h-[46vh] min-h-[24rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[50vh] lg:h-[56vh]"
+        className="relative h-[70vh] min-h-[34rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[78vh] lg:h-[86vh]"
       >
         <motion.video
           className="absolute left-0 top-[-8%] h-[116%] w-full object-cover will-change-transform"
