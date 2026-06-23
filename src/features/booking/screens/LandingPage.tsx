@@ -6,14 +6,27 @@ import pricesImage from "../../../images/prices.png";
 
 const heroVideo = "/hero-banner.mp4";
 
-const seasonalSpecials = [
-  { name: "MANICURE", price: "$15.00" },
-  { name: "PEDICURE", price: "$25.00" },
-  { name: "FACIAL", price: "$50.00" },
-  { name: "LASER SERVICE", price: "$35.00" },
-  { name: "WAXING full body", price: "$60.00" },
-  { name: "MASSAGE body therapy", price: "$40.00" },
+const serviceOfferings = [
+  {
+    name: "Nail Care & Manicure",
+    description: "Clean shaping, cuticle care, polish, and refined everyday nail grooming.",
+  },
+  {
+    name: "Pedicure Services",
+    description: "Relaxed foot care with soaking, exfoliation, shaping, and a polished finish.",
+  },
+  {
+    name: "Hand Treatments & Spa",
+    description: "Softening hand rituals with hydration, massage, and spa-focused care.",
+  },
+  {
+    name: "Nail Treatments",
+    description: "Strengthening and recovery treatments for healthier natural nails.",
+  },
 ] as const;
+
+const bookButtonClass =
+  "min-h-12 border border-[#f7d6df] bg-[#f6c9b8] px-6 text-[#4d2a16] shadow-[0_18px_38px_rgba(214,133,153,0.34)] hover:bg-[#f3b8c8] focus-visible:ring-[#d68599] sm:px-8";
 
 const wordmarkStyle = {
   backgroundImage: "linear-gradient(135deg, #6d3f1f 0%, #b78643 42%, #f2d39a 58%, #8a4f24 100%)",
@@ -54,24 +67,28 @@ export function LandingPage() {
   const bubbleY = useTransform(smoothProgress, [0, 1], [18, -12]);
   const quoteOpacity = useTransform(smoothProgress, [0.1, 0.32, 0.9], [0, 1, 1]);
   useEffect(() => {
-    const node = ctaRef.current;
-    if (!node) {
-      return undefined;
-    }
+    let frame = 0;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsCtaPinned(!entry.isIntersecting);
-      },
-      {
-        threshold: 0.01,
-      },
-    );
+    const updatePinnedState = () => {
+      const node = ctaRef.current;
+      if (!node) return;
 
-    observer.observe(node);
+      setIsCtaPinned(node.getBoundingClientRect().top <= 0);
+    };
+
+    const scheduleUpdate = () => {
+      window.cancelAnimationFrame(frame);
+      frame = window.requestAnimationFrame(updatePinnedState);
+    };
+
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
 
     return () => {
-      observer.disconnect();
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
     };
   }, []);
 
@@ -97,7 +114,7 @@ export function LandingPage() {
       <section
         ref={heroRef}
         id="hero"
-        className="relative h-[46vh] min-h-[24rem] w-full overflow-hidden bg-[#e7d8ce] sm:h-[54vh] lg:h-[62vh]"
+        className="relative h-[calc(100svh-5.5rem)] min-h-[32rem] w-full overflow-hidden bg-[#e7d8ce]"
       >
         <motion.video
           className="absolute left-0 top-[-8%] h-[116%] w-full object-cover will-change-transform"
@@ -140,23 +157,23 @@ export function LandingPage() {
 
         <div
           ref={ctaRef}
-          className="absolute left-1/2 top-8 z-20 flex -translate-x-1/2 justify-center px-4"
+          className="absolute bottom-6 left-1/2 z-20 flex -translate-x-1/2 justify-center px-4 sm:bottom-8"
         >
           <Button
             type="button"
             onClick={goToBooking}
             whileHover={reduceMotion ? undefined : { y: -2 }}
             whileTap={reduceMotion ? undefined : { scale: 0.985 }}
-            className="min-h-11 rounded-none border border-[#f2d39a] bg-[linear-gradient(135deg,#b78643_0%,#e0b85f_48%,#f7e1a4_100%)] px-5 text-[#3c2412] shadow-[0_16px_34px_rgba(183,134,67,0.34)]"
+            className={bookButtonClass}
           >
-            Book Appointment
+            Book an Appointment
           </Button>
         </div>
       </section>
 
       <div
-        className={`pointer-events-none fixed left-1/2 top-4 z-40 flex -translate-x-1/2 justify-center px-4 transition-all duration-300 sm:top-6 lg:top-8 ${
-          isCtaPinned ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-3"
+        className={`pointer-events-none fixed left-1/2 top-0 z-40 flex -translate-x-1/2 justify-center px-4 transition-all duration-300 ${
+          isCtaPinned ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
         }`}
         aria-hidden={!isCtaPinned}
       >
@@ -165,15 +182,15 @@ export function LandingPage() {
           onClick={goToBooking}
           whileHover={reduceMotion ? undefined : { y: -2 }}
           whileTap={reduceMotion ? undefined : { scale: 0.985 }}
-          className="pointer-events-auto min-h-11 rounded-none border border-[#f2d39a] bg-[linear-gradient(135deg,#b78643_0%,#e0b85f_48%,#f7e1a4_100%)] px-5 text-[#3c2412] shadow-[0_16px_34px_rgba(183,134,67,0.34)]"
+          className={`pointer-events-auto ${bookButtonClass}`}
         >
-          Book Appointment
+          Book an Appointment
         </Button>
       </div>
 
       <section
         id="services"
-        className="relative isolate w-full overflow-hidden bg-[#e7d8ce] py-16 sm:py-20 lg:min-h-[90vh] lg:py-0"
+        className="relative isolate w-full overflow-hidden bg-[#f7efe6] py-16 sm:py-20 lg:py-24"
       >
         <div
           className="absolute inset-0"
@@ -185,45 +202,37 @@ export function LandingPage() {
           }}
         />
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(247,239,230,0.62)_0%,rgba(247,239,230,0.56)_45%,rgba(232,194,170,0.62)_100%)] backdrop-blur-[8px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_100%,rgba(183,134,67,0.16),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.28),transparent_18%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(247,239,230,0.9)_0%,rgba(247,239,230,0.82)_46%,rgba(246,201,184,0.54)_100%)] backdrop-blur-[9px]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_100%,rgba(246,201,184,0.24),transparent_24%),radial-gradient(circle_at_80%_18%,rgba(255,255,255,0.35),transparent_18%)]" />
 
-        <div className="relative mx-auto flex min-h-[34rem] items-center justify-center px-4 sm:px-6 lg:min-h-[90vh] lg:px-12">
-          <div
-            className="w-full max-w-[620px] border border-[#d8bd95]/80 bg-[#f7efe6]/96 px-6 py-8 text-[#3c2412] shadow-[0_24px_80px_rgba(97,58,24,0.18)] backdrop-blur-[12px] sm:px-10 sm:py-10 lg:px-14 lg:py-14"
-          >
-            <div className="flex flex-col items-center text-center">
-              <span className="mb-5 block h-[2px] w-14 bg-[#b78643]/60 sm:mb-6" />
-              <h2 className="font-display text-[2.8rem] font-semibold italic leading-none tracking-[-0.03em] sm:text-[4rem] lg:text-[4.8rem]" style={sectionTitleStyle}>
-                Seasonal Specials
-              </h2>
-            </div>
+        <div className="relative mx-auto max-w-[88rem] px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <span className="mb-5 block h-[2px] w-14 bg-[#d68599]/70 sm:mb-6" />
+            <h2 className="font-display text-[2.8rem] font-semibold italic leading-none sm:text-[4rem] lg:text-[4.8rem]" style={sectionTitleStyle}>
+              What We Offer
+            </h2>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-[#6d5648] sm:text-base">
+              Detailed nail and spa services designed for clean finishes, soft skin, and calm salon appointments.
+            </p>
+          </div>
 
-            <div className="mt-8 space-y-0 sm:mt-10">
-              {seasonalSpecials.map((item) => (
-                <div
-                  key={item.name}
-                  className="flex items-baseline justify-between gap-4 border-b border-[#d8bd95]/45 py-4 last:border-b-0 sm:py-5"
-                >
-                  <p className="text-[0.9rem] font-semibold uppercase tracking-[0.18em] text-[#6d3f1f] sm:text-[1rem] sm:tracking-[0.22em]">
-                    {item.name}
-                  </p>
-                  <p className="whitespace-nowrap text-[0.9rem] font-medium text-[#7a5540] sm:text-[1rem]">
-                    Starting from {item.price}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-8 flex justify-center sm:mt-10">
-              <button
-                type="button"
-                onClick={goToBooking}
-                className="text-[0.78rem] font-semibold uppercase tracking-[0.26em] text-[#b78643] transition hover:text-[#6d3f1f]"
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4">
+            {serviceOfferings.map((item) => (
+              <article
+                key={item.name}
+                className="border border-[#e7c9c2]/80 bg-[#fff9f4]/92 p-5 text-[#3c2412] shadow-[0_18px_42px_rgba(97,58,24,0.1)] backdrop-blur-[10px] sm:p-6"
               >
-                Discover Offers
-              </button>
-            </div>
+                <div className="mb-5 flex h-10 w-10 items-center justify-center border border-[#f6c9b8] bg-[#f6c9b8]/42 text-sm font-semibold text-[#8a4545]">
+                  {item.name.charAt(0)}
+                </div>
+                <h3 className="text-base font-semibold uppercase tracking-[0.14em] text-[#6d3f1f]">
+                  {item.name}
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-[#6d5648]">
+                  {item.description}
+                </p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -239,33 +248,33 @@ export function LandingPage() {
               Nail and beauty lounge
             </p>
             <p className="mt-3 max-w-md text-sm leading-6 text-[#6d5648] sm:mt-4 sm:leading-7">
-              Luxury pastel salon care with simple booking and calm appointments.
+              Simple booking, polished nail care, and calm salon appointments.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-5 lg:contents">
+          <div className="grid gap-5 sm:grid-cols-3 lg:contents">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
-                Contact
+                Owner
               </p>
               <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
-                <li>hello@pastelnailsalon.com</li>
-                <li>+1 (000) 000-0000</li>
-                <li>Mon-Sat, 9-7</li>
+                <li>Haifa Salman Mezher</li>
               </ul>
             </div>
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
-                Links
+                Phone
               </p>
               <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
-                <li>
-                  <button type="button" onClick={goToBooking} className="transition hover:text-[#b78643]">
-                    Book
-                  </button>
-                </li>
-                <li>Specials</li>
-                <li>About</li>
+                <li>+961 71 430 542</li>
+              </ul>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
+                Hours
+              </p>
+              <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
+                <li>8:30 am till 6 pm</li>
               </ul>
             </div>
           </div>
