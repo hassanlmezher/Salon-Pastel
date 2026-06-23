@@ -1,15 +1,15 @@
 # Salon Pastel
 
-Salon Pastel is a mobile-first luxury salon booking frontend built with React, TypeScript, Tailwind CSS, Motion, and React Router. The product focuses on a short 3-step booking flow, strong premium visual hierarchy, realistic mock scheduling logic, and accessible guest booking.
+Salon Pastel is a mobile-first luxury salon booking website built with Next.js, React, and TypeScript. The product focuses on a premium first impression, clear service discovery, and a simple appointment request flow.
 
 ## Scripts
 
 - `npm install`
 - `npm run dev`
 - `npm run build`
-- `npm run preview`
+- `npm run start`
 
-`npm run dev` builds the current app bundle and serves it locally on `http://localhost:5173` where possible.
+`npm run dev` starts the Next.js dev server locally on `http://127.0.0.1:5173`.
 
 ## Architecture
 

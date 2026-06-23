@@ -254,7 +254,6 @@ export function LandingPage() {
                 <li>Mon-Sat, 9-7</li>
               </ul>
             </div>
-
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
                 Links
