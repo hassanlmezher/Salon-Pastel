@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
-import pricesImage from "../../../images/prices.png";
 
 const heroVideo = "/hero-banner.mp4";
+const pricesImage = new URL("../../../images/prices.png", import.meta.url).href;
 
 const serviceOfferings = [
   {

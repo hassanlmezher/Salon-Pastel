@@ -21,7 +21,7 @@ const offerings = [
   },
 ] as const;
 
-const phoneHref = "tel:+96171430542";
+const bookHref = "/book";
 
 export default function Home() {
   const ctaRef = useRef<HTMLDivElement | null>(null);
@@ -73,14 +73,14 @@ export default function Home() {
         </div>
 
         <div ref={ctaRef} className="pastelHeroCta">
-          <a className="pastelBookButton" href={phoneHref}>
+          <a className="pastelBookButton" href={bookHref}>
             Book an Appointment
           </a>
         </div>
       </section>
 
       <div className={`pastelStickyCta ${isPinned ? "isPinned" : ""}`} aria-hidden={!isPinned}>
-        <a className="pastelBookButton" href={phoneHref}>
+        <a className="pastelBookButton" href={bookHref}>
           Book an Appointment
         </a>
       </div>

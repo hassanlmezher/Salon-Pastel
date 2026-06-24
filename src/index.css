@@ -129,6 +129,15 @@ video {
   pointer-events: none;
 }
 
+.service-menu-card {
+  border-radius: 24px !important;
+}
+
+.service-menu-image,
+.service-menu-icon {
+  border-radius: 9999px !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
