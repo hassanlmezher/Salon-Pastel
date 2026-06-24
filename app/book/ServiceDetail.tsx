@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
+import type { FormEvent, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import type { ServiceGroupId, ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
 
 type ServiceDetailProps = {
@@ -65,15 +66,24 @@ const times = [
 ];
 
 export function ServiceDetail({ groupId, service }: ServiceDetailProps) {
+  const router = useRouter();
   const firstAvailableTime = useMemo(() => times.find((time) => time.available)?.label ?? "", []);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(5);
   const [selectedDay, setSelectedDay] = useState(() => getFirstAvailableDay(5));
   const [selectedTime, setSelectedTime] = useState(firstAvailableTime);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const days = useMemo(() => getDaysForMonth(selectedMonthIndex), [selectedMonthIndex]);
 
   const chooseMonth = (monthIndex: number) => {
     setSelectedMonthIndex(monthIndex);
     setSelectedDay(getFirstAvailableDay(monthIndex));
+  };
+
+  const submitCustomerForm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setShowCustomerForm(false);
+    setShowSuccess(true);
   };
 
   return (
@@ -155,11 +165,53 @@ export function ServiceDetail({ groupId, service }: ServiceDetailProps) {
             </div>
           </AppointmentStep>
 
-          <button className="appointmentContinue" type="button">
+          <button className="appointmentContinue" type="button" onClick={() => setShowCustomerForm(true)}>
             Continue to Booking <span>→</span>
           </button>
         </section>
       </div>
+
+      {showCustomerForm ? (
+        <div className="appointmentFormOverlay" role="dialog" aria-modal="true" aria-labelledby="customer-form-title">
+          <form className="appointmentFormPopup" onSubmit={submitCustomerForm}>
+            <h2 id="customer-form-title">Confirm your details</h2>
+            <p>Enter your contact information so we can confirm your appointment.</p>
+
+            <label>
+              First name
+              <input name="firstName" autoComplete="given-name" required />
+            </label>
+            <label>
+              Last name
+              <input name="lastName" autoComplete="family-name" required />
+            </label>
+            <label>
+              Phone number
+              <input name="phone" type="tel" autoComplete="tel" required />
+            </label>
+
+            <div className="appointmentFormActions">
+              <button type="button" onClick={() => setShowCustomerForm(false)}>
+                Back
+              </button>
+              <button type="submit">Submit</button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {showSuccess ? (
+        <div className="appointmentSuccessOverlay" role="status" aria-live="polite">
+          <div className="appointmentSuccessPopup">
+            <span aria-hidden="true">✓</span>
+            <h2>Appointment booked successfully.</h2>
+            <p>Thank you. Your appointment request has been received.</p>
+            <button type="button" onClick={() => router.push("/")}>
+              Done
+            </button>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

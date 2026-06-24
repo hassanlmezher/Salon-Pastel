@@ -1417,6 +1417,185 @@ textarea {
   margin-left: 24px;
 }
 
+.appointmentFormOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(35, 24, 20, 0.28);
+  padding: 16px;
+  backdrop-filter: blur(8px);
+}
+
+.appointmentFormPopup {
+  width: min(24rem, 100%);
+  border-radius: 24px;
+  background: #fffaf6;
+  padding: 24px;
+  box-shadow: 0 24px 70px rgba(97, 58, 24, 0.26);
+}
+
+.appointmentFormPopup h2 {
+  margin: 0;
+  color: #231814;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.appointmentFormPopup p {
+  margin: 12px 0 0;
+  color: #6d5648;
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.appointmentFormPopup label {
+  display: block;
+  margin-top: 18px;
+  color: #4d4039;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.appointmentFormPopup input {
+  width: 100%;
+  min-height: 48px;
+  display: block;
+  margin-top: 8px;
+  border: 1px solid #ead5cd;
+  background: #fff;
+  padding: 0 16px;
+  color: #231814;
+  outline: none;
+}
+
+.appointmentFormPopup input:focus {
+  border-color: #bd736b;
+}
+
+.appointmentFormActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.appointmentFormActions button {
+  min-height: 48px;
+  border: 1px solid #ead5cd;
+  padding: 0 16px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.appointmentFormActions button:first-child {
+  background: #fff;
+  color: #6d3f1f;
+}
+
+.appointmentFormActions button:last-child {
+  border-color: #bd736b;
+  background: #bd736b;
+  color: #fff;
+}
+
+.appointmentSuccessOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(35, 24, 20, 0.28);
+  padding: 16px;
+  backdrop-filter: blur(8px);
+  animation: appointmentOverlayFade 180ms ease-out both;
+}
+
+.appointmentSuccessPopup {
+  position: relative;
+  width: min(22rem, 100%);
+  border-radius: 24px;
+  background: #d68599;
+  padding: 40px 24px 24px;
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 24px 70px rgba(97, 58, 24, 0.28);
+  animation: appointmentSuccessEnter 360ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.appointmentSuccessPopup > span {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 4px solid #fff;
+  border-radius: 999px;
+  background: #d68599;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 12px 28px rgba(97, 58, 24, 0.2);
+}
+
+.appointmentSuccessPopup h2 {
+  margin: 0;
+  color: #fff;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  line-height: 1.12;
+}
+
+.appointmentSuccessPopup p {
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.appointmentSuccessPopup button {
+  min-height: 44px;
+  margin-top: 20px;
+  border: 0;
+  background: #fff;
+  padding: 0 24px;
+  color: #b46f65;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@keyframes appointmentOverlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes appointmentSuccessEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @media (max-width: 980px) {
   .pastelServiceGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

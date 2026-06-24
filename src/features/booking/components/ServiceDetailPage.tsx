@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
-import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import type { FormEvent, ReactNode } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import type { ServiceGroupId, ServiceMenuItem } from "../data/serviceMenu";
 
 type ServiceDetailPageProps = {
@@ -64,15 +64,24 @@ const times = [
 ];
 
 export function ServiceDetailPage({ groupId, service }: ServiceDetailPageProps) {
+  const navigate = useNavigate();
   const firstAvailableTime = useMemo(() => times.find((time) => time.available)?.label ?? "", []);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(5);
   const [selectedDay, setSelectedDay] = useState(() => getFirstAvailableDay(5));
   const [selectedTime, setSelectedTime] = useState(firstAvailableTime);
+  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const days = useMemo(() => getDaysForMonth(selectedMonthIndex), [selectedMonthIndex]);
 
   const chooseMonth = (monthIndex: number) => {
     setSelectedMonthIndex(monthIndex);
     setSelectedDay(getFirstAvailableDay(monthIndex));
+  };
+
+  const submitCustomerForm = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setShowCustomerForm(false);
+    setShowSuccess(true);
   };
 
   return (
@@ -192,12 +201,71 @@ export function ServiceDetailPage({ groupId, service }: ServiceDetailPageProps) 
 
           <button
             type="button"
+            onClick={() => setShowCustomerForm(true)}
             className="mt-6 min-h-[3.75rem] w-full bg-[#bd736b] px-5 text-center font-display text-[1.35rem] text-white shadow-[0_14px_28px_rgba(189,115,107,0.28)] transition hover:bg-[#a9615b] sm:text-[1.65rem]"
           >
             Continue to Booking →
           </button>
         </section>
       </div>
+
+      {showCustomerForm ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[#231814]/28 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="customer-form-title">
+          <form className="booking-form-popup w-full max-w-[24rem] bg-[#fffaf6] p-6 shadow-[0_24px_70px_rgba(97,58,24,0.26)]" onSubmit={submitCustomerForm}>
+            <h2 id="customer-form-title" className="font-display text-[2rem] font-semibold leading-none text-[#231814]">
+              Confirm your details
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-[#6d5648]">
+              Enter your contact information so we can confirm your appointment.
+            </p>
+
+            <label className="mt-5 block text-sm font-semibold text-[#4d4039]">
+              First name
+              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="firstName" autoComplete="given-name" required />
+            </label>
+            <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
+              Last name
+              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="lastName" autoComplete="family-name" required />
+            </label>
+            <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
+              Phone number
+              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="phone" type="tel" autoComplete="tel" required />
+            </label>
+
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <button type="button" onClick={() => setShowCustomerForm(false)} className="min-h-12 border border-[#ead5cd] bg-white px-4 text-sm font-semibold uppercase tracking-[0.14em] text-[#6d3f1f]">
+                Back
+              </button>
+              <button type="submit" className="min-h-12 bg-[#bd736b] px-4 text-sm font-semibold uppercase tracking-[0.14em] text-white">
+                Submit
+              </button>
+            </div>
+          </form>
+        </div>
+      ) : null}
+
+      {showSuccess ? (
+        <div className="fixed inset-0 z-50 grid place-items-center bg-[#231814]/28 px-4 backdrop-blur-sm" role="status" aria-live="polite">
+          <div className="success-popup relative w-full max-w-[22rem] bg-[#d68599] px-6 pb-6 pt-10 text-center text-white shadow-[0_24px_70px_rgba(97,58,24,0.28)]">
+            <span className="success-popup-icon absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center border-4 border-white bg-[#d68599] text-3xl font-semibold leading-none text-white shadow-[0_12px_28px_rgba(97,58,24,0.2)]">
+              ✓
+            </span>
+            <h2 className="font-display text-[1.8rem] font-semibold leading-tight text-white">
+              Appointment booked successfully.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-white/90">
+              Thank you. Your appointment request has been received.
+            </p>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="mt-5 min-h-11 bg-white px-6 text-sm font-semibold uppercase tracking-[0.16em] text-[#b46f65]"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
