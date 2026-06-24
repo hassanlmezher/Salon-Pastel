@@ -17,6 +17,7 @@ do $$
 declare
   day_column_type text;
   day_names text[] := array['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  day_short_names text[] := array['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   day_index int;
   day_value text;
   closed boolean;
@@ -34,7 +35,11 @@ begin
     if not exists (
       select 1
       from public.weekly_working_hours
-      where day_of_week::text in (day_index::text, day_names[day_index + 1], lower(day_names[day_index + 1]))
+      where lower(day_of_week::text) in (
+        day_index::text,
+        lower(day_names[day_index + 1]),
+        lower(day_short_names[day_index + 1])
+      )
     ) then
       if day_column_type in ('smallint', 'integer', 'bigint', 'numeric') then
         execute
@@ -49,6 +54,17 @@ begin
         using day_value, time '08:30', time '18:00', closed;
       end if;
     end if;
+
+    update public.weekly_working_hours
+    set
+      opens_at = time '08:30',
+      closes_at = time '18:00',
+      is_closed = closed
+    where lower(day_of_week::text) in (
+      day_index::text,
+      lower(day_names[day_index + 1]),
+      lower(day_short_names[day_index + 1])
+    );
   end loop;
 end $$;
 
