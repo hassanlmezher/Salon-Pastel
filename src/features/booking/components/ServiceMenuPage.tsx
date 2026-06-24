@@ -1,11 +1,13 @@
+import { Link } from "react-router-dom";
 import type { ServiceMenuItem } from "../data/serviceMenu";
 
 type ServiceMenuPageProps = {
+  groupId: "manicure" | "pedicure";
   title: string;
   services: ServiceMenuItem[];
 };
 
-export function ServiceMenuPage({ title, services }: ServiceMenuPageProps) {
+export function ServiceMenuPage({ groupId, title, services }: ServiceMenuPageProps) {
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-8 text-[#231814] sm:px-5 lg:px-8">
       <div className="mx-auto w-full">
@@ -38,8 +40,9 @@ export function ServiceMenuPage({ title, services }: ServiceMenuPageProps) {
 
         <section className="mt-8 grid w-full grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-7" aria-label={title}>
           {services.map((service) => (
-            <article
+            <Link
               key={service.name}
+              to={`/book/${groupId}/${service.slug}`}
               className="service-menu-card flex min-h-[18rem] flex-col items-center bg-[#fffaf6] px-3 py-5 text-center shadow-[0_16px_34px_rgba(97,58,24,0.12)] sm:min-h-[22rem] sm:px-5 sm:py-7 lg:min-h-[27rem] lg:px-7 lg:py-8"
             >
               <img
@@ -57,7 +60,7 @@ export function ServiceMenuPage({ title, services }: ServiceMenuPageProps) {
               <p className="mt-4 text-[0.78rem] leading-5 text-[#6d5648] sm:text-sm sm:leading-6">
                 Select this service to continue your appointment.
               </p>
-            </article>
+            </Link>
           ))}
         </section>
       </div>

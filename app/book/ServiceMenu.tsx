@@ -1,11 +1,12 @@
 import type { ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
 
 type ServiceMenuProps = {
+  groupId: "manicure" | "pedicure";
   title: string;
   services: ServiceMenuItem[];
 };
 
-export function ServiceMenu({ title, services }: ServiceMenuProps) {
+export function ServiceMenu({ groupId, title, services }: ServiceMenuProps) {
   return (
     <main className="serviceMenuPage">
       <div className="serviceMenuInner">
@@ -25,13 +26,13 @@ export function ServiceMenu({ title, services }: ServiceMenuProps) {
 
         <section className="serviceMenuGrid" aria-label={title}>
           {services.map((service) => (
-            <article className="serviceMenuCard" key={service.name}>
+            <a className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name}>
               <img src={service.imageSrc} alt={service.name} />
               <span aria-hidden="true">+</span>
               <h2>{service.name}</h2>
               <div />
               <p>Select this service to continue your appointment.</p>
-            </article>
+            </a>
           ))}
         </section>
       </div>

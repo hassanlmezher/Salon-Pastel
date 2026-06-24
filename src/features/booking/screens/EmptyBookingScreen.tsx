@@ -6,8 +6,8 @@ export function EmptyBookingScreen() {
   const { pathname } = useLocation();
 
   if (pathname.endsWith("/pedicure")) {
-    return <ServiceMenuPage title="Pedicure Services" services={pedicureServices} />;
+    return <ServiceMenuPage groupId="pedicure" title="Pedicure Services" services={pedicureServices} />;
   }
 
-  return <ServiceMenuPage title="Manicure Services" services={manicureServices} />;
+  return <ServiceMenuPage groupId="manicure" title="Manicure Services" services={manicureServices} />;
 }

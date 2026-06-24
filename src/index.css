@@ -40,7 +40,13 @@ body {
 
 button,
 a {
+  cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
 }
 
 ::selection {
@@ -134,8 +140,15 @@ video {
 }
 
 .service-menu-image,
-.service-menu-icon {
+.service-menu-icon,
+.service-detail-back,
+.service-detail-icon {
   border-radius: 9999px !important;
+}
+
+.service-detail-hero,
+.service-detail-panel {
+  border-radius: 18px !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
