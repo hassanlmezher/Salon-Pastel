@@ -1320,6 +1320,33 @@ textarea {
     color 180ms ease;
 }
 
+.serviceMenuState,
+.appointmentPageState,
+.appointmentInlineState,
+.appointmentError {
+  color: #6d5648;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.serviceMenuState {
+  grid-column: 1 / -1;
+  border: 1px solid #ead5cd;
+  background: rgba(255, 250, 246, 0.92);
+  padding: 18px;
+}
+
+.appointmentPageState {
+  border: 1px solid #ead5cd;
+  border-radius: 16px;
+  background: rgba(255, 250, 246, 0.92);
+  padding: 24px;
+}
+
+.appointmentError {
+  color: #8a4545;
+}
+
 .appointmentMonthGrid button {
   flex: 0 0 8.25rem;
   min-height: 66px;
@@ -1411,6 +1438,12 @@ textarea {
 
 .appointmentContinue:hover {
   background: #a9615b;
+}
+
+.appointmentContinue:disabled {
+  background: rgba(125, 114, 109, 0.45);
+  box-shadow: none;
+  cursor: not-allowed;
 }
 
 .appointmentContinue span {

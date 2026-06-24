@@ -1,12 +1,42 @@
-import type { ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
+"use client";
+
+import { useEffect, useState } from "react";
+import { fetchActiveServices } from "../../src/features/booking/data/supabaseBooking";
+import type { ServiceGroupId, ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
 
 type ServiceMenuProps = {
-  groupId: "manicure" | "pedicure";
+  groupId: ServiceGroupId;
   title: string;
-  services: ServiceMenuItem[];
 };
 
-export function ServiceMenu({ groupId, title, services }: ServiceMenuProps) {
+export function ServiceMenu({ groupId, title }: ServiceMenuProps) {
+  const [services, setServices] = useState<ServiceMenuItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadServices() {
+      try {
+        setIsLoading(true);
+        setErrorMessage("");
+        const activeServices = await fetchActiveServices(groupId);
+        if (isCurrent) setServices(activeServices);
+      } catch {
+        if (isCurrent) setErrorMessage("Unable to load services. Please try again.");
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
+    }
+
+    loadServices();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [groupId]);
+
   return (
     <main className="serviceMenuPage">
       <div className="serviceMenuInner">
@@ -25,6 +55,11 @@ export function ServiceMenu({ groupId, title, services }: ServiceMenuProps) {
         </section>
 
         <section className="serviceMenuGrid" aria-label={title}>
+          {isLoading ? <p className="serviceMenuState">Loading services...</p> : null}
+          {!isLoading && errorMessage ? <p className="serviceMenuState">{errorMessage}</p> : null}
+          {!isLoading && !errorMessage && services.length === 0 ? (
+            <p className="serviceMenuState">No services are available right now.</p>
+          ) : null}
           {services.map((service) => (
             <a className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name}>
               <img src={service.imageSrc} alt={service.name} />

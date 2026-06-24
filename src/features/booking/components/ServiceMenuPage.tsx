@@ -1,13 +1,41 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { ServiceMenuItem } from "../data/serviceMenu";
+import { fetchActiveServices } from "../data/supabaseBooking";
+import type { ServiceGroupId, ServiceMenuItem } from "../data/serviceMenu";
 
 type ServiceMenuPageProps = {
-  groupId: "manicure" | "pedicure";
+  groupId: ServiceGroupId;
   title: string;
-  services: ServiceMenuItem[];
 };
 
-export function ServiceMenuPage({ groupId, title, services }: ServiceMenuPageProps) {
+export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
+  const [services, setServices] = useState<ServiceMenuItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadServices() {
+      try {
+        setIsLoading(true);
+        setErrorMessage("");
+        const activeServices = await fetchActiveServices(groupId);
+        if (isCurrent) setServices(activeServices);
+      } catch {
+        if (isCurrent) setErrorMessage("Unable to load services. Please try again.");
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
+    }
+
+    loadServices();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [groupId]);
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-8 text-[#231814] sm:px-5 lg:px-8">
       <div className="mx-auto w-full">
@@ -39,6 +67,21 @@ export function ServiceMenuPage({ groupId, title, services }: ServiceMenuPagePro
         </section>
 
         <section className="mt-8 grid w-full grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-7" aria-label={title}>
+          {isLoading ? (
+            <p className="col-span-full border border-[#ead5cd] bg-[#fffaf6]/92 p-5 text-sm text-[#6d5648]">
+              Loading services...
+            </p>
+          ) : null}
+          {!isLoading && errorMessage ? (
+            <p className="col-span-full border border-[#ead5cd] bg-[#fffaf6]/92 p-5 text-sm text-[#6d5648]">
+              {errorMessage}
+            </p>
+          ) : null}
+          {!isLoading && !errorMessage && services.length === 0 ? (
+            <p className="col-span-full border border-[#ead5cd] bg-[#fffaf6]/92 p-5 text-sm text-[#6d5648]">
+              No services are available right now.
+            </p>
+          ) : null}
           {services.map((service) => (
             <Link
               key={service.name}

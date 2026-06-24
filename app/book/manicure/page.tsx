@@ -1,6 +1,5 @@
-import { manicureServices } from "../../../src/features/booking/data/serviceMenu";
 import { ServiceMenu } from "../ServiceMenu";
 
 export default function ManicurePage() {
-  return <ServiceMenu groupId="manicure" title="Manicure Services" services={manicureServices} />;
+  return <ServiceMenu groupId="manicure" title="Manicure Services" />;
 }

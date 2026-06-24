@@ -1,4 +1,5 @@
 export type ServiceMenuItem = {
+  id?: string;
   name: string;
   slug: string;
   imageSrc: string;
@@ -52,7 +53,32 @@ export const serviceGroups = {
 
 export type ServiceGroupId = keyof typeof serviceGroups;
 
+export function getServiceSlug(name: string) {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/\+/g, " ")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+export function getServiceImage(name: string, categoryName = "") {
+  const slug = getServiceSlug(name);
+  const knownService = [...manicureServices, ...pedicureServices].find((service) => service.slug === slug);
+
+  if (knownService) return knownService.imageSrc;
+
+  const folder = categoryName.toLowerCase().includes("pedicure") ? "/pedicure/" : "/";
+  return `${folder}${encodeURIComponent(name)}.png`;
+}
+
+export function getServiceBySlugFromList(services: ServiceMenuItem[], serviceSlug: string | undefined) {
+  return services.find((service) => service.slug === serviceSlug) ?? null;
+}
+
 export function getServiceBySlug(groupId: string | undefined, serviceSlug: string | undefined) {
   if (groupId !== "manicure" && groupId !== "pedicure") return null;
-  return serviceGroups[groupId].find((service) => service.slug === serviceSlug) ?? null;
+  return getServiceBySlugFromList([...serviceGroups[groupId]], serviceSlug);
 }
