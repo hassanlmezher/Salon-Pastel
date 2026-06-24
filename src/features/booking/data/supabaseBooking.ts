@@ -24,6 +24,8 @@ type RawService = Record<string, unknown> & {
 
 type RawSlot = Record<string, unknown> | string;
 
+const activeServicesCache = new Map<ServiceGroupId, Promise<ServiceMenuItem[]>>();
+
 function formatPrice(value: unknown) {
   if (value === null || value === undefined || value === "") return "";
   if (typeof value === "number") return `$${value}`;
@@ -70,7 +72,7 @@ function mapService(service: RawService): ServiceMenuItem | null {
   };
 }
 
-export async function fetchActiveServices(groupId: ServiceGroupId) {
+async function loadActiveServices(groupId: ServiceGroupId) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from("services")
@@ -84,6 +86,19 @@ export async function fetchActiveServices(groupId: ServiceGroupId) {
     .filter((service) => belongsToGroup(service, groupId))
     .map(mapService)
     .filter((service): service is ServiceMenuItem => Boolean(service));
+}
+
+export async function fetchActiveServices(groupId: ServiceGroupId) {
+  if (!activeServicesCache.has(groupId)) {
+    activeServicesCache.set(groupId, loadActiveServices(groupId));
+  }
+
+  try {
+    return await activeServicesCache.get(groupId)!;
+  } catch (error) {
+    activeServicesCache.delete(groupId);
+    throw error;
+  }
 }
 
 export async function fetchServiceBySlug(groupId: ServiceGroupId, serviceSlug: string) {
@@ -134,6 +149,47 @@ export async function fetchAvailableSlots(serviceId: string, dateIso: string): P
       };
     })
     .filter((slot): slot is AvailableSlot => Boolean(slot));
+}
+
+function getMonthDates(monthStartIso: string) {
+  const [year, month] = monthStartIso.split("-").map(Number);
+  const daysInMonth = new Date(year, month, 0).getDate();
+
+  return Array.from({ length: daysInMonth }, (_, index) => {
+    const day = String(index + 1).padStart(2, "0");
+    return `${year}-${String(month).padStart(2, "0")}-${day}`;
+  });
+}
+
+export async function fetchAvailableSlotsForMonth(serviceId: string, monthStartIso: string): Promise<AvailableSlot[]> {
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.rpc("get_available_slots_for_month", {
+    p_service_id: serviceId,
+    p_month_start: monthStartIso,
+  });
+
+  if (!error) {
+    return ((data ?? []) as RawSlot[])
+      .map((slot) => {
+        const rawStart = getSlotStart(slot);
+        if (!rawStart) return null;
+
+        const date = new Date(String(rawStart));
+        if (Number.isNaN(date.getTime())) return null;
+
+        return {
+          startIso: String(rawStart),
+          label: formatSlotLabel(date),
+        };
+      })
+      .filter((slot): slot is AvailableSlot => Boolean(slot));
+  }
+
+  const dailySlots = await Promise.all(
+    getMonthDates(monthStartIso).map((dateIso) => fetchAvailableSlots(serviceId, dateIso)),
+  );
+
+  return dailySlots.flat();
 }
 
 export async function createAppointment(input: {

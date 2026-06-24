@@ -5,7 +5,7 @@ import type { FormEvent, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
   createAppointment,
-  fetchAvailableSlots,
+  fetchAvailableSlotsForMonth,
   fetchServiceBySlug,
   getBookingErrorMessage,
   type AvailableSlot,
@@ -36,6 +36,10 @@ function formatDateIso(year: number, monthIndex: number, day: number) {
   const month = String(monthIndex + 1).padStart(2, "0");
   const dayText = String(day).padStart(2, "0");
   return `${year}-${month}-${dayText}`;
+}
+
+function getSlotDateIso(slot: AvailableSlot) {
+  return slot.startIso.slice(0, 10);
 }
 
 function formatLongDate(dateIso: string) {
@@ -117,12 +121,21 @@ export function ServiceDetail({ groupId, serviceSlug }: ServiceDetailProps) {
 
     try {
       const daysInMonth = new Date(selectedMonth.year, selectedMonth.monthIndex + 1, 0).getDate();
-      const monthDays = await Promise.all(
-        Array.from({ length: daysInMonth }, async (_, index) => {
+      const monthStartIso = formatDateIso(selectedMonth.year, selectedMonth.monthIndex, 1);
+      const monthSlots = await fetchAvailableSlotsForMonth(service.id as string, monthStartIso);
+      const slotsByDate = monthSlots.reduce<Map<string, AvailableSlot[]>>((groups, slot) => {
+        const dateIso = getSlotDateIso(slot);
+        const currentSlots = groups.get(dateIso) ?? [];
+        currentSlots.push(slot);
+        groups.set(dateIso, currentSlots);
+        return groups;
+      }, new Map());
+
+      const monthDays = Array.from({ length: daysInMonth }, (_, index) => {
           const dayNumber = index + 1;
           const dateIso = formatDateIso(selectedMonth.year, selectedMonth.monthIndex, dayNumber);
           const date = new Date(selectedMonth.year, selectedMonth.monthIndex, dayNumber);
-          const slots = await fetchAvailableSlots(service.id as string, dateIso);
+          const slots = slotsByDate.get(dateIso) ?? [];
 
           return {
             dateIso,
@@ -131,8 +144,7 @@ export function ServiceDetail({ groupId, serviceSlug }: ServiceDetailProps) {
             available: slots.length,
             slots,
           };
-        }),
-      );
+        });
 
       setDays(monthDays);
       setSelectedDateIso((currentDate) => {

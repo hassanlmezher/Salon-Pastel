@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { fetchActiveServices } from "../../src/features/booking/data/supabaseBooking";
 import type { ServiceGroupId, ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
@@ -61,13 +62,13 @@ export function ServiceMenu({ groupId, title }: ServiceMenuProps) {
             <p className="serviceMenuState">No services are available right now.</p>
           ) : null}
           {services.map((service) => (
-            <a className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name}>
+            <Link className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name} prefetch>
               <img src={service.imageSrc} alt={service.name} />
               <span aria-hidden="true">+</span>
               <h2>{service.name}</h2>
               <div />
               <p>Select this service to continue your appointment.</p>
-            </a>
+            </Link>
           ))}
         </section>
       </div>

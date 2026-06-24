@@ -60,7 +60,7 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
           </p>
           <h1
             id="service-menu-title"
-            className="mt-3 font-display text-[3rem] font-semibold leading-none text-[#4d2a16] sm:text-[4.5rem]"
+            className="mt-3 whitespace-nowrap font-display text-[2.25rem] font-semibold leading-none text-[#4d2a16] sm:text-[4.5rem]"
           >
             {title}
           </h1>

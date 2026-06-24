@@ -69,6 +69,7 @@ begin
 end $$;
 
 drop function if exists public.create_appointment(uuid, text, text, timestamp);
+drop function if exists public.get_available_slots_for_month(uuid, date);
 drop function if exists public.get_available_slots(uuid, date);
 
 create function public.get_available_slots(
@@ -149,6 +150,27 @@ begin
   )
   order by slots.slot_start;
 end;
+$$;
+
+create function public.get_available_slots_for_month(
+  p_service_id uuid,
+  p_month_start date
+)
+returns table (
+  appointment_start timestamp
+)
+language sql
+security definer
+set search_path = public
+as $$
+  select slots.appointment_start
+  from generate_series(
+    date_trunc('month', p_month_start)::date,
+    (date_trunc('month', p_month_start)::date + interval '1 month - 1 day')::date,
+    interval '1 day'
+  ) as month_days(day)
+  cross join lateral public.get_available_slots(p_service_id, month_days.day::date) as slots
+  order by slots.appointment_start;
 $$;
 
 create function public.create_appointment(
@@ -236,6 +258,7 @@ end;
 $$;
 
 grant execute on function public.get_available_slots(uuid, date) to anon;
+grant execute on function public.get_available_slots_for_month(uuid, date) to anon;
 grant execute on function public.create_appointment(uuid, text, text, timestamp) to anon;
 
 alter table public.services enable row level security;

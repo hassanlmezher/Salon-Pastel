@@ -1663,6 +1663,11 @@ textarea {
     gap: 14px;
   }
 
+  .serviceMenuHeader h1 {
+    font-size: clamp(2.25rem, 12vw, 3rem);
+    line-height: 0.95;
+  }
+
   .serviceMenuCard {
     min-height: 18rem;
     padding: 18px 10px;
@@ -1741,6 +1746,17 @@ textarea {
   .appointmentInfoPane,
   .appointmentPanel {
     padding: 22px 16px;
+  }
+
+  .appointmentInfoPane h1 {
+    font-size: clamp(1.55rem, 8vw, 2rem);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .appointmentPanel h2 {
+    font-size: clamp(1.5rem, 8vw, 2rem);
+    white-space: nowrap;
   }
 
   .appointmentDayGrid,
