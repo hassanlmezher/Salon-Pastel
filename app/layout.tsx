@@ -3,7 +3,11 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   icons: {
-    icon: "/icon.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/image.png", type: "image/png" },
+      { url: "/icon.png", type: "image/png", sizes: "512x512" },
+    ],
     apple: "/apple-icon.png",
   },
 };
