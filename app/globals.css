@@ -1755,7 +1755,8 @@ textarea {
   }
 
   .appointmentPanel h2 {
-    font-size: clamp(1.5rem, 8vw, 2rem);
+    font-size: clamp(1.2rem, 5.8vw, 1.5rem);
+    line-height: 1;
     white-space: nowrap;
   }
 

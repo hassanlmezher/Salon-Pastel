@@ -70,7 +70,17 @@ export function getServiceImage(name: string, categoryName = "") {
 
   if (knownService) return knownService.imageSrc;
 
-  const folder = categoryName.toLowerCase().includes("pedicure") ? "/pedicure/" : "/";
+  const isPedicure = categoryName.toLowerCase().includes("pedicure");
+  const pedicureImageAliases: Record<string, string> = {
+    "paraffin-therapy": "/pedicure/Paraffin%20Hand%20Therapy.png",
+    "pedicure-gel-color": "/pedicure/Pedicure%20%2B%20Gel%20Color%20(Gelish).png",
+  };
+
+  if (isPedicure && pedicureImageAliases[slug]) {
+    return pedicureImageAliases[slug];
+  }
+
+  const folder = isPedicure ? "/pedicure/" : "/";
   return `${folder}${encodeURIComponent(name)}.png`;
 }
 

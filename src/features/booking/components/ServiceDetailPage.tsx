@@ -286,7 +286,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         </section>
 
         <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8">
-          <h2 className="whitespace-nowrap font-display text-[1.55rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
+          <h2 className="whitespace-nowrap font-display text-[1.2rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
             Select Your Appointment
           </h2>
 
