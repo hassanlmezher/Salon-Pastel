@@ -16,11 +16,11 @@ export default function BookPage() {
     <main className="bookingChoicePage">
       <div className="bookingChoiceInner">
         <div className="bookingChoiceTopbar">
+          <a className="bookingChoiceBack" href="/" aria-label="Go back">
+            ←
+          </a>
           <a className="bookingChoiceBrand" href="/">
             Pastel
-          </a>
-          <a className="bookingChoiceBack" href="/">
-            Back
           </a>
         </div>
 

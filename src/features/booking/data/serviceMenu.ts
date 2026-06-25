@@ -84,6 +84,12 @@ export function getServiceImage(name: string, categoryName = "") {
   return `${folder}${encodeURIComponent(name)}.png`;
 }
 
+export function getOptimizedServiceImage(imageSrc: string) {
+  const [path, query = ""] = imageSrc.split("?");
+  const optimizedPath = `/optimized${path.replace(/\.png$/i, ".webp")}`;
+  return query ? `${optimizedPath}?${query}` : optimizedPath;
+}
+
 export function getServiceBySlugFromList(services: ServiceMenuItem[], serviceSlug: string | undefined) {
   return services.find((service) => service.slug === serviceSlug) ?? null;
 }

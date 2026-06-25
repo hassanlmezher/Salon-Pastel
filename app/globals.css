@@ -807,6 +807,7 @@ textarea {
 
 .bookingChoicePage {
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 18% 100%, rgba(246, 201, 184, 0.26), transparent 26%),
     radial-gradient(circle at 80% 18%, rgba(255, 255, 255, 0.54), transparent 20%),
@@ -822,8 +823,8 @@ textarea {
 
 .bookingChoiceTopbar {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   gap: 16px;
 }
 
@@ -839,19 +840,18 @@ textarea {
 }
 
 .bookingChoiceBack {
-  min-height: 40px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 8px;
   border: 1px solid #e7c9c2;
   background: rgba(255, 250, 246, 0.92);
-  padding: 0 16px;
+  padding: 0;
   color: #6d3f1f;
-  font-size: 0.74rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  line-height: 1;
   box-shadow: 0 10px 22px rgba(97, 58, 24, 0.08);
   transition: background 180ms ease;
 }
@@ -880,6 +880,8 @@ textarea {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(3.5rem, 10vw, 5rem);
   line-height: 0.95;
+  overflow-wrap: break-word;
+  text-wrap: balance;
 }
 
 .bookingChoiceGrid {
@@ -950,6 +952,7 @@ textarea {
 
 .serviceMenuPage {
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.82), transparent 28%),
     radial-gradient(circle at 86% 18%, rgba(246, 201, 184, 0.22), transparent 24%),
@@ -965,14 +968,13 @@ textarea {
 
 .serviceMenuTopbar {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: flex-start;
   gap: 16px;
 }
 
 .serviceMenuBrand {
   display: inline-block;
-  margin-left: clamp(0px, 1vw, 12px);
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(2.65rem, 6vw, 4rem);
   font-weight: 700;
@@ -983,19 +985,18 @@ textarea {
 }
 
 .serviceMenuBack {
-  min-height: 40px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  margin-top: 8px;
   border: 1px solid #e7c9c2;
   background: rgba(255, 250, 246, 0.92);
-  padding: 0 16px;
+  padding: 0;
   color: #6d3f1f;
-  font-size: 0.74rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  line-height: 1;
   box-shadow: 0 10px 22px rgba(97, 58, 24, 0.08);
   transition: background 180ms ease;
 }
@@ -1023,6 +1024,8 @@ textarea {
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(3rem, 8vw, 5rem);
   line-height: 0.95;
+  overflow-wrap: break-word;
+  text-wrap: balance;
 }
 
 .serviceMenuGrid {
@@ -1141,12 +1144,14 @@ textarea {
   position: absolute;
   top: 24px;
   left: 24px;
+  width: 56px;
+  height: 56px;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.88);
-  padding: 8px 16px 8px 8px;
+  padding: 0;
   color: #4d4039;
   font-size: 1rem;
   font-weight: 500;
@@ -1155,16 +1160,16 @@ textarea {
 }
 
 .appointmentBack span {
-  width: 44px;
-  height: 44px;
+  width: auto;
+  height: auto;
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: #fff;
+  background: transparent;
   color: #231814;
-  font-size: 2.2rem;
+  font-size: 1.7rem;
   line-height: 1;
-  box-shadow: 0 6px 18px rgba(97, 58, 24, 0.12);
+  box-shadow: none;
 }
 
 .appointmentInfoPane {
@@ -1644,6 +1649,30 @@ textarea {
 }
 
 @media (max-width: 640px) {
+  .bookingChoiceTopbar,
+  .serviceMenuTopbar {
+    gap: 12px;
+  }
+
+  .bookingChoiceBrand,
+  .serviceMenuBrand {
+    font-size: clamp(2.45rem, 13vw, 3.35rem);
+  }
+
+  .bookingChoiceIntro {
+    margin-top: clamp(42px, 12vw, 58px);
+  }
+
+  .bookingChoiceIntro h1 {
+    max-width: 13ch;
+    font-size: clamp(2.55rem, 11vw, 3.25rem);
+    line-height: 0.96;
+  }
+
+  .serviceMenuHeader {
+    margin-top: clamp(38px, 10vw, 54px);
+  }
+
   .pastelHeroCopy {
     min-height: calc(100svh - 172px);
     padding-bottom: 112px;
@@ -1668,8 +1697,9 @@ textarea {
   }
 
   .serviceMenuHeader h1 {
-    font-size: clamp(2.25rem, 12vw, 3rem);
-    line-height: 0.95;
+    max-width: 100%;
+    font-size: clamp(1.95rem, 8.8vw, 2.35rem);
+    line-height: 1;
   }
 
   .serviceMenuCard {
@@ -1711,17 +1741,15 @@ textarea {
   }
 
   .serviceMenuBack {
-    min-height: 36px;
-    padding-inline: 12px;
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
   }
 
   .bookingChoiceBack {
-    min-height: 36px;
-    padding-inline: 12px;
-    font-size: 0.68rem;
-    letter-spacing: 0.12em;
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
   }
 }
 
@@ -1737,14 +1765,12 @@ textarea {
   .appointmentBack {
     top: 14px;
     left: 14px;
-    gap: 8px;
-    padding: 6px 12px 6px 6px;
-    font-size: 0.92rem;
+    width: 50px;
+    height: 50px;
   }
 
   .appointmentBack span {
-    width: 38px;
-    height: 38px;
+    font-size: 1.5rem;
   }
 
   .appointmentInfoPane,
@@ -1755,13 +1781,17 @@ textarea {
   .appointmentInfoPane h1 {
     font-size: clamp(1.55rem, 8vw, 2rem);
     line-height: 1;
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    text-wrap: balance;
+    white-space: normal;
   }
 
   .appointmentPanel h2 {
     font-size: clamp(1.2rem, 5.8vw, 1.5rem);
     line-height: 1;
-    white-space: nowrap;
+    overflow-wrap: break-word;
+    text-wrap: balance;
+    white-space: normal;
   }
 
   .appointmentDayGrid,

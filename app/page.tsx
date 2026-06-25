@@ -26,6 +26,12 @@ const bookHref = "/book";
 export default function Home() {
   const ctaRef = useRef<HTMLDivElement | null>(null);
   const [isPinned, setIsPinned] = useState(false);
+  const [heroVideoReady, setHeroVideoReady] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setHeroVideoReady(true), 1400);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let frame = 0;
@@ -56,8 +62,17 @@ export default function Home() {
   return (
     <main className="pastelLanding">
       <section className="pastelHero">
-        <video className="pastelHeroVideo" autoPlay loop muted playsInline preload="auto" aria-hidden="true">
-          <source src="/hero-banner.mp4" type="video/mp4" />
+        <video
+          className="pastelHeroVideo"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="none"
+          poster="/hero-poster.webp"
+          aria-hidden="true"
+        >
+          {heroVideoReady ? <source src="/hero-banner.mp4" type="video/mp4" /> : null}
         </video>
         <div className="pastelHeroOverlay" />
 

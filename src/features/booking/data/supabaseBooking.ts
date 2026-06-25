@@ -50,6 +50,7 @@ function getCategoryName(service: RawService) {
 function belongsToGroup(service: RawService, groupId: ServiceGroupId) {
   const categoryName = getCategoryName(service).toLowerCase();
   const serviceName = String(service.name ?? "").toLowerCase();
+  if (categoryName) return categoryName.includes(groupId);
   return categoryName.includes(groupId) || serviceName.includes(groupId);
 }
 

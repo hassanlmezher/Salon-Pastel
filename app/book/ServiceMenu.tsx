@@ -1,52 +1,37 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { fetchActiveServices } from "../../src/features/booking/data/supabaseBooking";
-import type { ServiceGroupId, ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
+import {
+  getOptimizedServiceImage,
+  serviceGroups,
+  type ServiceGroupId,
+  type ServiceMenuItem,
+} from "../../src/features/booking/data/serviceMenu";
 
 type ServiceMenuProps = {
   groupId: ServiceGroupId;
   title: string;
 };
 
-export function ServiceMenu({ groupId, title }: ServiceMenuProps) {
-  const [services, setServices] = useState<ServiceMenuItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+async function getServices(groupId: ServiceGroupId): Promise<ServiceMenuItem[]> {
+  try {
+    return await fetchActiveServices(groupId);
+  } catch {
+    return [...serviceGroups[groupId]];
+  }
+}
 
-  useEffect(() => {
-    let isCurrent = true;
-
-    async function loadServices() {
-      try {
-        setIsLoading(true);
-        setErrorMessage("");
-        const activeServices = await fetchActiveServices(groupId);
-        if (isCurrent) setServices(activeServices);
-      } catch {
-        if (isCurrent) setErrorMessage("Unable to load services. Please try again.");
-      } finally {
-        if (isCurrent) setIsLoading(false);
-      }
-    }
-
-    loadServices();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [groupId]);
+export async function ServiceMenu({ groupId, title }: ServiceMenuProps) {
+  const services = await getServices(groupId);
 
   return (
     <main className="serviceMenuPage">
       <div className="serviceMenuInner">
         <div className="serviceMenuTopbar">
+          <a className="serviceMenuBack" href="/book" aria-label="Go back">
+            ←
+          </a>
           <a className="serviceMenuBrand" href="/">
             Pastel
-          </a>
-          <a className="serviceMenuBack" href="/book">
-            Back
           </a>
         </div>
 
@@ -56,14 +41,10 @@ export function ServiceMenu({ groupId, title }: ServiceMenuProps) {
         </section>
 
         <section className="serviceMenuGrid" aria-label={title}>
-          {isLoading ? <p className="serviceMenuState">Loading services...</p> : null}
-          {!isLoading && errorMessage ? <p className="serviceMenuState">{errorMessage}</p> : null}
-          {!isLoading && !errorMessage && services.length === 0 ? (
-            <p className="serviceMenuState">No services are available right now.</p>
-          ) : null}
+          {services.length === 0 ? <p className="serviceMenuState">No services are available right now.</p> : null}
           {services.map((service) => (
-            <Link className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name} prefetch>
-              <img src={service.imageSrc} alt={service.name} />
+            <Link className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name} prefetch={false}>
+              <img src={getOptimizedServiceImage(service.imageSrc)} alt={service.name} loading="lazy" decoding="async" />
               <span aria-hidden="true">+</span>
               <h2>{service.name}</h2>
               <div />

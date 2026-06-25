@@ -10,11 +10,12 @@ import {
   getBookingErrorMessage,
   type AvailableSlot,
 } from "../../src/features/booking/data/supabaseBooking";
-import type { ServiceGroupId, ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
+import { getOptimizedServiceImage, type ServiceGroupId, type ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
 
 type ServiceDetailProps = {
   groupId: ServiceGroupId;
   serviceSlug: string;
+  initialService?: ServiceMenuItem | null;
 };
 
 type DayAvailability = {
@@ -64,12 +65,12 @@ function createMonthOptions() {
   });
 }
 
-export function ServiceDetail({ groupId, serviceSlug }: ServiceDetailProps) {
+export function ServiceDetail({ groupId, serviceSlug, initialService = null }: ServiceDetailProps) {
   const router = useRouter();
   const monthOptions = useMemo(() => createMonthOptions(), []);
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0]);
-  const [service, setService] = useState<ServiceMenuItem | null>(null);
-  const [serviceLoading, setServiceLoading] = useState(true);
+  const [service, setService] = useState<ServiceMenuItem | null>(initialService);
+  const [serviceLoading, setServiceLoading] = useState(!initialService);
   const [serviceError, setServiceError] = useState("");
   const [days, setDays] = useState<DayAvailability[]>([]);
   const [selectedDateIso, setSelectedDateIso] = useState("");
@@ -86,6 +87,13 @@ export function ServiceDetail({ groupId, serviceSlug }: ServiceDetailProps) {
     let isCurrent = true;
 
     async function loadService() {
+      if (initialService?.slug === serviceSlug) {
+        setService(initialService);
+        setServiceError("");
+        setServiceLoading(false);
+        return;
+      }
+
       try {
         setServiceLoading(true);
         setServiceError("");
@@ -111,7 +119,7 @@ export function ServiceDetail({ groupId, serviceSlug }: ServiceDetailProps) {
     return () => {
       isCurrent = false;
     };
-  }, [groupId, serviceSlug]);
+  }, [groupId, initialService, serviceSlug]);
 
   const loadMonthAvailability = useCallback(async () => {
     if (!service?.id) return;
@@ -239,8 +247,8 @@ export function ServiceDetail({ groupId, serviceSlug }: ServiceDetailProps) {
       <main className="appointmentPage">
         <div className="appointmentInner">
           <div className="appointmentPageState">
-            <a className="serviceMenuBack" href={`/book/${groupId}`}>
-              Back
+            <a className="serviceMenuBack" href={`/book/${groupId}`} aria-label="Go back">
+              ←
             </a>
             <p>{serviceLoading ? "Loading service..." : serviceError}</p>
           </div>
@@ -254,10 +262,9 @@ export function ServiceDetail({ groupId, serviceSlug }: ServiceDetailProps) {
       <div className="appointmentInner">
         <section className="appointmentHero">
           <div className="appointmentImagePane">
-            <img src={service.imageSrc} alt={service.name} />
-            <a className="appointmentBack" href={`/book/${groupId}`}>
-              <span>‹</span>
-              Back
+            <img src={getOptimizedServiceImage(service.imageSrc)} alt={service.name} fetchPriority="high" />
+            <a className="appointmentBack" href={`/book/${groupId}`} aria-label="Go back">
+              <span aria-hidden="true">←</span>
             </a>
           </div>
 
