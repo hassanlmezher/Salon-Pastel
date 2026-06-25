@@ -382,15 +382,33 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
             <p>Enter your contact information so we can confirm your appointment.</p>
 
             <label>
-              First name
+              <span className="appointmentFormLabelText">
+                <span>First name</span>
+                <span aria-hidden="true">/</span>
+                <span lang="ar" dir="rtl">
+                  الاسم الأول
+                </span>
+              </span>
               <input name="firstName" autoComplete="given-name" required />
             </label>
             <label>
-              Last name
+              <span className="appointmentFormLabelText">
+                <span>Last name</span>
+                <span aria-hidden="true">/</span>
+                <span lang="ar" dir="rtl">
+                  اسم العائلة
+                </span>
+              </span>
               <input name="lastName" autoComplete="family-name" required />
             </label>
             <label>
-              Phone number
+              <span className="appointmentFormLabelText">
+                <span>Phone number</span>
+                <span aria-hidden="true">/</span>
+                <span lang="ar" dir="rtl">
+                  رقم الهاتف
+                </span>
+              </span>
               <input name="phone" type="tel" autoComplete="tel" required />
             </label>
 
@@ -398,10 +416,20 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
 
             <div className="appointmentFormActions">
               <button type="button" onClick={() => setShowCustomerForm(false)} disabled={isSubmitting}>
-                Back
+                <span className="appointmentFormButtonText">
+                  <span>Back</span>
+                  <span lang="ar" dir="rtl">
+                    رجوع
+                  </span>
+                </span>
               </button>
               <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Submit"}
+                <span className="appointmentFormButtonText">
+                  <span>{isSubmitting ? "Submitting..." : "Submit"}</span>
+                  <span lang="ar" dir="rtl">
+                    {isSubmitting ? "جاري الإرسال" : "إرسال"}
+                  </span>
+                </span>
               </button>
             </div>
           </form>

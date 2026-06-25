@@ -1589,6 +1589,14 @@ textarea {
   font-weight: 700;
 }
 
+.appointmentFormLabelText {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 2px;
+}
+
 .appointmentFormPopup input {
   width: 100%;
   min-height: 48px;
@@ -1613,17 +1621,15 @@ textarea {
 }
 
 .appointmentFormActions button {
-  min-height: 48px;
+  min-height: 56px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 1px solid #ead5cd;
-  padding: 0 18px;
+  padding: 8px 18px;
   font-size: 0.82rem;
   font-weight: 800;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  line-height: 1;
 }
 
 .appointmentFormActions button:first-child {
@@ -1635,6 +1641,20 @@ textarea {
   border-color: #bd736b;
   background: #bd736b;
   color: #fff;
+}
+
+.appointmentFormButtonText {
+  display: grid;
+  gap: 5px;
+}
+
+.appointmentFormButtonText span:first-child {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.appointmentFormButtonText span[lang="ar"] {
+  letter-spacing: 0;
 }
 
 .appointmentSuccessOverlay {
@@ -1940,6 +1960,9 @@ textarea {
   .appointmentFormActions button {
     padding-inline: 12px;
     font-size: 0.76rem;
+  }
+
+  .appointmentFormButtonText span:first-child {
     letter-spacing: 0.1em;
   }
 }

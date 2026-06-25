@@ -405,26 +405,54 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             </p>
 
             <label className="mt-5 block text-sm font-semibold text-[#4d4039]">
-              First name
+              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span>First name</span>
+                <span aria-hidden="true">/</span>
+                <span lang="ar" dir="rtl">
+                  الاسم الأول
+                </span>
+              </span>
               <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="firstName" autoComplete="given-name" required />
             </label>
             <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
-              Last name
+              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span>Last name</span>
+                <span aria-hidden="true">/</span>
+                <span lang="ar" dir="rtl">
+                  اسم العائلة
+                </span>
+              </span>
               <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="lastName" autoComplete="family-name" required />
             </label>
             <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
-              Phone number
+              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span>Phone number</span>
+                <span aria-hidden="true">/</span>
+                <span lang="ar" dir="rtl">
+                  رقم الهاتف
+                </span>
+              </span>
               <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="phone" type="tel" autoComplete="tel" required />
             </label>
 
             {formError ? <p className="mt-4 text-sm leading-5 text-[#8a4545]">{formError}</p> : null}
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button type="button" disabled={isSubmitting} onClick={() => setShowCustomerForm(false)} className="min-h-12 border border-[#ead5cd] bg-white px-4 text-sm font-semibold uppercase tracking-[0.14em] text-[#6d3f1f] disabled:cursor-not-allowed">
-                Back
+              <button type="button" disabled={isSubmitting} onClick={() => setShowCustomerForm(false)} className="grid min-h-14 place-items-center border border-[#ead5cd] bg-white px-4 py-2 text-sm font-semibold text-[#6d3f1f] disabled:cursor-not-allowed">
+                <span className="grid gap-1 leading-none">
+                  <span className="uppercase tracking-[0.14em]">Back</span>
+                  <span lang="ar" dir="rtl">
+                    رجوع
+                  </span>
+                </span>
               </button>
-              <button type="submit" disabled={isSubmitting} className="min-h-12 bg-[#bd736b] px-4 text-sm font-semibold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed">
-                {isSubmitting ? "Submitting..." : "Submit"}
+              <button type="submit" disabled={isSubmitting} className="grid min-h-14 place-items-center bg-[#bd736b] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed">
+                <span className="grid gap-1 leading-none">
+                  <span className="uppercase tracking-[0.14em]">{isSubmitting ? "Submitting..." : "Submit"}</span>
+                  <span lang="ar" dir="rtl">
+                    {isSubmitting ? "جاري الإرسال" : "إرسال"}
+                  </span>
+                </span>
               </button>
             </div>
           </form>
