@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff8f4",
-  "theme_color": "#bd736b",
+  "theme_color": "#ffffff",
   "categories": ["beauty", "lifestyle"],
   "icons": [
     {
