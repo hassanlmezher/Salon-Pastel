@@ -16,6 +16,10 @@ import {
   type ServiceGroupId,
   type ServiceMenuItem,
 } from "../../src/features/booking/data/serviceMenu";
+import {
+  requestAppointmentReminderSubscription,
+  type ReminderSubscriptionResult,
+} from "../../src/features/booking/pwa/reminders";
 
 type ServiceDetailProps = {
   groupId: ServiceGroupId;
@@ -32,11 +36,14 @@ type DayAvailability = {
 };
 
 type SuccessDetails = {
+  appointmentId: string;
   serviceName: string;
   date: string;
   time: string;
   phone: string;
 };
+
+type ReminderStatus = "idle" | "loading" | "success" | "info" | "error";
 
 function formatDateIso(year: number, monthIndex: number, day: number) {
   const month = String(monthIndex + 1).padStart(2, "0");
@@ -87,6 +94,8 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successDetails, setSuccessDetails] = useState<SuccessDetails | null>(null);
+  const [reminderStatus, setReminderStatus] = useState<ReminderStatus>("idle");
+  const [reminderMessage, setReminderMessage] = useState("");
 
   useEffect(() => {
     let isCurrent = true;
@@ -224,7 +233,7 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
 
     try {
       setIsSubmitting(true);
-      await createAppointment({
+      const appointmentId = await createAppointment({
         serviceId: service.id,
         customerFullName: `${firstName} ${lastName}`,
         customerPhone: phone,
@@ -232,11 +241,14 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
       });
 
       setSuccessDetails({
+        appointmentId,
         serviceName: service.name,
         date: formatLongDate(selectedDateIso),
         time: selectedSlot.label,
         phone,
       });
+      setReminderStatus("idle");
+      setReminderMessage("");
       setShowCustomerForm(false);
       setShowSuccess(true);
     } catch (error) {
@@ -245,6 +257,27 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const enableReminders = async () => {
+    if (!successDetails?.appointmentId) return;
+
+    setReminderStatus("loading");
+    setReminderMessage("");
+
+    const result: ReminderSubscriptionResult = await requestAppointmentReminderSubscription({
+      appointmentId: successDetails.appointmentId,
+      customerPhone: successDetails.phone,
+    });
+
+    if (result.status === "subscribed") {
+      setReminderStatus("success");
+      setReminderMessage("Appointment reminders are enabled for this booking.");
+      return;
+    }
+
+    setReminderStatus(result.status === "denied" || result.status === "error" ? "error" : "info");
+    setReminderMessage(result.message);
   };
 
   if (serviceLoading || serviceError || !service) {
@@ -452,7 +485,19 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
             ) : (
               <p>Thank you. Your appointment request has been received.</p>
             )}
-            <button type="button" onClick={() => router.push("/")}>
+            {successDetails ? (
+              <div className="appointmentReminderActions">
+                <button type="button" onClick={enableReminders} disabled={reminderStatus === "loading" || reminderStatus === "success"}>
+                  {reminderStatus === "loading" ? "Enabling..." : "Enable appointment reminders"}
+                </button>
+                {reminderMessage ? (
+                  <p className={`appointmentReminderMessage ${reminderStatus === "error" ? "error" : ""}`}>
+                    {reminderMessage}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+            <button type="button" className="appointmentDoneButton" onClick={() => router.push("/")}>
               Done
             </button>
           </div>

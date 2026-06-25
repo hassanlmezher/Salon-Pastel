@@ -208,7 +208,7 @@ export async function createAppointment(input: {
   });
 
   if (error) throw error;
-  return data;
+  return String(data ?? "");
 }
 
 export function getBookingErrorMessage(error: unknown) {

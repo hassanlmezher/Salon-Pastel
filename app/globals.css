@@ -27,6 +27,110 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+.pwaInstallShell {
+  position: fixed;
+  right: clamp(14px, 3vw, 28px);
+  bottom: clamp(14px, 3vw, 28px);
+  z-index: 80;
+  width: min(25rem, calc(100vw - 28px));
+  pointer-events: none;
+}
+
+.pwaInstallCard {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(234, 213, 205, 0.95);
+  border-radius: 18px;
+  background: rgba(255, 250, 246, 0.96);
+  box-shadow: 0 22px 60px rgba(97, 58, 24, 0.22);
+  backdrop-filter: blur(18px);
+  pointer-events: auto;
+}
+
+.pwaInstallIcon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #8a5f29, #e5bd7f);
+  color: #fffaf6;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.pwaInstallContent {
+  min-width: 0;
+}
+
+.pwaInstallEyebrow {
+  margin: 0;
+  color: #b46f65;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.pwaInstallContent h2 {
+  margin: 5px 0 0;
+  color: #231814;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.28rem;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.pwaInstallContent p {
+  margin: 8px 0 0;
+  color: #6d5648;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.pwaInstallSteps {
+  margin-top: 12px;
+  border: 1px solid #ead5cd;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  color: #4d4039;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.pwaInstallActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pwaInstallActions button {
+  min-height: 42px;
+  border: 1px solid #ead5cd;
+  padding: 0 16px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pwaInstallPrimary {
+  background: #bd736b;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(189, 115, 107, 0.24);
+}
+
+.pwaInstallSecondary {
+  background: #fff;
+  color: #6d3f1f;
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -1729,6 +1833,44 @@ textarea {
   text-transform: uppercase;
 }
 
+.appointmentReminderActions {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.appointmentReminderActions button,
+.appointmentSuccessPopup .appointmentDoneButton {
+  margin-top: 0;
+}
+
+.appointmentReminderActions button {
+  width: 100%;
+  padding-inline: 18px;
+  font-size: 0.72rem;
+  letter-spacing: 0.11em;
+}
+
+.appointmentReminderActions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.78;
+}
+
+.appointmentSuccessPopup .appointmentDoneButton {
+  margin-top: 14px;
+}
+
+.appointmentSuccessPopup .appointmentReminderMessage {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.appointmentSuccessPopup .appointmentReminderMessage.error {
+  color: #fff;
+}
+
 @keyframes appointmentOverlayFade {
   from {
     opacity: 0;
@@ -1760,6 +1902,35 @@ textarea {
 }
 
 @media (max-width: 640px) {
+  .pwaInstallShell {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: auto;
+  }
+
+  .pwaInstallCard {
+    grid-template-columns: 44px minmax(0, 1fr);
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .pwaInstallIcon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    font-size: 1.55rem;
+  }
+
+  .pwaInstallContent h2 {
+    font-size: 1.12rem;
+  }
+
+  .pwaInstallActions button {
+    flex: 1 1 8.5rem;
+    padding-inline: 12px;
+  }
+
   .bookingChoiceTopbar,
   .serviceMenuTopbar {
     gap: 12px;

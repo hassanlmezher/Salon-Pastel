@@ -9,6 +9,7 @@ import {
   type AvailableSlot,
 } from "../data/supabaseBooking";
 import { getServiceArabicCopy, type ServiceGroupId, type ServiceMenuItem } from "../data/serviceMenu";
+import { requestAppointmentReminderSubscription, type ReminderSubscriptionResult } from "../pwa/reminders";
 
 type ServiceDetailPageProps = {
   groupId: ServiceGroupId;
@@ -24,11 +25,14 @@ type DayAvailability = {
 };
 
 type SuccessDetails = {
+  appointmentId: string;
   serviceName: string;
   date: string;
   time: string;
   phone: string;
 };
+
+type ReminderStatus = "idle" | "loading" | "success" | "info" | "error";
 
 function formatDateIso(year: number, monthIndex: number, day: number) {
   const month = String(monthIndex + 1).padStart(2, "0");
@@ -79,6 +83,8 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successDetails, setSuccessDetails] = useState<SuccessDetails | null>(null);
+  const [reminderStatus, setReminderStatus] = useState<ReminderStatus>("idle");
+  const [reminderMessage, setReminderMessage] = useState("");
 
   useEffect(() => {
     let isCurrent = true;
@@ -209,7 +215,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
 
     try {
       setIsSubmitting(true);
-      await createAppointment({
+      const appointmentId = await createAppointment({
         serviceId: service.id,
         customerFullName: `${firstName} ${lastName}`,
         customerPhone: phone,
@@ -217,11 +223,14 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       });
 
       setSuccessDetails({
+        appointmentId,
         serviceName: service.name,
         date: formatLongDate(selectedDateIso),
         time: selectedSlot.label,
         phone,
       });
+      setReminderStatus("idle");
+      setReminderMessage("");
       setShowCustomerForm(false);
       setShowSuccess(true);
     } catch (error) {
@@ -230,6 +239,27 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const enableReminders = async () => {
+    if (!successDetails?.appointmentId) return;
+
+    setReminderStatus("loading");
+    setReminderMessage("");
+
+    const result: ReminderSubscriptionResult = await requestAppointmentReminderSubscription({
+      appointmentId: successDetails.appointmentId,
+      customerPhone: successDetails.phone,
+    });
+
+    if (result.status === "subscribed") {
+      setReminderStatus("success");
+      setReminderMessage("Appointment reminders are enabled for this booking.");
+      return;
+    }
+
+    setReminderStatus(result.status === "denied" || result.status === "error" ? "error" : "info");
+    setReminderMessage(result.message);
   };
 
   if (serviceLoading || serviceError || !service) {
@@ -481,6 +511,23 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                 Thank you. Your appointment request has been received.
               </p>
             )}
+            {successDetails ? (
+              <div className="mt-5 grid gap-2">
+                <button
+                  type="button"
+                  onClick={enableReminders}
+                  disabled={reminderStatus === "loading" || reminderStatus === "success"}
+                  className="min-h-11 bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-[#b46f65] disabled:cursor-not-allowed disabled:opacity-75"
+                >
+                  {reminderStatus === "loading" ? "Enabling..." : "Enable appointment reminders"}
+                </button>
+                {reminderMessage ? (
+                  <p className={`text-xs leading-5 ${reminderStatus === "error" ? "text-white" : "text-white/90"}`}>
+                    {reminderMessage}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
             <button
               type="button"
               onClick={() => navigate("/")}
