@@ -4,12 +4,12 @@ const choices = [
   {
     id: "manicure",
     title: "Manicure Stuff",
-    description: "Choose this for nail care, polish, hand spa, and manicure services.",
+    descriptionAr: "اختاري هذا الخيار للعناية بالأظافر، الطلاء، سبا اليدين وخدمات المناكير.",
   },
   {
     id: "pedicure",
     title: "Pedicure Stuff",
-    description: "Choose this for pedicure care, foot spa, shaping, and polish services.",
+    descriptionAr: "اختاري هذا الخيار للعناية بالقدمين، سبا القدم، التشذيب والطلاء.",
   },
 ] as const;
 
@@ -56,12 +56,15 @@ export function BookingChoiceScreen() {
               <h2 className="text-base font-semibold uppercase tracking-[0.16em] text-[#6d3f1f]">
                 {choice.title}
               </h2>
-              <p className="mt-4 text-sm leading-7 text-[#6d5648]">
-                {choice.description}
+              <p className="mt-4 text-right text-sm leading-7 text-[#6d5648]" lang="ar" dir="rtl">
+                {choice.descriptionAr}
               </p>
               <div className="mt-8">
-                <span className="inline-flex min-h-12 items-center justify-center border border-[#f7d6df] bg-[#f6c9b8] px-5 text-sm font-semibold uppercase tracking-[0.18em] text-[#4d2a16] shadow-[0_18px_38px_rgba(214,133,153,0.24)]">
-                  Choose
+                <span className="inline-flex min-h-[72px] w-full max-w-[15.5rem] flex-col items-center justify-center gap-1.5 border border-[#f7d6df] bg-[#f6c9b8] px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-[#4d2a16] shadow-[0_18px_38px_rgba(214,133,153,0.24)]">
+                  <span>Choose</span>
+                  <span className="text-[0.82rem] normal-case tracking-normal" lang="ar" dir="rtl">
+                    اختر
+                  </span>
                 </span>
               </div>
             </button>

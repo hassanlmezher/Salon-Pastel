@@ -2,12 +2,12 @@ const choices = [
   {
     href: "/book/manicure",
     title: "Manicure Stuff",
-    copy: "Choose this for nail care, polish, hand spa, and manicure services.",
+    copyAr: "اختاري هذا الخيار للعناية بالأظافر، الطلاء، سبا اليدين وخدمات المناكير.",
   },
   {
     href: "/book/pedicure",
     title: "Pedicure Stuff",
-    copy: "Choose this for pedicure care, foot spa, shaping, and polish services.",
+    copyAr: "اختاري هذا الخيار للعناية بالقدمين، سبا القدم، التشذيب والطلاء.",
   },
 ] as const;
 
@@ -33,8 +33,11 @@ export default function BookPage() {
           {choices.map((choice) => (
             <a className="bookingChoiceCard" href={choice.href} key={choice.href}>
               <h2>{choice.title}</h2>
-              <p>{choice.copy}</p>
-              <span>Choose</span>
+              <p lang="ar" dir="rtl">{choice.copyAr}</p>
+              <span className="bookingChoiceButton">
+                <span>Choose</span>
+                <span lang="ar" dir="rtl">اختر</span>
+              </span>
             </a>
           ))}
         </section>
