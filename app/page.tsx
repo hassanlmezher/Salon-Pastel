@@ -6,18 +6,22 @@ const offerings = [
   {
     title: "Nail Care & Manicure",
     copy: "Clean shaping, cuticle care, polish, and refined everyday nail grooming.",
+    copyAr: "تنظيف وتشكيل الأظافر، عناية بالجلد المحيط، طلاء، ولمسة نهائية مرتبة لكل يوم.",
   },
   {
     title: "Pedicure Services",
     copy: "Relaxed foot care with soaking, exfoliation, shaping, and a polished finish.",
+    copyAr: "عناية مريحة بالقدمين مع نقع، تقشير، تشكيل، ولمسة طلاء أنيقة.",
   },
   {
     title: "Hand Treatments & Spa",
     copy: "Softening hand rituals with hydration, massage, and spa-focused care.",
+    copyAr: "علاجات لتنعيم اليدين مع ترطيب، تدليك، وعناية سبا هادئة.",
   },
   {
     title: "Nail Treatments",
     copy: "Strengthening and recovery treatments for healthier natural nails.",
+    copyAr: "علاجات تقوية وتعافي للحصول على أظافر طبيعية أكثر صحة.",
   },
 ] as const;
 
@@ -85,18 +89,27 @@ export default function Home() {
 
         <div className="pastelHeroCopy">
           <h1>Welcome to Pastel Nail Salon.</h1>
+          <p className="pastelHeroArabic" lang="ar" dir="rtl">
+            أهلاً بك في صالون باستيل للأظافر.
+          </p>
         </div>
 
         <div ref={ctaRef} className="pastelHeroCta">
           <a className="pastelBookButton" href={bookHref}>
-            Book an Appointment
+            <span>Book an Appointment</span>
+            <span className="pastelBookButtonArabic" lang="ar" dir="rtl">
+              احجز موعدك
+            </span>
           </a>
         </div>
       </section>
 
       <div className={`pastelStickyCta ${isPinned ? "isPinned" : ""}`} aria-hidden={!isPinned}>
         <a className="pastelBookButton" href={bookHref}>
-          Book an Appointment
+          <span>Book an Appointment</span>
+          <span className="pastelBookButtonArabic" lang="ar" dir="rtl">
+            احجز موعدك
+          </span>
         </a>
       </div>
 
@@ -113,7 +126,12 @@ export default function Home() {
               <article className="pastelServiceBlock" key={item.title}>
                 <div>{item.title.charAt(0)}</div>
                 <h3>{item.title}</h3>
-                <p>{item.copy}</p>
+                <p>
+                  {item.copy}
+                  <span className="pastelServiceBlockArabic" lang="ar" dir="rtl">
+                    {item.copyAr}
+                  </span>
+                </p>
               </article>
             ))}
           </div>
@@ -127,15 +145,15 @@ export default function Home() {
             <p className="pastelFooterTag">Nail and beauty lounge</p>
           </div>
           <div>
-            <small>Owner</small>
+            <small lang="ar" dir="rtl">المالكة</small>
             <p>Haifa Salman Mezher</p>
           </div>
           <div>
-            <small>Phone</small>
+            <small lang="ar" dir="rtl">الهاتف</small>
             <p>+961 71 430 542</p>
           </div>
           <div>
-            <small>Hours</small>
+            <small lang="ar" dir="rtl">ساعات العمل</small>
             <p>8:30 am till 6 pm</p>
           </div>
         </div>

@@ -609,6 +609,8 @@ textarea {
   display: flex;
   min-height: calc(100svh - 190px);
   align-items: center;
+  justify-content: space-between;
+  gap: clamp(24px, 6vw, 96px);
   padding: 40px clamp(16px, 4vw, 48px) 120px;
 }
 
@@ -624,6 +626,19 @@ textarea {
   mix-blend-mode: screen;
 }
 
+.pastelHeroArabic {
+  max-width: 560px;
+  margin: 0;
+  color: rgba(246, 201, 184, 0.72);
+  font-size: clamp(1.8rem, 5vw, 4.4rem);
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1.08;
+  text-align: right;
+  text-shadow: 0 1px 0 rgba(255, 244, 238, 0.14);
+  mix-blend-mode: screen;
+}
+
 .pastelHeroCta {
   position: absolute;
   left: 50%;
@@ -633,10 +648,12 @@ textarea {
 }
 
 .pastelBookButton {
-  min-height: 48px;
+  min-height: 62px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
+  gap: 4px;
   border: 1px solid #f7d6df;
   background: #f6c9b8;
   padding: 0 28px;
@@ -651,6 +668,14 @@ textarea {
   transition:
     background 180ms ease,
     transform 180ms ease;
+}
+
+.pastelBookButtonArabic {
+  direction: rtl;
+  font-size: 0.82rem;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
 }
 
 .pastelBookButton:hover {
@@ -770,6 +795,13 @@ textarea {
   line-height: 1.75;
 }
 
+.pastelServiceBlockArabic {
+  display: block;
+  margin-top: 12px;
+  direction: rtl;
+  text-align: right;
+}
+
 .pastelFooter {
   border-top: 1px solid rgba(220, 202, 184, 0.7);
   background: #f7efe6;
@@ -794,8 +826,9 @@ textarea {
   color: #8b6b58;
   font-size: 0.68rem;
   font-weight: 800;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
+  direction: rtl;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .pastelFooter p:not(.pastelFooterBrand):not(.pastelFooterTag) {
@@ -1674,8 +1707,24 @@ textarea {
   }
 
   .pastelHeroCopy {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
+    gap: clamp(44px, 11vh, 92px);
     min-height: calc(100svh - 172px);
     padding-bottom: 112px;
+  }
+
+  .pastelHeroCopy h1,
+  .pastelHeroArabic {
+    max-width: 100%;
+  }
+
+  .pastelHeroArabic {
+    align-self: flex-end;
+    max-width: 88%;
+    margin-top: 8px;
+    font-size: clamp(1.65rem, 9vw, 2.55rem);
   }
 
   .pastelBookButton {

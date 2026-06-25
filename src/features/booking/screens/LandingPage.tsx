@@ -10,23 +10,27 @@ const serviceOfferings = [
   {
     name: "Nail Care & Manicure",
     description: "Clean shaping, cuticle care, polish, and refined everyday nail grooming.",
+    descriptionAr: "تنظيف وتشكيل الأظافر، عناية بالجلد المحيط، طلاء، ولمسة نهائية مرتبة لكل يوم.",
   },
   {
     name: "Pedicure Services",
     description: "Relaxed foot care with soaking, exfoliation, shaping, and a polished finish.",
+    descriptionAr: "عناية مريحة بالقدمين مع نقع، تقشير، تشكيل، ولمسة طلاء أنيقة.",
   },
   {
     name: "Hand Treatments & Spa",
     description: "Softening hand rituals with hydration, massage, and spa-focused care.",
+    descriptionAr: "علاجات لتنعيم اليدين مع ترطيب، تدليك، وعناية سبا هادئة.",
   },
   {
     name: "Nail Treatments",
     description: "Strengthening and recovery treatments for healthier natural nails.",
+    descriptionAr: "علاجات تقوية وتعافي للحصول على أظافر طبيعية أكثر صحة.",
   },
 ] as const;
 
 const bookButtonClass =
-  "min-h-12 border border-[#f7d6df] bg-[#f6c9b8] px-6 text-[#4d2a16] shadow-[0_18px_38px_rgba(214,133,153,0.34)] hover:bg-[#f3b8c8] focus-visible:ring-[#d68599] sm:px-8";
+  "min-h-16 flex-col gap-1 border border-[#f7d6df] bg-[#f6c9b8] px-6 text-[#4d2a16] shadow-[0_18px_38px_rgba(214,133,153,0.34)] hover:bg-[#f3b8c8] focus-visible:ring-[#d68599] sm:px-8";
 
 const wordmarkStyle = {
   backgroundImage: "linear-gradient(135deg, #6d3f1f 0%, #b78643 42%, #f2d39a 58%, #8a4f24 100%)",
@@ -139,7 +143,7 @@ export function LandingPage() {
           style={reduceMotion ? undefined : { y: overlayY }}
         />
 
-        <div className="relative flex h-full items-center px-4 sm:px-6">
+        <div className="relative flex h-full flex-col justify-center gap-14 px-4 sm:gap-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
           <motion.div
             className="max-w-[32rem] bg-transparent px-0 py-0 text-[#f6c9b8]/70 shadow-none backdrop-blur-0 mix-blend-screen sm:max-w-[38rem] lg:max-w-[42rem]"
             style={reduceMotion ? undefined : { y: bubbleY, opacity: quoteOpacity }}
@@ -151,6 +155,21 @@ export function LandingPage() {
               }}
             >
               Welcome to Pastel Nail Salon.
+            </p>
+          </motion.div>
+          <motion.div
+            className="ml-auto max-w-[30rem] bg-transparent px-0 py-0 text-right text-[#f6c9b8]/70 shadow-none backdrop-blur-0 mix-blend-screen lg:max-w-[36rem]"
+            style={reduceMotion ? undefined : { y: bubbleY, opacity: quoteOpacity }}
+          >
+            <p
+              className="font-body text-[1.65rem] font-black leading-[1.08] tracking-normal text-[#f6c9b8]/70 sm:text-[2.3rem] lg:text-[3.25rem]"
+              lang="ar"
+              dir="rtl"
+              style={{
+                WebkitTextStroke: "1px rgba(255, 244, 238, 0.12)",
+              }}
+            >
+              أهلاً بك في صالون باستيل للأظافر.
             </p>
           </motion.div>
         </div>
@@ -166,7 +185,10 @@ export function LandingPage() {
             whileTap={reduceMotion ? undefined : { scale: 0.985 }}
             className={bookButtonClass}
           >
-            Book an Appointment
+            <span>Book an Appointment</span>
+            <span className="text-[0.82rem] normal-case tracking-normal" lang="ar" dir="rtl">
+              احجز موعدك
+            </span>
           </Button>
         </div>
       </section>
@@ -184,7 +206,10 @@ export function LandingPage() {
           whileTap={reduceMotion ? undefined : { scale: 0.985 }}
           className={`pointer-events-auto ${bookButtonClass}`}
         >
-          Book an Appointment
+          <span>Book an Appointment</span>
+          <span className="text-[0.82rem] normal-case tracking-normal" lang="ar" dir="rtl">
+            احجز موعدك
+          </span>
         </Button>
       </div>
 
@@ -230,6 +255,9 @@ export function LandingPage() {
                 </h3>
                 <p className="mt-4 text-sm leading-7 text-[#6d5648]">
                   {item.description}
+                  <span className="mt-3 block text-right leading-7" lang="ar" dir="rtl">
+                    {item.descriptionAr}
+                  </span>
                 </p>
               </article>
             ))}
@@ -254,24 +282,24 @@ export function LandingPage() {
 
           <div className="grid gap-5 sm:grid-cols-3 lg:contents">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
-                Owner
+              <p className="text-[10px] font-semibold tracking-normal text-[#8b6b58] sm:text-[11px]" lang="ar" dir="rtl">
+                المالكة
               </p>
               <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
                 <li>Haifa Salman Mezher</li>
               </ul>
             </div>
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
-                Phone
+              <p className="text-[10px] font-semibold tracking-normal text-[#8b6b58] sm:text-[11px]" lang="ar" dir="rtl">
+                الهاتف
               </p>
               <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
                 <li>+961 71 430 542</li>
               </ul>
             </div>
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#8b6b58] sm:text-[11px] sm:tracking-[0.28em]">
-                Hours
+              <p className="text-[10px] font-semibold tracking-normal text-[#8b6b58] sm:text-[11px]" lang="ar" dir="rtl">
+                ساعات العمل
               </p>
               <ul className="mt-3 space-y-2 text-xs leading-5 text-[#6d5648] sm:mt-4 sm:space-y-3 sm:text-sm sm:leading-6">
                 <li>8:30 am till 6 pm</li>
