@@ -1237,12 +1237,23 @@ textarea {
 }
 
 .appointmentInfoPane h1 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 12px;
+  row-gap: 4px;
   margin: 0;
   color: #231814;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(2.1rem, 3.8vw, 3rem);
   font-weight: 500;
   line-height: 1.08;
+}
+
+.appointmentInfoPane h1 span[lang="ar"] {
+  color: #5a2f1b;
+  font-size: 0.82em;
+  line-height: 1.15;
 }
 
 .appointmentPrice {
@@ -1288,6 +1299,11 @@ textarea {
 }
 
 .appointmentFact small {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 2px;
   color: #6d5648;
   font-size: 0.92rem;
 }
@@ -1488,9 +1504,14 @@ textarea {
 }
 
 .appointmentContinue {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(18px, 3vw, 28px);
   width: 100%;
-  min-height: 60px;
+  min-height: 68px;
   margin-top: 24px;
+  padding: 12px 18px;
   border: 0;
   border-radius: 10px;
   background: #bd736b;
@@ -1511,8 +1532,18 @@ textarea {
   cursor: not-allowed;
 }
 
-.appointmentContinue span {
-  margin-left: 24px;
+.appointmentContinueText {
+  display: grid;
+  gap: 4px;
+  line-height: 1;
+}
+
+.appointmentContinueText span[lang="ar"] {
+  font-size: 0.78em;
+}
+
+.appointmentContinueArrow {
+  line-height: 1;
 }
 
 .appointmentFormOverlay {

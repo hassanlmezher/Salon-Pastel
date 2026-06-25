@@ -8,7 +8,7 @@ import {
   getBookingErrorMessage,
   type AvailableSlot,
 } from "../data/supabaseBooking";
-import type { ServiceGroupId, ServiceMenuItem } from "../data/serviceMenu";
+import { getServiceArabicCopy, type ServiceGroupId, type ServiceMenuItem } from "../data/serviceMenu";
 
 type ServiceDetailPageProps = {
   groupId: ServiceGroupId;
@@ -250,6 +250,8 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     );
   }
 
+  const arabicCopy = getServiceArabicCopy(service.slug);
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-4 text-[#231814] sm:px-5 lg:px-6">
       <div className="mx-auto max-w-[76rem]">
@@ -268,8 +270,11 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
           </div>
 
           <div className="px-6 py-7 sm:px-8 lg:px-10 lg:py-10">
-            <h1 className="whitespace-nowrap font-display text-[1.55rem] font-semibold leading-none text-[#231814] sm:text-[2.7rem]">
-              {service.name}
+            <h1 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-display text-[1.55rem] font-semibold leading-none text-[#231814] sm:text-[2.7rem]">
+              <span>{service.name}</span>
+              <span lang="ar" dir="rtl" className="text-[0.82em] leading-tight text-[#5a2f1b]">
+                {arabicCopy.title}
+              </span>
             </h1>
             <p className="mt-4 text-[2rem] font-medium leading-none text-[#b46f65]">
               {service.price}
@@ -279,8 +284,8 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             </p>
 
             <div className="mt-6 grid gap-4">
-              <DetailRow icon="◷" label="Duration" value={service.duration || "Based on service"} />
-              <DetailRow icon="▣" label="Service type" value={service.serviceType} />
+              <DetailRow icon="◷" label="Duration" arabicLabel="المدة" value={service.duration || "Based on service"} />
+              <DetailRow icon="▣" label="Service type" arabicLabel="نوع الخدمة" value={service.serviceType} />
             </div>
           </div>
         </section>
@@ -376,9 +381,15 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             type="button"
             disabled={availabilityLoading || !selectedSlot}
             onClick={() => setShowCustomerForm(true)}
-            className="mt-6 min-h-[3.75rem] w-full bg-[#bd736b] px-5 text-center font-display text-[1.35rem] text-white shadow-[0_14px_28px_rgba(189,115,107,0.28)] transition hover:bg-[#a9615b] disabled:cursor-not-allowed disabled:bg-[#7d726d]/45 disabled:shadow-none sm:text-[1.65rem]"
+            className="mt-6 flex min-h-[4.25rem] w-full items-center justify-center gap-5 bg-[#bd736b] px-5 text-center font-display text-[1.35rem] text-white shadow-[0_14px_28px_rgba(189,115,107,0.28)] transition hover:bg-[#a9615b] disabled:cursor-not-allowed disabled:bg-[#7d726d]/45 disabled:shadow-none sm:text-[1.65rem]"
           >
-            Continue to Booking →
+            <span className="grid gap-1 leading-none">
+              <span>Continue to Booking</span>
+              <span lang="ar" dir="rtl" className="text-[0.78em]">
+                تابع الحجز
+              </span>
+            </span>
+            <span aria-hidden="true">→</span>
           </button>
         </section>
       </div>
@@ -456,14 +467,20 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
   );
 }
 
-function DetailRow({ icon, label, value }: { icon: string; label: string; value: string }) {
+function DetailRow({ icon, label, arabicLabel, value }: { icon: string; label: string; arabicLabel: string; value: string }) {
   return (
     <div className="flex items-center gap-4">
       <span className="service-detail-icon grid h-11 w-11 place-items-center bg-[#f2e7e2] text-lg text-[#a25b54]">
         {icon}
       </span>
       <div>
-        <p className="text-sm text-[#6d5648]">{label}</p>
+        <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm text-[#6d5648]">
+          <span>{label}</span>
+          <span aria-hidden="true">/</span>
+          <span lang="ar" dir="rtl">
+            {arabicLabel}
+          </span>
+        </p>
         <p className="mt-1 font-display text-lg leading-none text-[#231814]">{value}</p>
       </div>
     </div>

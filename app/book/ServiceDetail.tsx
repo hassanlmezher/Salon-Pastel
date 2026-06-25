@@ -10,7 +10,12 @@ import {
   getBookingErrorMessage,
   type AvailableSlot,
 } from "../../src/features/booking/data/supabaseBooking";
-import { getOptimizedServiceImage, type ServiceGroupId, type ServiceMenuItem } from "../../src/features/booking/data/serviceMenu";
+import {
+  getOptimizedServiceImage,
+  getServiceArabicCopy,
+  type ServiceGroupId,
+  type ServiceMenuItem,
+} from "../../src/features/booking/data/serviceMenu";
 
 type ServiceDetailProps = {
   groupId: ServiceGroupId;
@@ -257,6 +262,8 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     );
   }
 
+  const arabicCopy = getServiceArabicCopy(service.slug);
+
   return (
     <main className="appointmentPage">
       <div className="appointmentInner">
@@ -269,12 +276,17 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
           </div>
 
           <div className="appointmentInfoPane">
-            <h1>{service.name}</h1>
+            <h1>
+              <span>{service.name}</span>
+              <span lang="ar" dir="rtl">
+                {arabicCopy.title}
+              </span>
+            </h1>
             <p className="appointmentPrice">{service.price}</p>
             <p className="appointmentDescription">{service.description}</p>
             <div className="appointmentFacts">
-              <Fact icon="◷" label="Duration" value={service.duration || "Based on service"} />
-              <Fact icon="▣" label="Service type" value={service.serviceType} />
+              <Fact icon="◷" label="Duration" arabicLabel="المدة" value={service.duration || "Based on service"} />
+              <Fact icon="▣" label="Service type" arabicLabel="نوع الخدمة" value={service.serviceType} />
             </div>
           </div>
         </section>
@@ -350,7 +362,15 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
             disabled={availabilityLoading || !selectedSlot}
             onClick={() => setShowCustomerForm(true)}
           >
-            Continue to Booking <span>→</span>
+            <span className="appointmentContinueText">
+              <span>Continue to Booking</span>
+              <span lang="ar" dir="rtl">
+                تابع الحجز
+              </span>
+            </span>
+            <span className="appointmentContinueArrow" aria-hidden="true">
+              →
+            </span>
           </button>
         </section>
       </div>
@@ -414,12 +434,18 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
   );
 }
 
-function Fact({ icon, label, value }: { icon: string; label: string; value: string }) {
+function Fact({ icon, label, arabicLabel, value }: { icon: string; label: string; arabicLabel: string; value: string }) {
   return (
     <div className="appointmentFact">
       <span>{icon}</span>
       <div>
-        <small>{label}</small>
+        <small>
+          <span>{label}</span>
+          <span aria-hidden="true">/</span>
+          <span lang="ar" dir="rtl">
+            {arabicLabel}
+          </span>
+        </small>
         <p>{value}</p>
       </div>
     </div>
