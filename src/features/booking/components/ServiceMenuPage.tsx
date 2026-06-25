@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchActiveServices } from "../data/supabaseBooking";
-import type { ServiceGroupId, ServiceMenuItem } from "../data/serviceMenu";
+import { getServiceArabicCopy, type ServiceGroupId, type ServiceMenuItem } from "../data/serviceMenu";
 
 type ServiceMenuPageProps = {
   groupId: ServiceGroupId;
@@ -82,29 +82,34 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
               No services are available right now.
             </p>
           ) : null}
-          {services.map((service) => (
-            <Link
-              key={service.name}
-              to={`/book/${groupId}/${service.slug}`}
-              className="service-menu-card flex min-h-[18rem] flex-col items-center bg-[#fffaf6] px-3 py-5 text-center shadow-[0_16px_34px_rgba(97,58,24,0.12)] sm:min-h-[22rem] sm:px-5 sm:py-7 lg:min-h-[27rem] lg:px-7 lg:py-8"
-            >
-              <img
-                src={service.imageSrc}
-                alt={service.name}
-                className="service-menu-image aspect-square w-[76%] max-w-[13rem] object-cover shadow-[0_10px_24px_rgba(97,58,24,0.1)]"
-              />
-              <span className="service-menu-icon -mt-5 grid h-10 w-10 place-items-center border-2 border-white bg-[#dfb9aa] text-sm font-semibold text-white shadow-[0_8px_18px_rgba(97,58,24,0.16)] sm:h-12 sm:w-12">
-                +
-              </span>
-              <h2 className="mt-4 max-w-full text-balance font-display text-[1.2rem] font-semibold leading-[1.05] text-[#231814] sm:text-[1.65rem] lg:text-[2rem]">
-                {service.name}
-              </h2>
-              <span className="mt-4 h-px w-10 bg-[#d7aa9d]" />
-              <p className="mt-4 text-[0.78rem] leading-5 text-[#6d5648] sm:text-sm sm:leading-6">
-                Select this service to continue your appointment.
-              </p>
-            </Link>
-          ))}
+          {services.map((service) => {
+            const arabicCopy = getServiceArabicCopy(service.slug);
+
+            return (
+              <Link
+                key={service.name}
+                to={`/book/${groupId}/${service.slug}`}
+                className="service-menu-card flex min-h-[18rem] flex-col items-center bg-[#fffaf6] px-3 py-5 text-center shadow-[0_16px_34px_rgba(97,58,24,0.12)] sm:min-h-[22rem] sm:px-5 sm:py-7 lg:min-h-[27rem] lg:px-7 lg:py-8"
+              >
+                <img
+                  src={service.imageSrc}
+                  alt={service.name}
+                  className="service-menu-image aspect-square w-[76%] max-w-[13rem] object-cover shadow-[0_10px_24px_rgba(97,58,24,0.1)]"
+                />
+                <span className="service-menu-icon -mt-5 grid h-10 w-10 place-items-center border-2 border-white bg-[#dfb9aa] text-sm font-semibold text-white shadow-[0_8px_18px_rgba(97,58,24,0.16)] sm:h-12 sm:w-12">
+                  +
+                </span>
+                <h2 className="mt-4 max-w-full text-balance font-display text-[1.2rem] font-semibold leading-[1.05] text-[#231814] sm:text-[1.65rem] lg:text-[2rem]">
+                  {service.name}
+                </h2>
+                <span className="mt-4 h-px w-10 bg-[#d7aa9d]" />
+                <p className="mt-4 text-right text-[0.78rem] leading-5 text-[#6d5648] sm:text-sm sm:leading-6" lang="ar" dir="rtl">
+                  <strong className="mb-1 block font-semibold text-[#4d4039]">{arabicCopy.title}</strong>
+                  <span>{arabicCopy.description}</span>
+                </p>
+              </Link>
+            );
+          })}
         </section>
       </div>
     </main>

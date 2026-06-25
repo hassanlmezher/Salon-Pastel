@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.ico", type: "image/x-icon", sizes: "any" },
       { url: "/image.png", type: "image/png" },
       { url: "/icon.png", type: "image/png", sizes: "512x512" },
     ],

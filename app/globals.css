@@ -1144,6 +1144,19 @@ textarea {
   color: #6d5648;
   font-size: clamp(0.78rem, 1.2vw, 0.95rem);
   line-height: 1.55;
+  direction: rtl;
+  text-align: center;
+}
+
+.serviceMenuCard p strong,
+.serviceMenuCard p span {
+  display: block;
+}
+
+.serviceMenuCard p strong {
+  margin-bottom: 6px;
+  color: #4d4039;
+  font-weight: 700;
 }
 
 .appointmentPage {

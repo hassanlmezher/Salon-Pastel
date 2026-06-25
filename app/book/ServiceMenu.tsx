@@ -2,6 +2,7 @@ import Link from "next/link";
 import { fetchActiveServices } from "../../src/features/booking/data/supabaseBooking";
 import {
   getOptimizedServiceImage,
+  getServiceArabicCopy,
   serviceGroups,
   type ServiceGroupId,
   type ServiceMenuItem,
@@ -42,15 +43,22 @@ export async function ServiceMenu({ groupId, title }: ServiceMenuProps) {
 
         <section className="serviceMenuGrid" aria-label={title}>
           {services.length === 0 ? <p className="serviceMenuState">No services are available right now.</p> : null}
-          {services.map((service) => (
-            <Link className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name} prefetch={false}>
-              <img src={getOptimizedServiceImage(service.imageSrc)} alt={service.name} loading="lazy" decoding="async" />
-              <span aria-hidden="true">+</span>
-              <h2>{service.name}</h2>
-              <div />
-              <p>Select this service to continue your appointment.</p>
-            </Link>
-          ))}
+          {services.map((service) => {
+            const arabicCopy = getServiceArabicCopy(service.slug);
+
+            return (
+              <Link className="serviceMenuCard" href={`/book/${groupId}/${service.slug}`} key={service.name} prefetch={false}>
+                <img src={getOptimizedServiceImage(service.imageSrc)} alt={service.name} loading="lazy" decoding="async" />
+                <span aria-hidden="true">+</span>
+                <h2>{service.name}</h2>
+                <div />
+                <p lang="ar" dir="rtl">
+                  <strong>{arabicCopy.title}</strong>
+                  <span>{arabicCopy.description}</span>
+                </p>
+              </Link>
+            );
+          })}
         </section>
       </div>
     </main>

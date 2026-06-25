@@ -12,6 +12,147 @@ export type ServiceMenuItem = {
 const manicureType = "Manicure Service";
 const pedicureType = "Pedicure Service";
 
+export type ServiceArabicCopy = {
+  title: string;
+  description: string;
+};
+
+const defaultServiceArabicCopy: ServiceArabicCopy = {
+  title: "خدمة الأظافر",
+  description: "خدمة متخصصة للعناية بالأظافر تمنحكِ مظهرًا أنيقًا ومرتبًا.",
+};
+
+export const serviceArabicCopyBySlug: Record<string, ServiceArabicCopy> = {
+  "broken-tip-repair": {
+    title: "إصلاح الظفر المكسور",
+    description: "خدمة متخصصة لإصلاح الأظافر المكسورة واستعادة مظهرها الطبيعي بشكل متين وأنيق.",
+  },
+  chrome: {
+    title: "كروم",
+    description: "لمسة نهائية لامعة بتأثير معدني عصري تمنح أظافركِ مظهرًا أنيقًا وجذابًا.",
+  },
+  french: {
+    title: "فرنش",
+    description: "تصميم كلاسيكي وأنيق يبرز جمال الأظافر بمظهر نظيف وراقٍ يناسب جميع المناسبات.",
+  },
+  "full-set-builder-gel": {
+    title: "طقم كامل بيلدر جل",
+    description: "تقنية متينة لتقوية وبناء الأظافر تمنحها مظهرًا طبيعيًا وأنيقًا يدوم لفترة طويلة.",
+  },
+  "full-set-fiber": {
+    title: "طقم كامل فايبر",
+    description: "تقنية تعزز قوة ومتانة الأظافر مع مظهر طبيعي وأنيق يدوم لفترة طويلة.",
+  },
+  "full-set-gel-extension": {
+    title: "طقم كامل جل إكستنشن",
+    description: "إطالة الأظافر باستخدام الجل للحصول على شكل أنيق وطول مثالي بمظهر طبيعي وجذاب.",
+  },
+  "fungal-nail-care-and-treatment": {
+    title: "العناية وعلاج فطريات الأظافر",
+    description: "عناية متخصصة للمساعدة في تحسين صحة الأظافر والتخفيف من آثار الفطريات واستعادة مظهرها الصحي.",
+  },
+  "fungal-nail-care-treatment": {
+    title: "العناية وعلاج فطريات الأظافر",
+    description: "عناية متخصصة للمساعدة في تحسين صحة الأظافر والتخفيف من آثار الفطريات واستعادة مظهرها الصحي.",
+  },
+  "hard-gel-color": {
+    title: "هارد جل مع لون",
+    description: "تقوية للأظافر باستخدام الهارد جل مع لون أنيق يمنحها مظهرًا جذابًا وثباتًا طويل الأمد.",
+  },
+  "massage-scrub-for-hands": {
+    title: "مساج وتقشير لليدين",
+    description: "جلسة مريحة تساعد على تنعيم البشرة وتجديدها مع منح اليدين إحساسًا بالانتعاش والحيوية.",
+  },
+  "nail-design": {
+    title: "تصميم الأظافر",
+    description: "تصاميم مبتكرة ومخصصة تضيف لمسة فنية فريدة تعكس ذوقكِ وأسلوبكِ الخاص.",
+  },
+  ombre: {
+    title: "أومبري",
+    description: "تدرج لوني ناعم وأنيق يمنح الأظافر مظهرًا عصريًا وجذابًا.",
+  },
+  "paraffin-hand-therapy": {
+    title: "علاج اليدين بالبارافين",
+    description: "علاج مرطب يساعد على تنعيم البشرة الجافة واستعادة نعومة وراحة اليدين.",
+  },
+  pose: {
+    title: "طلاء الأظافر",
+    description: "تطبيق احترافي لطلاء الأظافر يمنحها لونًا متناسقًا ومظهرًا أنيقًا وجذابًا.",
+  },
+  refill: {
+    title: "إعادة تعبئة الأظافر",
+    description: "خدمة للحفاظ على جمال ومتانة الأظافر من خلال تجديد النمو وإعادة توازن مظهرها.",
+  },
+  rubber: {
+    title: "روبر بيس",
+    description: "طبقة مرنة تساعد على تقوية الأظافر الطبيعية وتحسين ثبات الطلاء مع تقليل التكسر.",
+  },
+  "rubber-cover-up": {
+    title: "روبر بيس مع كوفر أب",
+    description: "تقوية للأظافر مع تغطية طبيعية متجانسة تمنحها مظهرًا أنيقًا ومرتبًا يدوم لفترة أطول.",
+  },
+  "rubber-gel-color": {
+    title: "روبر بيس مع لون جل",
+    description: "تقوية للأظافر بطبقة مرنة مع لون جل لامع يمنحها مظهرًا جذابًا وثباتًا طويل الأمد.",
+  },
+  "russian-manicure": {
+    title: "المانيكير الروسي",
+    description: "تقنية دقيقة للعناية بالأظافر والجلد المحيط بها تمنح مظهرًا نظيفًا وأنيقًا يدوم لفترة أطول.",
+  },
+  "soak-off": {
+    title: "إزالة الجل",
+    description: "إزالة آمنة ولطيفة للجل أو الطلاء شبه الدائم مع الحفاظ على صحة الأظافر الطبيعية.",
+  },
+  "massage-scrub": {
+    title: "مساج وتقشير",
+    description: "جلسة مريحة تساعد على تنعيم البشرة وتجديدها مع منح القدمين إحساسًا بالانتعاش والراحة.",
+  },
+  "pedicure-paraffin-hand-therapy": {
+    title: "علاج البارافين",
+    description: "علاج مرطب يساعد على تنعيم البشرة الجافة واستعادة نعومة وراحة القدمين.",
+  },
+  "paraffin-therapy": {
+    title: "علاج البارافين",
+    description: "علاج مرطب يساعد على تنعيم البشرة الجافة واستعادة نعومة وراحة القدمين.",
+  },
+  "pedicure-classic-french-manicure": {
+    title: "بديكير مع فرنش كلاسيكي",
+    description: "عناية متكاملة للقدمين مع تصميم فرنش كلاسيكي يمنح الأظافر مظهرًا أنيقًا ومرتبًا.",
+  },
+  "pedicure-french": {
+    title: "بديكير مع فرنش",
+    description: "عناية متكاملة للقدمين مع لمسة فرنش أنيقة تمنح الأظافر مظهرًا نظيفًا وجذابًا.",
+  },
+  "pedicure-french-gelish": {
+    title: "بديكير مع فرنش جيليش",
+    description: "عناية متكاملة للقدمين مع فرنش جيليش لامع يدوم طويلًا ويمنح الأظافر مظهرًا أنيقًا ومتألقًا.",
+  },
+  "pedicure-gel-color-gelish": {
+    title: "بديكير مع لون جل",
+    description: "عناية متكاملة للقدمين مع لون جل لامع وثابت يمنح الأظافر مظهرًا أنيقًا يدوم لفترة طويلة.",
+  },
+  "pedicure-gelish": {
+    title: "بديكير مع جيليش",
+    description: "عناية متكاملة للقدمين مع طلاء جيليش لامع يمنح الأظافر مظهرًا جذابًا وثباتًا يدوم طويلًا.",
+  },
+  "pedicure-pose": {
+    title: "بديكير مع طلاء الأظافر",
+    description: "عناية متكاملة للقدمين مع تطبيق احترافي لطلاء الأظافر يمنحها مظهرًا أنيقًا ومرتبًا.",
+  },
+  "pedicure-fungal-nail-care-treatment": {
+    title: "العناية وعلاج فطريات الأظافر",
+    description: "عناية متخصصة للمساعدة في تحسين صحة الأظافر والتخفيف من آثار الفطريات واستعادة مظهرها الصحي.",
+  },
+  "pedicure-fungal-nail-care-and-treatment": {
+    title: "العناية وعلاج فطريات الأظافر",
+    description: "عناية متخصصة للمساعدة في تحسين صحة الأظافر والتخفيف من آثار الفطريات واستعادة مظهرها الصحي.",
+  },
+};
+
+export function getServiceArabicCopy(serviceSlug: string): ServiceArabicCopy {
+  return serviceArabicCopyBySlug[serviceSlug] ?? defaultServiceArabicCopy;
+}
+
 export const manicureServices: ServiceMenuItem[] = [
   { name: "Russian Manicure", slug: "russian-manicure", imageSrc: "/Russian%20Manicure.png", price: "$25", description: "Detailed cuticle work and clean shaping for a polished natural nail finish.", duration: "60 min", serviceType: manicureType },
   { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$20", description: "A neat nail application service finished with a clean salon look.", duration: "45 min", serviceType: manicureType },
