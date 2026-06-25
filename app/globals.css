@@ -1511,19 +1511,23 @@ textarea {
 
 .appointmentFormActions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 12px;
   margin-top: 24px;
 }
 
 .appointmentFormActions button {
   min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid #ead5cd;
-  padding: 0 16px;
+  padding: 0 18px;
   font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .appointmentFormActions button:first-child {
@@ -1789,5 +1793,16 @@ textarea {
   .appointmentTimeGrid button {
     min-height: 50px;
     font-size: 0.95rem;
+  }
+
+  .appointmentFormActions {
+    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+    gap: 10px;
+  }
+
+  .appointmentFormActions button {
+    padding-inline: 12px;
+    font-size: 0.76rem;
+    letter-spacing: 0.1em;
   }
 }
