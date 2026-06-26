@@ -422,7 +422,7 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
                         <small>{addOn.description}</small>
                       </span>
                       <span className="appointmentAddonToggle" aria-hidden="true">
-                        {selected ? "✓" : "+"}
+                        {selected ? "✓" : ""}
                       </span>
                     </button>
                   );

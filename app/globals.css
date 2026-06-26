@@ -1293,8 +1293,9 @@ textarea {
 
 .appointmentImagePane {
   position: relative;
-  min-height: 24rem;
+  min-height: 29rem;
   overflow: hidden;
+  background: #f6eee8;
 }
 
 .appointmentImagePane img {
@@ -1302,52 +1303,62 @@ textarea {
   height: 100%;
   display: block;
   object-fit: cover;
+  object-position: center 36%;
 }
 
 .appointmentImagePane::after {
   content: "";
   position: absolute;
-  inset: auto 0 0;
-  height: 62%;
-  background: linear-gradient(180deg, rgba(35, 24, 20, 0) 0%, rgba(35, 24, 20, 0.72) 100%);
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(35, 24, 20, 0) 44%, rgba(35, 24, 20, 0.34) 100%),
+    linear-gradient(90deg, rgba(35, 24, 20, 0.14) 0%, rgba(35, 24, 20, 0) 48%);
   pointer-events: none;
 }
 
 .appointmentServiceOverlay {
   position: absolute;
-  left: clamp(18px, 3vw, 34px);
-  right: clamp(18px, 3vw, 34px);
-  bottom: clamp(18px, 3vw, 34px);
+  left: clamp(22px, 3.4vw, 38px);
+  right: clamp(22px, 3.4vw, 38px);
+  bottom: clamp(22px, 3.4vw, 38px);
   z-index: 1;
+  width: min(36rem, calc(100% - 44px));
+  border: 1px solid rgba(255, 250, 246, 0.46);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(214, 133, 153, 0.82), rgba(184, 111, 101, 0.72));
+  box-shadow: 0 18px 42px rgba(62, 34, 27, 0.2);
+  padding: clamp(16px, 2.2vw, 24px);
+  backdrop-filter: blur(14px);
   color: #fffaf6;
 }
 
 .appointmentServiceOverlay h1 {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  column-gap: 10px;
-  row-gap: 4px;
+  display: grid;
+  max-width: 34rem;
+  gap: 7px;
   margin: 0;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2rem, 4vw, 3.15rem);
+  font-size: clamp(2.15rem, 3.2vw, 3rem);
   font-weight: 500;
-  line-height: 1;
-  text-shadow: 0 8px 22px rgba(35, 24, 20, 0.28);
+  line-height: 0.95;
+  letter-spacing: 0;
+  overflow-wrap: break-word;
+  text-shadow: 0 8px 24px rgba(35, 24, 20, 0.32);
 }
 
 .appointmentServiceOverlay h1 span[lang="ar"] {
   color: rgba(255, 250, 246, 0.9);
-  font-size: 0.78em;
-  line-height: 1.12;
+  font-size: 0.58em;
+  font-weight: 600;
+  line-height: 1.15;
 }
 
 .appointmentServiceMeta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  margin-top: 14px;
+  gap: 8px;
+  margin-top: 16px;
 }
 
 .appointmentServiceMeta strong,
@@ -1361,22 +1372,24 @@ textarea {
 
 .appointmentServiceMeta strong,
 .appointmentServiceMeta span {
-  padding: 8px 12px;
-  font-size: 0.95rem;
+  padding: 8px 13px;
+  font-size: 0.88rem;
+  font-weight: 800;
   line-height: 1;
 }
 
 .appointmentServiceMeta strong {
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 
 .appointmentServiceOverlay p {
-  max-width: 34rem;
-  margin: 14px 0 0;
+  max-width: 29rem;
+  margin: 16px 0 0;
   color: rgba(255, 250, 246, 0.9);
-  font-size: 0.95rem;
-  line-height: 1.5;
+  font-size: 0.98rem;
+  font-weight: 650;
+  line-height: 1.45;
 }
 
 .appointmentIncludedList {
@@ -1387,9 +1400,9 @@ textarea {
 }
 
 .appointmentIncludedList span {
-  padding: 7px 10px;
+  padding: 8px 12px;
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
@@ -1570,7 +1583,6 @@ textarea {
   justify-content: space-between;
   gap: 12px;
   margin-top: auto;
-  border-top: 1px solid #ead5cd;
   padding-top: 18px;
 }
 
@@ -2261,7 +2273,7 @@ textarea {
   }
 
   .appointmentImagePane {
-    min-height: 18rem;
+    min-height: 25rem;
   }
 
   .appointmentAddonGrid {
@@ -2312,7 +2324,7 @@ textarea {
   }
 
   .appointmentImagePane {
-    min-height: 18rem;
+    min-height: 24rem;
   }
 
   .appointmentBack {
@@ -2339,18 +2351,41 @@ textarea {
     white-space: normal;
   }
 
+  .appointmentServiceOverlay {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: auto;
+    padding: 16px;
+  }
+
   .appointmentServiceOverlay h1 {
-    font-size: clamp(1.6rem, 8vw, 2.05rem);
+    max-width: 100%;
+    font-size: clamp(1.65rem, 8vw, 2.2rem);
+    line-height: 0.98;
     overflow-wrap: break-word;
     text-wrap: balance;
+  }
+
+  .appointmentServiceOverlay h1 span[lang="ar"] {
+    font-size: 0.62em;
   }
 
   .appointmentServiceOverlay p {
     display: -webkit-box;
     overflow: hidden;
+    margin-top: 12px;
     font-size: 0.86rem;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
+  }
+
+  .appointmentServiceMeta {
+    margin-top: 12px;
+  }
+
+  .appointmentIncludedList {
+    margin-top: 10px;
   }
 
   .appointmentAddonGrid {
