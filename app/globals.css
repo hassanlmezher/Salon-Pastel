@@ -1288,13 +1288,14 @@ textarea {
 .appointmentHero {
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .appointmentImagePane {
   position: relative;
   min-height: 29rem;
   overflow: hidden;
+  border-radius: 18px 0 0 18px;
   background: #f6eee8;
 }
 
@@ -1442,7 +1443,24 @@ textarea {
   display: flex;
   min-height: 100%;
   flex-direction: column;
+  border-radius: 0 18px 18px 0;
+  background: rgba(255, 250, 246, 0.96);
   padding: clamp(24px, 3.5vw, 42px) clamp(24px, 4vw, 44px);
+}
+
+.appointmentExtrasHeader {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin: calc(clamp(24px, 3.5vw, 42px) * -1) calc(clamp(24px, 4vw, 44px) * -1) 0;
+  border-bottom: 1px solid rgba(234, 213, 205, 0.82);
+  background: rgba(255, 250, 246, 0.94);
+  padding: clamp(20px, 3vw, 32px) clamp(24px, 4vw, 44px) 18px;
+  backdrop-filter: blur(14px);
 }
 
 .appointmentExtrasHeader p {
@@ -1462,6 +1480,43 @@ textarea {
   font-size: clamp(1.55rem, 2.6vw, 2.25rem);
   font-weight: 500;
   line-height: 1.05;
+}
+
+.appointmentStickyQuote {
+  display: grid;
+  min-width: 8.5rem;
+  justify-items: end;
+  gap: 2px;
+  border: 1px solid rgba(189, 115, 107, 0.22);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(97, 58, 24, 0.08);
+  padding: 10px 12px;
+}
+
+.appointmentStickyQuote span {
+  color: #6d5648;
+  font-size: 0.66rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.appointmentStickyQuote strong {
+  color: #b46f65;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.42rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.appointmentStickyQuote em {
+  color: #6d5648;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.15;
 }
 
 .appointmentAddonGrid {
@@ -2273,7 +2328,12 @@ textarea {
   }
 
   .appointmentImagePane {
+    border-radius: 18px 18px 0 0;
     min-height: 25rem;
+  }
+
+  .appointmentInfoPane {
+    border-radius: 0 0 18px 18px;
   }
 
   .appointmentAddonGrid {
@@ -2341,6 +2401,30 @@ textarea {
   .appointmentInfoPane,
   .appointmentPanel {
     padding: 22px 16px;
+  }
+
+  .appointmentExtrasHeader {
+    align-items: center;
+    gap: 12px;
+    margin: -22px -16px 0;
+    padding: 16px;
+  }
+
+  .appointmentExtrasHeader h2 {
+    font-size: clamp(1.28rem, 6vw, 1.72rem);
+  }
+
+  .appointmentStickyQuote {
+    min-width: 7rem;
+    padding: 9px 10px;
+  }
+
+  .appointmentStickyQuote strong {
+    font-size: 1.18rem;
+  }
+
+  .appointmentStickyQuote em {
+    font-size: 0.72rem;
   }
 
   .appointmentInfoPane h1 {

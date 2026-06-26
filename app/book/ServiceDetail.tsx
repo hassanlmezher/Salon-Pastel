@@ -380,8 +380,8 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
                 </span>
               </h1>
               <div className="appointmentServiceMeta">
-                <strong>{service.price}</strong>
-                <span>{service.duration || "Based on service"}</span>
+                <strong>{totalPriceText}</strong>
+                <span>{totalDurationText}</span>
               </div>
               <p>{service.description}</p>
               {serviceInclusions.length > 0 ? (
@@ -396,8 +396,15 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
 
           <div className="appointmentInfoPane">
             <div className="appointmentExtrasHeader">
-              <p>Available extra services</p>
-              <h2>Customize your appointment</h2>
+              <div>
+                <p>Available extra services</p>
+                <h2>Customize your appointment</h2>
+              </div>
+              <div className="appointmentStickyQuote" aria-live="polite">
+                <span>Total</span>
+                <strong>{totalPriceText}</strong>
+                <em>{totalDurationText}</em>
+              </div>
             </div>
 
             {availableAddOns.length > 0 ? (
