@@ -9,8 +9,24 @@ export type ServiceMenuItem = {
   serviceType: string;
 };
 
+export type ServiceAddOnOption = {
+  name: string;
+  slug: string;
+  imageSrc: string;
+  price: string;
+  priceValue: number;
+  duration: string;
+  durationMin: number;
+  description: string;
+  serviceType: string;
+  conflictsWith?: string[];
+  exclusiveGroup?: string;
+};
+
 const manicureType = "Manicure Service";
 const pedicureType = "Pedicure Service";
+const enhancementType = "Nail Enhancement";
+const addOnType = "Nail Add-on";
 
 export type ServiceArabicCopy = {
   title: string;
@@ -36,8 +52,16 @@ export const serviceArabicCopyBySlug: Record<string, ServiceArabicCopy> = {
     description: "تصميم كلاسيكي وأنيق يبرز جمال الأظافر بمظهر نظيف وراقٍ يناسب جميع المناسبات.",
   },
   "full-set-builder-gel": {
-    title: "طقم كامل بيلدر جل",
-    description: "تقنية متينة لتقوية وبناء الأظافر تمنحها مظهرًا طبيعيًا وأنيقًا يدوم لفترة طويلة.",
+    title: "طقم كامل بولي جل",
+    description: "تقنية متينة لبناء الأظافر تمنحها مظهرًا طبيعيًا وأنيقًا يدوم لفترة طويلة.",
+  },
+  "full-set-poly-gel": {
+    title: "طقم كامل بولي جل",
+    description: "تقنية متينة لبناء الأظافر تمنحها مظهرًا طبيعيًا وأنيقًا يدوم لفترة طويلة.",
+  },
+  "full-set-hard-gel": {
+    title: "طقم كامل هارد جل",
+    description: "بناء قوي للأظافر باستخدام الهارد جل مع شكل أنيق وثبات طويل.",
   },
   "full-set-fiber": {
     title: "طقم كامل فايبر",
@@ -60,8 +84,12 @@ export const serviceArabicCopyBySlug: Record<string, ServiceArabicCopy> = {
     description: "تقوية للأظافر باستخدام الهارد جل مع لون أنيق يمنحها مظهرًا جذابًا وثباتًا طويل الأمد.",
   },
   "massage-scrub-for-hands": {
-    title: "مساج وتقشير لليدين",
-    description: "جلسة مريحة تساعد على تنعيم البشرة وتجديدها مع منح اليدين إحساسًا بالانتعاش والحيوية.",
+    title: "مساج وتقشير وبارافين لليدين",
+    description: "جلسة متكاملة لتنعيم اليدين وتجديد البشرة مع علاج بارافين مرطب.",
+  },
+  "massage-scrub-paraffin-hands": {
+    title: "مساج وتقشير وبارافين لليدين",
+    description: "جلسة متكاملة لتنعيم اليدين وتجديد البشرة مع علاج بارافين مرطب.",
   },
   "nail-design": {
     title: "تصميم الأظافر",
@@ -96,16 +124,28 @@ export const serviceArabicCopyBySlug: Record<string, ServiceArabicCopy> = {
     description: "تقوية للأظافر بطبقة مرنة مع لون جل لامع يمنحها مظهرًا جذابًا وثباتًا طويل الأمد.",
   },
   "russian-manicure": {
-    title: "المانيكير الروسي",
+    title: "المانيكير الكلاسيكي",
     description: "تقنية دقيقة للعناية بالأظافر والجلد المحيط بها تمنح مظهرًا نظيفًا وأنيقًا يدوم لفترة أطول.",
+  },
+  "classic-manicure": {
+    title: "المانيكير الكلاسيكي",
+    description: "عناية دقيقة بالأظافر والجلد المحيط بها تمنح مظهرًا نظيفًا وأنيقًا.",
   },
   "soak-off": {
     title: "إزالة الجل",
     description: "إزالة آمنة ولطيفة للجل أو الطلاء شبه الدائم مع الحفاظ على صحة الأظافر الطبيعية.",
   },
+  "soak-off-classic-manicure-oil": {
+    title: "إزالة الجل مع مانيكير كلاسيكي وزيت",
+    description: "إزالة لطيفة للمنتج مع مانيكير كلاسيكي وزيت مغذٍ للأظافر.",
+  },
   "massage-scrub": {
-    title: "مساج وتقشير",
-    description: "جلسة مريحة تساعد على تنعيم البشرة وتجديدها مع منح القدمين إحساسًا بالانتعاش والراحة.",
+    title: "مساج وتقشير وبارافين",
+    description: "جلسة مريحة لتنعيم القدمين وتجديد البشرة مع علاج بارافين مرطب.",
+  },
+  "pedicure-massage-scrub-paraffin": {
+    title: "مساج وتقشير وبارافين",
+    description: "جلسة مريحة لتنعيم القدمين وتجديد البشرة مع علاج بارافين مرطب.",
   },
   "pedicure-paraffin-hand-therapy": {
     title: "علاج البارافين",
@@ -154,38 +194,283 @@ export function getServiceArabicCopy(serviceSlug: string): ServiceArabicCopy {
 }
 
 export const manicureServices: ServiceMenuItem[] = [
-  { name: "Russian Manicure", slug: "russian-manicure", imageSrc: "/Russian%20Manicure.png", price: "$25", description: "Detailed cuticle work and clean shaping for a polished natural nail finish.", duration: "60 min", serviceType: manicureType },
-  { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$20", description: "A neat nail application service finished with a clean salon look.", duration: "45 min", serviceType: manicureType },
-  { name: "Rubber", slug: "rubber", imageSrc: "/Rubber.png", price: "$20", description: "Strengthen natural nails with a flexible rubber base treatment.", duration: "50 min", serviceType: "Nail Enhancement" },
-  { name: "Rubber + Cover Up", slug: "rubber-cover-up", imageSrc: "/Rubber%20%2B%20Cover%20Up.png", price: "$25", description: "Rubber base with soft coverage for a smooth, even nail finish.", duration: "60 min", serviceType: "Nail Enhancement" },
-  { name: "Hard Gel + Color", slug: "hard-gel-color", imageSrc: "/Hard%20Gel%20%2B%20Color.png", price: "$30", description: "Durable hard gel structure finished with your selected color.", duration: "75 min", serviceType: "Nail Enhancement" },
-  { name: "Rubber + Gel Color", slug: "rubber-gel-color", imageSrc: "/Rubber%20%2B%20Gel%20Color.png", price: "$25", description: "Strengthen natural nails with rubber base and finish with long-lasting gel color.", duration: "60 min", serviceType: "Nail Enhancement" },
-  { name: "Refill", slug: "refill", imageSrc: "/refill.png", price: "$25", description: "Refresh existing nail enhancement growth with balanced structure and finish.", duration: "60 min", serviceType: "Nail Maintenance" },
-  { name: "Broken Tip Repair", slug: "broken-tip-repair", imageSrc: "/Broken%20Tip%20Repair.png", price: "$5", description: "Repair a damaged or broken nail tip with careful shaping and finish.", duration: "20 min", serviceType: "Nail Repair" },
-  { name: "Soak Off", slug: "soak-off", imageSrc: "/Soak%20Off.png", price: "$10", description: "Gentle product removal to protect the natural nail surface.", duration: "30 min", serviceType: "Nail Removal" },
+  { name: "Classic Manicure", slug: "classic-manicure", imageSrc: "/Russian%20Manicure.png", price: "$25", description: "Detailed cuticle work and clean shaping for a polished natural nail finish.", duration: "60 min", serviceType: manicureType },
+  { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$10", description: "A neat nail application service finished with a clean salon look.", duration: "30 min", serviceType: manicureType },
+  { name: "Rubber", slug: "rubber", imageSrc: "/Rubber.png", price: "$20", description: "Strengthen natural nails with a flexible rubber base treatment.", duration: "60 min", serviceType: enhancementType },
+  { name: "Hard Gel + Color", slug: "hard-gel-color", imageSrc: "/Hard%20Gel%20%2B%20Color.png", price: "$30", description: "Durable hard gel structure finished with your selected color.", duration: "1 hr 30 min", serviceType: enhancementType },
+  { name: "Rubber + Gel Color", slug: "rubber-gel-color", imageSrc: "/Rubber%20%2B%20Gel%20Color.png", price: "$25", description: "Strengthen natural nails with rubber base and finish with long-lasting gel color.", duration: "1 hr 30 min", serviceType: enhancementType },
+  { name: "Refill", slug: "refill", imageSrc: "/refill.png", price: "$25", description: "Refresh existing nail enhancement growth with balanced structure and finish.", duration: "1 hr 30 min", serviceType: "Nail Maintenance" },
+  { name: "Refill Poly Gel", slug: "refill-poly-gel", imageSrc: "/refill.png", price: "$30", description: "Refresh existing poly gel growth with balanced structure and finish.", duration: "2 hr", serviceType: "Nail Maintenance" },
+  { name: "Refill Hard Gel", slug: "refill-hard-gel", imageSrc: "/refill.png", price: "$30", description: "Refresh existing hard gel growth with balanced structure and finish.", duration: "2 hr", serviceType: "Nail Maintenance" },
+  { name: "Broken Tip Repair", slug: "broken-tip-repair", imageSrc: "/Broken%20Tip%20Repair.png", price: "$1.50", description: "Repair a damaged or broken nail tip with careful shaping and finish.", duration: "10 min", serviceType: "Nail Repair" },
+  { name: "Soak Off + Classic Manicure + Oil", slug: "soak-off-classic-manicure-oil", imageSrc: "/Soak%20Off.png", price: "$15", description: "Gentle product removal finished with classic manicure care and nourishing oil.", duration: "30 min", serviceType: "Nail Removal" },
   { name: "French", slug: "french", imageSrc: "/French.png", price: "$5", description: "Classic French tips for a clean, elegant nail finish.", duration: "20 min", serviceType: "Nail Add-on" },
-  { name: "Ombré", slug: "ombre", imageSrc: "/Ombr%C3%A9.png", price: "$10", description: "Soft blended color fade for a polished ombré effect.", duration: "25 min", serviceType: "Nail Add-on" },
-  { name: "Chrome", slug: "chrome", imageSrc: "/Chrome.png", price: "$10", description: "Reflective chrome finish added over your selected nail service.", duration: "20 min", serviceType: "Nail Add-on" },
-  { name: "Full Set Builder Gel", slug: "full-set-builder-gel", imageSrc: "/Full%20Set%20Builder%20Gel.png", price: "$40", description: "Full builder gel set for added shape, strength, and length.", duration: "90 min", serviceType: "Nail Enhancement" },
-  { name: "Full Set Fiber", slug: "full-set-fiber", imageSrc: "/Full%20Set%20Fiber.png", price: "$45", description: "Full fiber set designed for lightweight strength and a refined finish.", duration: "90 min", serviceType: "Nail Enhancement" },
-  { name: "Full Set Gel Extension", slug: "full-set-gel-extension", imageSrc: "/Full%20Set%20Gel%20Extension.png", price: "$45", description: "Gel extensions shaped and finished for an elegant full set.", duration: "95 min", serviceType: "Nail Extension" },
-  { name: "Massage + Scrub for Hands", slug: "massage-scrub-for-hands", imageSrc: "/Massage%20%2B%20Scrub%20for%20Hands.png", price: "$15", description: "Hand exfoliation and massage for softer, refreshed skin.", duration: "25 min", serviceType: "Hand Spa" },
-  { name: "Nail Design", slug: "nail-design", imageSrc: "/Nail%20Design.png", price: "$10", description: "Custom nail detail added to personalize your manicure.", duration: "25 min", serviceType: "Nail Art" },
-  { name: "Fungal Nail Care & Treatment", slug: "fungal-nail-care-treatment", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$35", description: "Focused nail care treatment for damaged or problem nails.", duration: "45 min", serviceType: "Nail Treatment" },
-  { name: "Paraffin Hand Therapy", slug: "paraffin-hand-therapy", imageSrc: "/Paraffin%20Hand%20Therapy.png", price: "$15", description: "Warm paraffin therapy to deeply soften and hydrate the hands.", duration: "25 min", serviceType: "Hand Spa" },
+  { name: "Ombré", slug: "ombre", imageSrc: "/Ombr%C3%A9.png", price: "$5", description: "Soft blended color fade for a polished ombré effect.", duration: "20 min", serviceType: addOnType },
+  { name: "Chrome", slug: "chrome", imageSrc: "/Chrome.png", price: "$5", description: "Reflective chrome finish added over your selected nail service.", duration: "10 min", serviceType: addOnType },
+  { name: "Full Set Poly Gel", slug: "full-set-poly-gel", imageSrc: "/Full%20Set%20Builder%20Gel.png", price: "$45", description: "Full poly gel set for added shape, strength, and length.", duration: "2 hr 30 min", serviceType: enhancementType },
+  { name: "Full Set Hard Gel", slug: "full-set-hard-gel", imageSrc: "/Full%20Set%20Builder%20Gel.png", price: "$45", description: "Full hard gel set built for strong structure and a clean finish.", duration: "2 hr 30 min", serviceType: enhancementType },
+  { name: "Full Set Fiber", slug: "full-set-fiber", imageSrc: "/Full%20Set%20Fiber.png", price: "$50", description: "Full fiber set designed for lightweight strength and a refined finish.", duration: "2 hr 30 min", serviceType: enhancementType },
+  { name: "Full Set Gel Extension", slug: "full-set-gel-extension", imageSrc: "/Full%20Set%20Gel%20Extension.png", price: "$35", description: "Gel extensions shaped and finished for an elegant full set.", duration: "2 hr", serviceType: "Nail Extension" },
+  { name: "Massage + Scrub + Paraffin Hand Therapy", slug: "massage-scrub-paraffin-hands", imageSrc: "/Massage%20%2B%20Scrub%20for%20Hands.png", price: "$25", description: "Hand exfoliation, massage, and warm paraffin hydration in one service.", duration: "45 min", serviceType: "Hand Spa" },
+  { name: "Nail Design", slug: "nail-design", imageSrc: "/Nail%20Design.png", price: "From $2", description: "Custom nail detail added to personalize your manicure.", duration: "10 min", serviceType: "Nail Art" },
+  { name: "Fungal Nail Care & Treatment", slug: "fungal-nail-care-treatment", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused hand nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
 ];
 
 export const pedicureServices: ServiceMenuItem[] = [
-  { name: "Pedicure + Pose", slug: "pedicure-pose", imageSrc: "/pedicure/Pedicure%20%2B%20Pose.png", price: "$25", description: "Classic pedicure care finished with a neat pose application.", duration: "60 min", serviceType: pedicureType },
-  { name: "Pedicure + Gel Color (Gelish)", slug: "pedicure-gel-color-gelish", imageSrc: "/pedicure/Pedicure%20%2B%20Gel%20Color%20(Gelish).png", price: "$30", description: "Pedicure care with long-lasting Gelish color for a polished finish.", duration: "70 min", serviceType: pedicureType },
-  { name: "Pedicure + French", slug: "pedicure-french", imageSrc: "/pedicure/Pedicure%20%2B%20French.png", price: "$28", description: "Fresh pedicure service finished with clean French tips.", duration: "65 min", serviceType: pedicureType },
-  { name: "Pedicure + Classic French Manicure", slug: "pedicure-classic-french-manicure", imageSrc: "/pedicure/Pedicure%20%2B%20Classic%20French%20Manicure.png", price: "$35", description: "Complete classic French styling for feet and hands.", duration: "90 min", serviceType: pedicureType },
-  { name: "Pedicure + Gelish", slug: "pedicure-gelish", imageSrc: "/pedicure/Pedicure%20%2B%20Gelish.png", price: "$30", description: "Relaxed pedicure care with glossy Gelish polish.", duration: "70 min", serviceType: pedicureType },
-  { name: "Pedicure + French Gelish", slug: "pedicure-french-gelish", imageSrc: "/pedicure/Pedicure%20%2B%20French%20Gelish.png", price: "$35", description: "French pedicure styling with the durability of Gelish polish.", duration: "75 min", serviceType: pedicureType },
-  { name: "Massage + Scrub", slug: "massage-scrub", imageSrc: "/pedicure/Massage%20%2B%20Scrub.png", price: "$15", description: "Foot scrub and massage for soft, refreshed skin.", duration: "25 min", serviceType: "Foot Spa" },
-  { name: "Paraffin Hand Therapy", slug: "pedicure-paraffin-hand-therapy", imageSrc: "/pedicure/Paraffin%20Hand%20Therapy.png", price: "$15", description: "Warm paraffin therapy to hydrate and soften dry skin.", duration: "25 min", serviceType: "Spa Therapy" },
-  { name: "Fungal Nail Care & Treatment", slug: "pedicure-fungal-nail-care-treatment", imageSrc: "/pedicure/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$35", description: "Focused foot nail care treatment for damaged or problem nails.", duration: "45 min", serviceType: "Nail Treatment" },
+  { name: "Pedicure + Pose", slug: "pedicure-pose", imageSrc: "/pedicure/Pedicure%20%2B%20Pose.png", price: "$15", description: "Classic pedicure care finished with a neat pose application.", duration: "1 hr 30 min", serviceType: pedicureType },
+  { name: "Pedicure + Classic French", slug: "pedicure-classic-french", imageSrc: "/pedicure/Pedicure%20%2B%20Classic%20French%20Manicure.png", price: "$17", description: "Pedicure care finished with classic French styling.", duration: "1 hr 30 min", serviceType: pedicureType },
+  { name: "Pedicure + Gelish", slug: "pedicure-gelish", imageSrc: "/pedicure/Pedicure%20%2B%20Gelish.png", price: "$17", description: "Relaxed pedicure care with glossy Gelish polish.", duration: "2 hr", serviceType: pedicureType },
+  { name: "Pedicure + French Gelish", slug: "pedicure-french-gelish", imageSrc: "/pedicure/Pedicure%20%2B%20French%20Gelish.png", price: "$20", description: "French pedicure styling with the durability of Gelish polish.", duration: "2 hr", serviceType: pedicureType },
+  { name: "Pedicure + Ombré", slug: "pedicure-ombre", imageSrc: "/pedicure/Pedicure%20%2B%20French.png", price: "$20", description: "Pedicure care finished with a soft ombré color blend.", duration: "2 hr", serviceType: pedicureType },
+  { name: "Massage + Scrub + Paraffin", slug: "pedicure-massage-scrub-paraffin", imageSrc: "/pedicure/Massage%20%2B%20Scrub.png", price: "$20", description: "Foot scrub, massage, and paraffin hydration in one service.", duration: "45 min", serviceType: "Foot Spa" },
+  { name: "Fungal Nail Care & Treatment", slug: "pedicure-fungal-nail-care-treatment", imageSrc: "/pedicure/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$35", description: "Focused foot nail care treatment for damaged or problem nails.", duration: "1 hr 15 min", serviceType: "Nail Treatment" },
 ];
+
+const slugAliases: Record<string, string> = {
+  "russian-manicure": "classic-manicure",
+  "full-set-builder-gel": "full-set-poly-gel",
+  "rubber-cover-up": "rubber",
+  "soak-off": "soak-off-classic-manicure-oil",
+  "massage-scrub-for-hands": "massage-scrub-paraffin-hands",
+  "paraffin-hand-therapy": "massage-scrub-paraffin-hands",
+  "pedicure-classic-french-manicure": "pedicure-classic-french",
+  "pedicure-french": "pedicure-classic-french",
+  "pedicure-gel-color-gelish": "pedicure-gelish",
+  "massage-scrub": "pedicure-massage-scrub-paraffin",
+  "pedicure-paraffin-hand-therapy": "pedicure-massage-scrub-paraffin",
+};
+
+const manicureCanonicalServices = new Map(manicureServices.map((service) => [service.slug, service]));
+const pedicureCanonicalServices = new Map(pedicureServices.map((service) => [service.slug, service]));
+
+export function getCanonicalServiceSlug(slug: string) {
+  return slugAliases[slug] ?? slug;
+}
+
+function getCanonicalService(groupId: ServiceGroupId, slug: string) {
+  const canonicalSlug = getCanonicalServiceSlug(slug);
+  const serviceMap = groupId === "pedicure" ? pedicureCanonicalServices : manicureCanonicalServices;
+  return serviceMap.get(canonicalSlug) ?? null;
+}
+
+export function normalizeServiceMenuItem(service: ServiceMenuItem, groupId: ServiceGroupId): ServiceMenuItem {
+  const canonical = getCanonicalService(groupId, service.slug);
+  if (!canonical) return service;
+
+  return {
+    ...service,
+    ...canonical,
+    id: service.id,
+    description: canonical.description,
+  };
+}
+
+const addOnOptions: Record<string, ServiceAddOnOption> = {
+  "broken-tip-repair": {
+    name: "Broken Tip Repair",
+    slug: "broken-tip-repair",
+    imageSrc: "/Broken%20Tip%20Repair.png",
+    price: "$1.50",
+    priceValue: 1.5,
+    duration: "10 min",
+    durationMin: 10,
+    description: "Repair one damaged nail tip before the finish.",
+    serviceType: "Nail Repair",
+  },
+  chrome: {
+    name: "Chrome",
+    slug: "chrome",
+    imageSrc: "/Chrome.png",
+    price: "$5",
+    priceValue: 5,
+    duration: "10 min",
+    durationMin: 10,
+    description: "Reflective chrome finish.",
+    serviceType: addOnType,
+  },
+  french: {
+    name: "French",
+    slug: "french",
+    imageSrc: "/French.png",
+    price: "$5",
+    priceValue: 5,
+    duration: "20 min",
+    durationMin: 20,
+    description: "Classic French tips.",
+    serviceType: addOnType,
+    conflictsWith: ["ombre"],
+  },
+  ombre: {
+    name: "Ombré",
+    slug: "ombre",
+    imageSrc: "/Ombr%C3%A9.png",
+    price: "$5",
+    priceValue: 5,
+    duration: "20 min",
+    durationMin: 20,
+    description: "Soft blended ombré finish.",
+    serviceType: addOnType,
+    conflictsWith: ["french"],
+  },
+  "nail-design": {
+    name: "Nail Design",
+    slug: "nail-design",
+    imageSrc: "/Nail%20Design.png",
+    price: "From $2",
+    priceValue: 2,
+    duration: "10 min",
+    durationMin: 10,
+    description: "Custom nail detail.",
+    serviceType: "Nail Art",
+  },
+  "gel-color": {
+    name: "Gel Color",
+    slug: "gel-color",
+    imageSrc: "/Rubber%20%2B%20Gel%20Color.png",
+    price: "$5",
+    priceValue: 5,
+    duration: "30 min",
+    durationMin: 30,
+    description: "Long-lasting gel color finish.",
+    serviceType: addOnType,
+  },
+  "massage-scrub-paraffin-hands": {
+    name: "Massage + Scrub + Paraffin",
+    slug: "massage-scrub-paraffin-hands",
+    imageSrc: "/Massage%20%2B%20Scrub%20for%20Hands.png",
+    price: "$25",
+    priceValue: 25,
+    duration: "45 min",
+    durationMin: 45,
+    description: "Hand massage, scrub, and paraffin therapy.",
+    serviceType: "Hand Spa",
+  },
+  "classic-manicure-mini": {
+    name: "Classic Manicure",
+    slug: "classic-manicure-mini",
+    imageSrc: "/Russian%20Manicure.png",
+    price: "$5",
+    priceValue: 5,
+    duration: "10 min",
+    durationMin: 10,
+    description: "Quick classic manicure prep.",
+    serviceType: manicureType,
+  },
+  "pose-french": {
+    name: "French",
+    slug: "pose-french",
+    imageSrc: "/French.png",
+    price: "$2",
+    priceValue: 2,
+    duration: "10 min",
+    durationMin: 10,
+    description: "French finish for pose.",
+    serviceType: addOnType,
+    exclusiveGroup: "pose-finish",
+  },
+  "pose-design": {
+    name: "Design",
+    slug: "pose-design",
+    imageSrc: "/Nail%20Design.png",
+    price: "$2",
+    priceValue: 2,
+    duration: "10 min",
+    durationMin: 10,
+    description: "Simple design for pose.",
+    serviceType: "Nail Art",
+    exclusiveGroup: "pose-finish",
+  },
+};
+
+const fullSetAddOns = ["chrome", "french", "ombre", "massage-scrub-paraffin-hands", "nail-design", "gel-color"];
+const enhancementAddOns = [...fullSetAddOns, "broken-tip-repair"];
+
+const manicureAddOnsByService: Record<string, string[]> = {
+  "classic-manicure": ["broken-tip-repair", "chrome", "french", "ombre", "nail-design"],
+  pose: ["classic-manicure-mini", "pose-design", "pose-french"],
+  rubber: enhancementAddOns,
+  "rubber-gel-color": enhancementAddOns,
+  "hard-gel-color": enhancementAddOns,
+  refill: enhancementAddOns,
+  "refill-poly-gel": enhancementAddOns,
+  "refill-hard-gel": enhancementAddOns,
+  "full-set-gel-extension": fullSetAddOns,
+  "full-set-fiber": fullSetAddOns,
+  "full-set-poly-gel": fullSetAddOns,
+  "full-set-hard-gel": fullSetAddOns,
+  chrome: ["classic-manicure", "rubber", "rubber-gel-color", "hard-gel-color", "refill", "refill-poly-gel", "refill-hard-gel", "full-set-gel-extension", "full-set-fiber", "full-set-poly-gel", "full-set-hard-gel", "french", "ombre", "nail-design"],
+  french: ["classic-manicure", "rubber", "rubber-gel-color", "hard-gel-color", "refill", "refill-poly-gel", "refill-hard-gel", "full-set-gel-extension", "full-set-fiber", "full-set-poly-gel", "full-set-hard-gel", "chrome", "nail-design"],
+  ombre: ["classic-manicure", "rubber", "rubber-gel-color", "hard-gel-color", "refill", "refill-poly-gel", "refill-hard-gel", "full-set-gel-extension", "full-set-fiber", "full-set-poly-gel", "full-set-hard-gel", "chrome", "nail-design"],
+  "nail-design": ["classic-manicure", "rubber", "rubber-gel-color", "hard-gel-color", "refill", "refill-poly-gel", "refill-hard-gel", "full-set-gel-extension", "full-set-fiber", "full-set-poly-gel", "full-set-hard-gel", "chrome", "french", "ombre"],
+  "broken-tip-repair": ["classic-manicure", "rubber", "rubber-gel-color", "hard-gel-color", "refill", "refill-poly-gel", "refill-hard-gel", "chrome", "french", "ombre", "nail-design"],
+};
+
+const standaloneServiceSlugs = new Set([
+  "fungal-nail-care-treatment",
+  "soak-off-classic-manicure-oil",
+  "massage-scrub-paraffin-hands",
+  "pedicure-fungal-nail-care-treatment",
+  "pedicure-massage-scrub-paraffin",
+]);
+
+export function getServiceAddOns(groupId: ServiceGroupId, serviceSlug: string): ServiceAddOnOption[] {
+  const slug = getCanonicalServiceSlug(serviceSlug);
+  if (groupId === "pedicure" || standaloneServiceSlugs.has(slug)) return [];
+
+  return (manicureAddOnsByService[slug] ?? [])
+    .map((addOnSlug) => {
+      const existingAddOn = addOnOptions[addOnSlug];
+      if (existingAddOn) return existingAddOn;
+
+      const service = manicureCanonicalServices.get(addOnSlug);
+      if (!service) return null;
+
+      return {
+        ...service,
+        priceValue: parseServicePrice(service.price),
+        durationMin: parseServiceDuration(service.duration),
+        conflictsWith: service.slug === "french" ? ["ombre"] : service.slug === "ombre" ? ["french"] : undefined,
+      };
+    })
+    .filter((addOn): addOn is ServiceAddOnOption => Boolean(addOn));
+}
+
+export function getServiceInclusions(serviceSlug: string) {
+  const slug = getCanonicalServiceSlug(serviceSlug);
+  if (["full-set-gel-extension", "full-set-fiber", "full-set-poly-gel", "full-set-hard-gel"].includes(slug)) {
+    return ["Classic manicure included"];
+  }
+
+  return [];
+}
+
+export function parseServicePrice(price: string) {
+  const match = price.match(/\d+(?:\.\d+)?/);
+  return match ? Number(match[0]) : 0;
+}
+
+export function parseServiceDuration(duration: string) {
+  const normalized = duration.toLowerCase();
+  let minutes = 0;
+  const hourMatch = normalized.match(/(\d+(?:\.\d+)?)\s*(?:hr|hour)/);
+  const minuteMatch = normalized.match(/(\d+)\s*min/);
+
+  if (hourMatch) minutes += Number(hourMatch[1]) * 60;
+  if (minuteMatch) minutes += Number(minuteMatch[1]);
+  if (!hourMatch && !minuteMatch) {
+    const numeric = normalized.match(/\d+/);
+    if (numeric) minutes = Number(numeric[0]);
+  }
+
+  return minutes;
+}
+
+export function formatServiceDuration(totalMinutes: number) {
+  if (totalMinutes < 60) return `${totalMinutes} min`;
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return minutes ? `${hours} hr ${minutes} min` : `${hours} hr`;
+}
 
 export const serviceGroups = {
   manicure: manicureServices,
@@ -207,7 +492,8 @@ export function getServiceSlug(name: string) {
 
 export function getServiceImage(name: string, categoryName = "") {
   const slug = getServiceSlug(name);
-  const knownService = [...manicureServices, ...pedicureServices].find((service) => service.slug === slug);
+  const canonicalSlug = getCanonicalServiceSlug(slug);
+  const knownService = [...manicureServices, ...pedicureServices].find((service) => service.slug === canonicalSlug);
 
   if (knownService) return knownService.imageSrc;
 
@@ -232,7 +518,8 @@ export function getOptimizedServiceImage(imageSrc: string) {
 }
 
 export function getServiceBySlugFromList(services: ServiceMenuItem[], serviceSlug: string | undefined) {
-  return services.find((service) => service.slug === serviceSlug) ?? null;
+  const canonicalSlug = serviceSlug ? getCanonicalServiceSlug(serviceSlug) : undefined;
+  return services.find((service) => service.slug === canonicalSlug || getCanonicalServiceSlug(service.slug) === canonicalSlug) ?? null;
 }
 
 export function getServiceBySlug(groupId: string | undefined, serviceSlug: string | undefined) {

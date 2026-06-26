@@ -3,6 +3,7 @@ import {
   getServiceBySlugFromList,
   getServiceImage,
   getServiceSlug,
+  normalizeServiceMenuItem,
   type ServiceGroupId,
   type ServiceMenuItem,
 } from "./serviceMenu";
@@ -54,12 +55,17 @@ function belongsToGroup(service: RawService, groupId: ServiceGroupId) {
   return categoryName.includes(groupId) || serviceName.includes(groupId);
 }
 
+function getServiceGroupFromCategory(categoryName: string): ServiceGroupId {
+  return categoryName.toLowerCase().includes("pedicure") ? "pedicure" : "manicure";
+}
+
 function mapService(service: RawService): ServiceMenuItem | null {
   if (!service.id || !service.name) return null;
 
   const categoryName = getCategoryName(service);
+  const groupId = getServiceGroupFromCategory(categoryName);
 
-  return {
+  return normalizeServiceMenuItem({
     id: service.id,
     name: service.name,
     slug: getServiceSlug(service.name),
@@ -70,7 +76,7 @@ function mapService(service: RawService): ServiceMenuItem | null {
       `Select ${service.name.toLowerCase()} to continue your appointment.`,
     duration: formatDuration(service),
     serviceType: categoryName || "Salon Service",
-  };
+  }, groupId);
 }
 
 async function loadActiveServices(groupId: ServiceGroupId) {
@@ -86,7 +92,8 @@ async function loadActiveServices(groupId: ServiceGroupId) {
   return ((data ?? []) as RawService[])
     .filter((service) => belongsToGroup(service, groupId))
     .map(mapService)
-    .filter((service): service is ServiceMenuItem => Boolean(service));
+    .filter((service): service is ServiceMenuItem => Boolean(service))
+    .filter((service, index, list) => list.findIndex((item) => item.slug === service.slug) === index);
 }
 
 export async function fetchActiveServices(groupId: ServiceGroupId) {

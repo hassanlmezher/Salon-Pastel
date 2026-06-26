@@ -11,9 +11,15 @@ import {
   type AvailableSlot,
 } from "../../src/features/booking/data/supabaseBooking";
 import {
+  formatServiceDuration,
+  getServiceAddOns,
   getOptimizedServiceImage,
   getServiceArabicCopy,
+  getServiceInclusions,
+  parseServiceDuration,
+  parseServicePrice,
   type ServiceGroupId,
+  type ServiceAddOnOption,
   type ServiceMenuItem,
 } from "../../src/features/booking/data/serviceMenu";
 import {
@@ -38,6 +44,9 @@ type DayAvailability = {
 type SuccessDetails = {
   appointmentId: string;
   serviceName: string;
+  addOnNames: string[];
+  totalPrice: string;
+  totalDuration: string;
   date: string;
   time: string;
   phone: string;
@@ -77,6 +86,10 @@ function createMonthOptions() {
   });
 }
 
+function formatServicePrice(value: number) {
+  return `$${Number.isInteger(value) ? value : value.toFixed(2)}`;
+}
+
 export function ServiceDetail({ groupId, serviceSlug, initialService = null }: ServiceDetailProps) {
   const router = useRouter();
   const monthOptions = useMemo(() => createMonthOptions(), []);
@@ -91,6 +104,7 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
   const [availabilityError, setAvailabilityError] = useState("");
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedAddOnSlugs, setSelectedAddOnSlugs] = useState<string[]>([]);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successDetails, setSuccessDetails] = useState<SuccessDetails | null>(null);
@@ -206,10 +220,57 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     [selectedDaySlots, selectedSlotStart],
   );
 
+  const availableAddOns = useMemo(
+    () => (service ? getServiceAddOns(groupId, service.slug) : []),
+    [groupId, service],
+  );
+
+  const selectedAddOns = useMemo(
+    () => availableAddOns.filter((addOn) => selectedAddOnSlugs.includes(addOn.slug)),
+    [availableAddOns, selectedAddOnSlugs],
+  );
+
+  const serviceInclusions = useMemo(
+    () => (service ? getServiceInclusions(service.slug) : []),
+    [service],
+  );
+
+  const totalPrice = useMemo(() => {
+    const servicePrice = service ? parseServicePrice(service.price) : 0;
+    return servicePrice + selectedAddOns.reduce((total, addOn) => total + addOn.priceValue, 0);
+  }, [selectedAddOns, service]);
+
+  const totalDurationMin = useMemo(() => {
+    const serviceDuration = service ? parseServiceDuration(service.duration) : 0;
+    return serviceDuration + selectedAddOns.reduce((total, addOn) => total + addOn.durationMin, 0);
+  }, [selectedAddOns, service]);
+
+  useEffect(() => {
+    setSelectedAddOnSlugs([]);
+  }, [service?.slug]);
+
   const chooseMonth = (month: (typeof monthOptions)[number]) => {
     setSelectedMonth(month);
     setSelectedDateIso("");
     setSelectedSlotStart("");
+  };
+
+  const toggleAddOn = (addOn: ServiceAddOnOption) => {
+    setSelectedAddOnSlugs((current) => {
+      if (current.includes(addOn.slug)) {
+        return current.filter((slug) => slug !== addOn.slug);
+      }
+
+      const blockedSlugs = new Set(addOn.conflictsWith ?? []);
+      const next = current.filter((slug) => {
+        const existing = availableAddOns.find((option) => option.slug === slug);
+        if (blockedSlugs.has(slug)) return false;
+        if (addOn.exclusiveGroup && existing?.exclusiveGroup === addOn.exclusiveGroup) return false;
+        return true;
+      });
+
+      return [...next, addOn.slug];
+    });
   };
 
   const submitCustomerForm = async (event: FormEvent<HTMLFormElement>) => {
@@ -243,6 +304,9 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
       setSuccessDetails({
         appointmentId,
         serviceName: service.name,
+        addOnNames: selectedAddOns.map((addOn) => addOn.name),
+        totalPrice: formatServicePrice(totalPrice),
+        totalDuration: formatServiceDuration(totalDurationMin),
         date: formatLongDate(selectedDateIso),
         time: selectedSlot.label,
         phone,
@@ -296,6 +360,8 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
   }
 
   const arabicCopy = getServiceArabicCopy(service.slug);
+  const totalPriceText = formatServicePrice(totalPrice);
+  const totalDurationText = formatServiceDuration(totalDurationMin);
 
   return (
     <main className="appointmentPage">
@@ -306,20 +372,79 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
             <a className="appointmentBack" href={`/book/${groupId}`} aria-label="Go back">
               <span aria-hidden="true">←</span>
             </a>
+            <div className="appointmentServiceOverlay">
+              <h1>
+                <span>{service.name}</span>
+                <span lang="ar" dir="rtl">
+                  {arabicCopy.title}
+                </span>
+              </h1>
+              <div className="appointmentServiceMeta">
+                <strong>{service.price}</strong>
+                <span>{service.duration || "Based on service"}</span>
+              </div>
+              <p>{service.description}</p>
+              {serviceInclusions.length > 0 ? (
+                <div className="appointmentIncludedList">
+                  {serviceInclusions.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+              ) : null}
+            </div>
           </div>
 
           <div className="appointmentInfoPane">
-            <h1>
-              <span>{service.name}</span>
-              <span lang="ar" dir="rtl">
-                {arabicCopy.title}
-              </span>
-            </h1>
-            <p className="appointmentPrice">{service.price}</p>
-            <p className="appointmentDescription">{service.description}</p>
+            <div className="appointmentExtrasHeader">
+              <p>Available extra services</p>
+              <h2>Customize your appointment</h2>
+            </div>
+
+            {availableAddOns.length > 0 ? (
+              <div className="appointmentAddonGrid">
+                {availableAddOns.map((addOn) => {
+                  const selected = selectedAddOnSlugs.includes(addOn.slug);
+
+                  return (
+                    <button
+                      key={addOn.slug}
+                      type="button"
+                      className={`appointmentAddonCard ${selected ? "selected" : ""}`}
+                      onClick={() => toggleAddOn(addOn)}
+                      aria-pressed={selected}
+                    >
+                      <img src={getOptimizedServiceImage(addOn.imageSrc)} alt="" aria-hidden="true" />
+                      <span className="appointmentAddonContent">
+                        <strong>{addOn.name}</strong>
+                        <span>
+                          {addOn.price} / {addOn.duration}
+                        </span>
+                        <small>{addOn.description}</small>
+                      </span>
+                      <span className="appointmentAddonToggle" aria-hidden="true">
+                        {selected ? "✓" : "+"}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="appointmentNoAddons">
+                <strong>This service is booked alone.</strong>
+                <span>No extra services are available with this appointment.</span>
+              </div>
+            )}
+
             <div className="appointmentFacts">
-              <Fact icon="◷" label="Duration" arabicLabel="المدة" value={service.duration || "Based on service"} />
+              <Fact icon="◷" label="Total duration" arabicLabel="المدة" value={totalDurationText} />
               <Fact icon="▣" label="Service type" arabicLabel="نوع الخدمة" value={service.serviceType} />
+            </div>
+
+            <div className="appointmentTotalBar">
+              <span>Total</span>
+              <strong>
+                {totalPriceText} / {totalDurationText}
+              </strong>
             </div>
           </div>
         </section>
@@ -477,6 +602,9 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
             {successDetails ? (
               <p>
                 {successDetails.serviceName}
+                {successDetails.addOnNames.length > 0 ? ` + ${successDetails.addOnNames.join(" + ")}` : ""}
+                <br />
+                {successDetails.totalPrice} / {successDetails.totalDuration}
                 <br />
                 {successDetails.date} at {successDetails.time}
                 <br />
