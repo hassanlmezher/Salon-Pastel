@@ -3,6 +3,7 @@ import {
   getServiceBySlugFromList,
   getServiceImage,
   getServiceSlug,
+  isPrimaryServiceSlug,
   normalizeServiceMenuItem,
   type ServiceGroupId,
   type ServiceMenuItem,
@@ -93,6 +94,7 @@ async function loadActiveServices(groupId: ServiceGroupId) {
     .filter((service) => belongsToGroup(service, groupId))
     .map(mapService)
     .filter((service): service is ServiceMenuItem => Boolean(service))
+    .filter((service) => isPrimaryServiceSlug(groupId, service.slug))
     .filter((service, index, list) => list.findIndex((item) => item.slug === service.slug) === index);
 }
 
