@@ -297,8 +297,29 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
       const appointmentId = await createAppointment({
         serviceId: service.id,
         customerFullName: `${firstName} ${lastName}`,
+        customerFirstName: firstName,
+        customerLastName: lastName,
         customerPhone: phone,
         appointmentStart: selectedSlot.startIso,
+        selectedServices: [
+          {
+            id: service.id,
+            slug: service.slug,
+            kind: "service",
+            name: service.name,
+            price: parseServicePrice(service.price),
+            duration_minutes: parseServiceDuration(service.duration),
+          },
+          ...selectedAddOns.map((addOn) => ({
+            slug: addOn.slug,
+            kind: "add_on" as const,
+            name: addOn.name,
+            price: addOn.priceValue,
+            duration_minutes: addOn.durationMin,
+          })),
+        ],
+        totalPrice,
+        totalDurationMinutes: totalDurationMin,
       });
 
       setSuccessDetails({

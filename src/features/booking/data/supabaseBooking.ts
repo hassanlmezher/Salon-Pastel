@@ -205,8 +205,20 @@ export async function fetchAvailableSlotsForMonth(serviceId: string, monthStartI
 export async function createAppointment(input: {
   serviceId: string;
   customerFullName: string;
+  customerFirstName?: string;
+  customerLastName?: string;
   customerPhone: string;
   appointmentStart: string;
+  selectedServices?: Array<{
+    id?: string | null;
+    slug?: string | null;
+    kind?: "service" | "add_on";
+    name: string;
+    price?: number | string | null;
+    duration_minutes?: number | null;
+  }>;
+  totalPrice?: number;
+  totalDurationMinutes?: number;
 }) {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase.rpc("create_appointment", {
@@ -214,10 +226,39 @@ export async function createAppointment(input: {
     p_customer_full_name: input.customerFullName,
     p_customer_phone: input.customerPhone,
     p_appointment_start: input.appointmentStart,
+    p_customer_first_name: input.customerFirstName ?? null,
+    p_customer_last_name: input.customerLastName ?? null,
+    p_selected_services: input.selectedServices ?? null,
+    p_total_price: input.totalPrice ?? null,
+    p_total_duration_minutes: input.totalDurationMinutes ?? null,
   });
 
-  if (error) throw error;
-  return String(data ?? "");
+  if (!error) return String(data ?? "");
+
+  if (!isCreateAppointmentSignatureError(error)) throw error;
+
+  const { data: fallbackData, error: fallbackError } = await supabase.rpc("create_appointment", {
+    p_service_id: input.serviceId,
+    p_customer_full_name: input.customerFullName,
+    p_customer_phone: input.customerPhone,
+    p_appointment_start: input.appointmentStart,
+  });
+
+  if (fallbackError) throw fallbackError;
+  return String(fallbackData ?? "");
+}
+
+function isCreateAppointmentSignatureError(error: unknown) {
+  const details = typeof error === "object" && error !== null ? error as Record<string, unknown> : {};
+  const message = String(details.message ?? details.details ?? details.hint ?? error ?? "").toLowerCase();
+
+  return (
+    String(details.code ?? "") === "PGRST202" ||
+    message.includes("could not find the function") ||
+    message.includes("schema cache") ||
+    message.includes("p_customer_first_name") ||
+    message.includes("p_selected_services")
+  );
 }
 
 export function getBookingErrorMessage(error: unknown) {

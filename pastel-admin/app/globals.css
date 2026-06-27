@@ -1,0 +1,403 @@
+:root {
+  color-scheme: light;
+  --canvas: #f6efe9;
+  --ink: #231814;
+  --muted: #715e52;
+  --line: rgba(78, 53, 40, 0.16);
+  --rose: #d99b96;
+  --sage: #607b69;
+  --clay: #a65f46;
+  --cream: #fffaf5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button:not(:disabled),
+a[href] {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+.adminShell,
+.loginPage {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, rgba(255, 250, 245, 0.94), rgba(246, 239, 233, 0.98)),
+    var(--canvas);
+}
+
+.adminShell {
+  padding: clamp(20px, 4vw, 48px);
+}
+
+.adminHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1280px;
+  margin: 0 auto 24px;
+}
+
+.adminHeader h1,
+.loginCard h1,
+.emptyState h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.adminHeader h1 {
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 0.98;
+}
+
+.adminHeader p {
+  max-width: 44rem;
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--clay);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.logoutButton,
+.filterButton,
+.resetButton,
+.loginForm button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(166, 95, 70, 0.24);
+  border-radius: 8px;
+  padding: 0 16px;
+  background: #fffaf5;
+  color: #6d3f1f;
+  font-weight: 800;
+}
+
+.logoutButton,
+.filterButton,
+.loginForm button {
+  background: var(--clay);
+  color: #fffaf5;
+  box-shadow: 0 14px 30px rgba(166, 95, 70, 0.18);
+}
+
+.toolbar,
+.tableCard,
+.emptyState {
+  max-width: 1280px;
+  margin: 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 245, 0.9);
+  box-shadow: 0 18px 60px rgba(80, 47, 27, 0.08);
+}
+
+.toolbar {
+  display: grid;
+  gap: 18px;
+  padding: 18px;
+}
+
+.toolbarTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #6d3f1f;
+  font-weight: 800;
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.9fr) minmax(160px, 0.9fr) minmax(220px, 1.4fr) auto auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.filters label,
+.loginForm label {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.filters input,
+.filters select,
+.loginForm input,
+.statusControl select {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid rgba(78, 53, 40, 0.16);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  padding: 0 12px;
+  outline: none;
+}
+
+.filters input:focus,
+.filters select:focus,
+.loginForm input:focus,
+.statusControl select:focus {
+  border-color: rgba(166, 95, 70, 0.55);
+  box-shadow: 0 0 0 3px rgba(217, 155, 150, 0.22);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  max-width: 1280px;
+  margin: 18px auto;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 8px;
+  min-height: 132px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffaf5;
+  padding: 18px;
+  color: var(--muted);
+}
+
+.summaryCard svg {
+  color: var(--clay);
+}
+
+.summaryCard span {
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.summaryCard strong {
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.2rem;
+  font-weight: 600;
+}
+
+.tableCard {
+  overflow: hidden;
+}
+
+.tableScroller {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.appointmentTable {
+  width: 100%;
+  min-width: 980px;
+  border-collapse: collapse;
+}
+
+.appointmentTable th,
+.appointmentTable td {
+  border-bottom: 1px solid rgba(78, 53, 40, 0.12);
+  padding: 16px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.appointmentTable th {
+  background: rgba(246, 239, 233, 0.75);
+  color: #6d3f1f;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.appointmentTable td {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.appointmentTable td strong,
+.appointmentTable td span {
+  display: block;
+}
+
+.appointmentTable td strong {
+  color: var(--ink);
+}
+
+.serviceList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.serviceList span {
+  border: 1px solid rgba(217, 155, 150, 0.42);
+  border-radius: 999px;
+  background: rgba(217, 155, 150, 0.12);
+  padding: 5px 9px;
+  color: #6d3f1f;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.statusControl {
+  display: grid;
+  gap: 6px;
+  min-width: 150px;
+}
+
+.statusControl select {
+  text-transform: capitalize;
+}
+
+.statusSaved,
+.statusError {
+  min-height: 1rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.statusSaved {
+  color: var(--sage);
+}
+
+.statusError {
+  color: #9b2f22;
+}
+
+.emptyState {
+  padding: 36px;
+  text-align: center;
+}
+
+.emptyState p {
+  color: var(--muted);
+}
+
+.loginPage {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.loginCard {
+  width: min(100%, 430px);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 250, 245, 0.96);
+  padding: clamp(24px, 5vw, 36px);
+  box-shadow: 0 24px 70px rgba(80, 47, 27, 0.12);
+}
+
+.loginMark {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  background: rgba(217, 155, 150, 0.16);
+  color: var(--clay);
+}
+
+.loginCard h1 {
+  font-size: 2.3rem;
+}
+
+.loginIntro,
+.signedInNotice {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.loginForm {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.formError {
+  border: 1px solid rgba(155, 47, 34, 0.22);
+  border-radius: 8px;
+  background: rgba(155, 47, 34, 0.08);
+  padding: 12px;
+  color: #8d2f24;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .adminHeader {
+    display: grid;
+  }
+
+  .filters,
+  .summaryGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .searchLabel,
+  .filterButton,
+  .resetButton {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .adminShell {
+    padding: 18px 12px;
+  }
+
+  .filters,
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .searchLabel,
+  .filterButton,
+  .resetButton {
+    grid-column: auto;
+  }
+}
