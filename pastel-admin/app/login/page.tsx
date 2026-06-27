@@ -1,4 +1,3 @@
-import { LockKeyhole } from "lucide-react";
 import { loginOwner, logoutOwner } from "../actions";
 import { createSupabaseServerClient } from "../../src/lib/supabase/server";
 
@@ -25,9 +24,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <main className="loginPage">
       <section className="loginCard" aria-labelledby="login-title">
-        <div className="loginMark" aria-hidden="true">
-          <LockKeyhole size={24} strokeWidth={1.8} />
-        </div>
+        <img className="loginLogo" src="/admin-logo.png" alt="Pastel" />
         <p className="eyebrow">Pastel owner access</p>
         <h1 id="login-title">Admin login</h1>
         <p className="loginIntro">Sign in with the owner account to view and manage appointments.</p>

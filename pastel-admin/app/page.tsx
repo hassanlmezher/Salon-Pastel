@@ -20,10 +20,13 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   return (
     <main className="adminShell">
       <header className="adminHeader">
-        <div>
-          <p className="eyebrow">Pastel owner dashboard</p>
-          <h1>Appointments</h1>
-          <p>Review bookings, filter the schedule, and update appointment status.</p>
+        <div className="adminHeaderBrand">
+          <img className="adminLogo" src="/admin-logo.png" alt="Pastel" />
+          <div>
+            <p className="eyebrow">Pastel owner dashboard</p>
+            <h1>Appointments</h1>
+            <p>Review bookings, filter the schedule, and update appointment status.</p>
+          </div>
         </div>
         <form action={logoutOwner}>
           <button type="submit" className="logoutButton">

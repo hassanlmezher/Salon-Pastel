@@ -67,6 +67,24 @@ button:disabled {
   margin: 0 auto 24px;
 }
 
+.adminHeaderBrand {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.adminLogo {
+  width: clamp(72px, 8vw, 104px);
+  height: clamp(72px, 8vw, 104px);
+  flex: 0 0 auto;
+  border: 1px solid rgba(217, 155, 150, 0.34);
+  border-radius: 8px;
+  background: #fffaf5;
+  object-fit: contain;
+  padding: 8px;
+  box-shadow: 0 14px 35px rgba(80, 47, 27, 0.1);
+}
+
 .adminHeader h1,
 .loginCard h1,
 .emptyState h2 {
@@ -332,15 +350,17 @@ button:disabled {
   box-shadow: 0 24px 70px rgba(80, 47, 27, 0.12);
 }
 
-.loginMark {
-  display: grid;
-  width: 52px;
-  height: 52px;
-  place-items: center;
+.loginLogo {
+  display: block;
+  width: 74px;
+  height: 74px;
   margin-bottom: 18px;
+  border: 1px solid rgba(217, 155, 150, 0.34);
   border-radius: 8px;
-  background: rgba(217, 155, 150, 0.16);
-  color: var(--clay);
+  background: #fffaf5;
+  object-fit: contain;
+  padding: 7px;
+  box-shadow: 0 14px 35px rgba(80, 47, 27, 0.1);
 }
 
 .loginCard h1 {
@@ -368,9 +388,114 @@ button:disabled {
   font-weight: 700;
 }
 
+.pwaInstallShell {
+  position: fixed;
+  right: clamp(14px, 3vw, 28px);
+  bottom: clamp(14px, 3vw, 28px);
+  z-index: 80;
+  width: min(25rem, calc(100vw - 28px));
+  pointer-events: none;
+}
+
+.pwaInstallCard {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(234, 213, 205, 0.95);
+  border-radius: 18px;
+  background: rgba(255, 250, 246, 0.96);
+  box-shadow: 0 22px 60px rgba(97, 58, 24, 0.22);
+  backdrop-filter: blur(18px);
+  pointer-events: auto;
+}
+
+.pwaInstallIcon {
+  display: block;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: #fffaf6;
+  object-fit: contain;
+  padding: 5px;
+}
+
+.pwaInstallContent {
+  min-width: 0;
+}
+
+.pwaInstallEyebrow {
+  margin: 0;
+  color: #b46f65;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.pwaInstallContent h2 {
+  margin: 5px 0 0;
+  color: #231814;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.28rem;
+  font-weight: 600;
+  line-height: 1.05;
+}
+
+.pwaInstallContent p {
+  margin: 8px 0 0;
+  color: #6d5648;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.pwaInstallSteps {
+  margin-top: 12px;
+  border: 1px solid #ead5cd;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  color: #4d4039;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.pwaInstallActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.pwaInstallActions button {
+  min-height: 42px;
+  border: 1px solid #ead5cd;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pwaInstallPrimary {
+  background: #bd736b;
+  color: #fff;
+  box-shadow: 0 12px 24px rgba(189, 115, 107, 0.24);
+}
+
+.pwaInstallSecondary {
+  background: #fff;
+  color: #6d3f1f;
+}
+
 @media (max-width: 900px) {
   .adminHeader {
     display: grid;
+  }
+
+  .adminHeaderBrand {
+    align-items: flex-start;
   }
 
   .filters,
@@ -388,6 +513,11 @@ button:disabled {
 @media (max-width: 600px) {
   .adminShell {
     padding: 18px 12px;
+  }
+
+  .adminHeaderBrand {
+    display: grid;
+    gap: 12px;
   }
 
   .filters,

@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { PwaInstallPrompt } from "./components/PwaInstallPrompt";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -8,9 +9,18 @@ export const metadata: Metadata = {
     template: "%s | Pastel Admin",
   },
   description: "Owner dashboard for Pastel salon appointments.",
+  manifest: "/manifest.webmanifest",
   robots: {
     index: false,
     follow: false,
+  },
+  icons: {
+    icon: [
+      { url: "/admin-logo.png", type: "image/png" },
+      { url: "/admin-icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/admin-icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/admin-icon-192.png",
   },
 };
 
@@ -26,7 +36,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <PwaInstallPrompt />
+      </body>
     </html>
   );
 }
