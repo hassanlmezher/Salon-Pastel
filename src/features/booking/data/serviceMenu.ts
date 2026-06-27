@@ -516,6 +516,10 @@ export function getServiceImage(name: string, categoryName = "") {
 
 export function getOptimizedServiceImage(imageSrc: string) {
   const [path, query = ""] = imageSrc.split("?");
+  if (decodeURIComponent(path) === "/Nail Design.png") {
+    return imageSrc;
+  }
+
   const optimizedPath = `/optimized${path.replace(/\.png$/i, ".webp")}`;
   return query ? `${optimizedPath}?${query}` : optimizedPath;
 }
