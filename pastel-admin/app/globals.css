@@ -117,8 +117,7 @@ button:disabled {
 
 .logoutButton,
 .filterButton,
-.resetButton,
-.loginForm button {
+.resetButton {
   display: inline-flex;
   min-height: 42px;
   align-items: center;
@@ -133,8 +132,7 @@ button:disabled {
 }
 
 .logoutButton,
-.filterButton,
-.loginForm button {
+.filterButton {
   background: var(--clay);
   color: #fffaf5;
   box-shadow: 0 14px 30px rgba(166, 95, 70, 0.18);
@@ -172,8 +170,7 @@ button:disabled {
   align-items: end;
 }
 
-.filters label,
-.loginForm label {
+.filters label {
   display: grid;
   gap: 7px;
   color: var(--muted);
@@ -184,7 +181,6 @@ button:disabled {
 
 .filters input,
 .filters select,
-.loginForm input,
 .statusControl select {
   width: 100%;
   min-height: 42px;
@@ -198,7 +194,6 @@ button:disabled {
 
 .filters input:focus,
 .filters select:focus,
-.loginForm input:focus,
 .statusControl select:focus {
   border-color: rgba(166, 95, 70, 0.55);
   box-shadow: 0 0 0 3px rgba(217, 155, 150, 0.22);
@@ -336,35 +331,208 @@ button:disabled {
 }
 
 .loginPage {
-  display: grid;
-  place-items: center;
-  padding: 24px;
+  position: relative;
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: flex-start;
+  overflow: hidden;
+  padding: clamp(16px, 3vh, 32px) 24px;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(255, 255, 255, 0.95) 0 22%, rgba(255, 251, 248, 0.84) 48%, rgba(255, 244, 238, 0.88) 100%),
+    linear-gradient(180deg, #fffaf7 0%, #fff8f4 58%, #fdebe4 100%);
+  color: #332622;
+}
+
+.loginPage::before,
+.loginPage::after {
+  position: absolute;
+  content: "";
+  z-index: 0;
+  pointer-events: none;
+}
+
+.loginPage::before {
+  top: -7rem;
+  left: -6rem;
+  width: 21rem;
+  height: 21rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(212, 141, 111, 0.2), rgba(212, 141, 111, 0) 68%);
+  filter: blur(16px);
+}
+
+.loginPage::after {
+  right: -5rem;
+  bottom: -5rem;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(210, 112, 105, 0.16), rgba(210, 112, 105, 0) 66%);
+  filter: blur(18px);
+}
+
+.loginPalm {
+  position: absolute;
+  z-index: 0;
+  width: 270px;
+  height: 430px;
+  opacity: 0.16;
+  filter: blur(1px);
+  pointer-events: none;
+}
+
+.loginPalm::before,
+.loginPalm::after {
+  position: absolute;
+  content: "";
+  border-radius: 999px;
+  background: rgba(144, 117, 103, 0.34);
+  transform-origin: bottom center;
+}
+
+.loginPalm::before {
+  left: 48%;
+  bottom: 18px;
+  width: 5px;
+  height: 350px;
+  transform: rotate(-23deg);
+}
+
+.loginPalm::after {
+  left: 42%;
+  bottom: 125px;
+  width: 160px;
+  height: 28px;
+  border-radius: 80% 8% 80% 8%;
+  box-shadow:
+    0 -48px 0 -2px rgba(144, 117, 103, 0.22),
+    18px 50px 0 -4px rgba(144, 117, 103, 0.22),
+    42px 100px 0 -7px rgba(144, 117, 103, 0.18);
+  transform: rotate(-62deg);
+}
+
+.loginPalmTop {
+  top: -74px;
+  left: -68px;
+  transform: rotate(18deg);
+}
+
+.loginPalmBottom {
+  right: -36px;
+  bottom: 20px;
+  transform: rotate(196deg);
+}
+
+.loginBottomWave {
+  position: absolute;
+  right: -8%;
+  bottom: -6rem;
+  left: -8%;
+  z-index: 0;
+  height: 10rem;
+  border-top: 2px solid rgba(203, 121, 100, 0.42);
+  border-radius: 52% 48% 0 0 / 22% 38% 0 0;
+  background: linear-gradient(180deg, rgba(251, 222, 213, 0.58), rgba(255, 244, 239, 0.94));
 }
 
 .loginCard {
-  width: min(100%, 430px);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: rgba(255, 250, 245, 0.96);
-  padding: clamp(24px, 5vw, 36px);
-  box-shadow: 0 24px 70px rgba(80, 47, 27, 0.12);
+  width: min(100%, 680px);
+  margin: clamp(14px, 2.6vh, 22px) auto 0;
+  border: 1px solid rgba(234, 213, 205, 0.82);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: clamp(18px, 3vh, 28px);
+  box-shadow:
+    0 26px 90px rgba(110, 74, 58, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
 }
 
-.loginLogo {
-  display: block;
-  width: 74px;
-  height: 74px;
-  margin-bottom: 18px;
-  border: 1px solid rgba(217, 155, 150, 0.34);
-  border-radius: 8px;
-  background: #fffaf5;
-  object-fit: contain;
-  padding: 7px;
-  box-shadow: 0 14px 35px rgba(80, 47, 27, 0.1);
+.loginPanel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 760px);
+  margin: 0 auto;
+  text-align: center;
 }
 
-.loginCard h1 {
-  font-size: 2.3rem;
+.loginBrand {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+
+.loginTextLogo {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  color: #c48670;
+}
+
+.loginPastelName {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3rem, 9vh, 5.8rem);
+  font-weight: 400;
+  letter-spacing: 0.13em;
+  line-height: 0.9;
+  text-transform: uppercase;
+}
+
+.loginAdminName {
+  font-size: clamp(0.95rem, 2.4vh, 1.35rem);
+  font-weight: 500;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+}
+
+.loginOwnerName {
+  color: #81706d;
+  font-size: clamp(0.82rem, 2.1vh, 1.08rem);
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.loginOrnament {
+  display: grid;
+  width: clamp(104px, 15vh, 148px);
+  height: clamp(104px, 15vh, 148px);
+  place-items: center;
+  margin: clamp(12px, 2vh, 20px) auto clamp(10px, 1.8vh, 16px);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(255, 246, 242, 0.98), rgba(248, 218, 209, 0.78));
+  box-shadow:
+    0 22px 55px rgba(197, 122, 95, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.loginOrnament svg {
+  width: 72%;
+  height: 72%;
+  fill: none;
+  stroke: #c27062;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.78;
+}
+
+.loginWelcome h1 {
+  margin: 0;
+  color: #31231f;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.65rem, 4.2vh, 2.35rem);
+  font-weight: 700;
+  line-height: 1.08;
+}
+
+.loginWelcome p {
+  margin: 7px 0 0;
+  color: #88726f;
+  font-size: clamp(0.95rem, 2.3vh, 1.18rem);
+  font-weight: 500;
 }
 
 .loginIntro,
@@ -375,8 +543,113 @@ button:disabled {
 
 .loginForm {
   display: grid;
-  gap: 16px;
-  margin-top: 22px;
+  gap: clamp(10px, 1.7vh, 16px);
+  margin-top: 0;
+}
+
+.loginInputShell {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr) auto;
+  align-items: center;
+  min-height: clamp(54px, 7.2vh, 64px);
+  overflow: hidden;
+  border: 1px solid rgba(205, 163, 151, 0.72);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.82);
+  color: #82716e;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.loginInputIcon {
+  display: grid;
+  align-self: stretch;
+  place-items: center;
+  background: linear-gradient(90deg, rgba(249, 225, 217, 0.88), rgba(249, 225, 217, 0.46));
+  color: #c75d59;
+}
+
+.loginInputShell input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #382b28;
+  padding: 0 20px;
+  font-size: clamp(1.05rem, 3vw, 1.55rem);
+  outline: none;
+}
+
+.loginInputShell input::placeholder {
+  color: #8c7a77;
+  opacity: 0.96;
+}
+
+.loginPasswordToggle {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #887572;
+}
+
+.loginOptions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: #332622;
+  font-size: clamp(0.88rem, 2vh, 1.08rem);
+}
+
+.rememberControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rememberControl input {
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  appearance: none;
+  border: 2px solid rgba(193, 151, 142, 0.78);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.rememberControl input:checked {
+  border-color: #cf6865;
+  background:
+    linear-gradient(135deg, transparent 0 38%, #fff 38% 52%, transparent 52%),
+    linear-gradient(45deg, transparent 0 44%, #fff 44% 58%, transparent 58%),
+    #cf6865;
+}
+
+.forgotPassword {
+  color: #c95f5b;
+}
+
+.loginSubmit {
+  min-height: clamp(56px, 7.4vh, 68px);
+  border: 0;
+  border-radius: 15px;
+  background: linear-gradient(180deg, #f6b5b8, #e9989e);
+  color: #7b3839;
+  font-size: clamp(1.12rem, 3.4vw, 1.78rem);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow:
+    0 18px 35px rgba(222, 125, 131, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.48);
+}
+
+.loginAccessNote {
+  margin: 6px 0 0;
+  color: #806f6c;
+  font-size: clamp(0.96rem, 2.4vw, 1.32rem);
+  font-weight: 500;
 }
 
 .formError {
@@ -518,6 +791,56 @@ button:disabled {
   .adminHeaderBrand {
     display: grid;
     gap: 12px;
+  }
+
+  .loginPage {
+    justify-content: center;
+    padding: 14px 16px;
+  }
+
+  .loginPastelName {
+    font-size: clamp(2.55rem, 13vw, 3.5rem);
+  }
+
+  .loginAdminName,
+  .loginOwnerName {
+    letter-spacing: 0.24em;
+  }
+
+  .loginOrnament {
+    width: 94px;
+    height: 94px;
+  }
+
+  .loginCard {
+    border-radius: 18px;
+    padding: 18px;
+  }
+
+  .loginInputShell {
+    grid-template-columns: 56px minmax(0, 1fr) auto;
+    min-height: 56px;
+    border-radius: 13px;
+  }
+
+  .loginPasswordToggle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .loginOptions {
+    align-items: flex-start;
+    font-size: 0.95rem;
+  }
+
+  .rememberControl input {
+    width: 24px;
+    height: 24px;
+  }
+
+  .loginSubmit {
+    min-height: 58px;
+    border-radius: 13px;
   }
 
   .filters,
