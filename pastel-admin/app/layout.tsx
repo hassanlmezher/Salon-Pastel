@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { AdminNavigationLoader } from "./components/AdminNavigationLoader";
 import { PwaInstallPrompt } from "./components/PwaInstallPrompt";
 import "./globals.css";
 
@@ -38,6 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
+        <AdminNavigationLoader />
         <PwaInstallPrompt />
       </body>
     </html>

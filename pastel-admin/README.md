@@ -20,9 +20,11 @@ Use the same Supabase project values as the customer booking site:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+NEXT_PUBLIC_BOOKING_URL=http://127.0.0.1:5173/book
 ```
 
 Do not add a service role key to this app. The admin dashboard uses Supabase Auth, RLS, and the `admin_update_appointment_status` RPC.
+`NEXT_PUBLIC_BOOKING_URL` should point to the customer booking flow used by the New Appointment button.
 
 ## Supabase Setup
 

@@ -14,9 +14,16 @@ export function StatusSelect({
   const [selectedStatus, setSelectedStatus] = useState(status);
   const [message, setMessage] = useState("");
   const [isPending, startTransition] = useTransition();
+  const labels: Record<AppointmentStatus, string> = {
+    booked: "Pending",
+    confirmed: "Confirmed",
+    completed: "Completed",
+    cancelled: "Cancelled",
+    no_show: "No-show",
+  };
 
   return (
-    <div className="statusControl">
+    <div className="statusControl mobileStatusControl" data-status={selectedStatus}>
       <select
         value={selectedStatus}
         disabled={isPending}
@@ -39,7 +46,7 @@ export function StatusSelect({
       >
         {appointmentStatuses.map((option) => (
           <option key={option} value={option}>
-            {option.replace("_", " ")}
+            {labels[option]}
           </option>
         ))}
       </select>

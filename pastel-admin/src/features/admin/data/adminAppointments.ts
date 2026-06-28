@@ -37,8 +37,9 @@ export function parseAdminFilters(searchParams: Record<string, string | string[]
   const date = typeof searchParams.date === "string" ? searchParams.date : "";
   const status = typeof searchParams.status === "string" && isAppointmentStatus(searchParams.status) ? searchParams.status : "";
   const search = typeof searchParams.search === "string" ? searchParams.search.trim() : "";
+  const sort = searchParams.sort === "oldest" ? "oldest" : "newest";
 
-  return { date, status, search };
+  return { date, status, search, sort };
 }
 
 function getService(raw: RawAppointment) {
@@ -183,6 +184,7 @@ export async function requireOwnerUser() {
 
 export async function getAdminAppointments(filters: AdminAppointmentFilters) {
   const { supabase } = await requireOwnerUser();
+  const sortAscending = filters.sort === "oldest";
   let query = supabase
     .from("appointments")
     .select(
@@ -200,7 +202,7 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
         "services(id,name,price,duration_minutes)",
       ].join(","),
     )
-    .order("appointment_start", { ascending: false })
+    .order("appointment_start", { ascending: sortAscending })
     .limit(1000);
 
   if (filters.date) {

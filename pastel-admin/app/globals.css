@@ -21,6 +21,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
+  overflow-x: hidden;
   background: var(--canvas);
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -692,6 +693,291 @@ button:disabled {
   font-weight: 800;
 }
 
+.adminSkeletonRoute,
+.adminSkeletonOverlay {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 248, 244, 0.97)),
+    #fffaf8;
+}
+
+.adminSkeletonRoute {
+  min-height: 100vh;
+}
+
+.adminSkeletonOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 140;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.adminSkeletonShell {
+  min-height: 100vh;
+  padding: 0 clamp(20px, 4.8vw, 40px) 150px;
+}
+
+.adminSkeletonTopbar {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 92px;
+  align-items: center;
+  min-height: 184px;
+  margin: 0 calc(clamp(20px, 4.8vw, 40px) * -1);
+  border-bottom: 1px solid rgba(118, 64, 48, 0.14);
+  padding: 24px clamp(34px, 5.8vw, 50px) 18px;
+}
+
+.adminSkeletonLine,
+.adminSkeletonBrand span,
+.adminSkeletonBrand i,
+.adminSkeletonBrand em,
+.adminSkeletonLogout span,
+.adminSkeletonLogout i,
+.adminSkeletonHeading,
+.adminSkeletonMetric span,
+.adminSkeletonMetric i,
+.adminSkeletonMetric b,
+.adminSkeletonMetric em,
+.adminSkeletonMetric strong,
+.adminSkeletonFilters span,
+.adminSkeletonFilters i,
+.adminSkeletonCard .avatar,
+.adminSkeletonCard i,
+.adminSkeletonBottom span {
+  display: block;
+  border-radius: 20px;
+  background:
+    linear-gradient(100deg, rgba(244, 214, 209, 0.55) 0%, rgba(255, 255, 255, 0.95) 36%, rgba(244, 214, 209, 0.55) 72%) 0 0 / 220% 100%,
+    #f6ded9;
+  animation: adminSkeletonShimmer 1.15s ease-in-out infinite;
+}
+
+.adminSkeletonLine.menu {
+  width: 42px;
+  height: 4px;
+  box-shadow:
+    0 14px 0 #ead4cf,
+    0 28px 0 #ead4cf;
+}
+
+.adminSkeletonBrand {
+  display: grid;
+  justify-items: center;
+  gap: 11px;
+}
+
+.adminSkeletonBrand span {
+  width: min(330px, 55vw);
+  height: 55px;
+}
+
+.adminSkeletonBrand i {
+  width: 170px;
+  height: 17px;
+}
+
+.adminSkeletonBrand em {
+  width: 220px;
+  height: 20px;
+}
+
+.adminSkeletonLogout {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+
+.adminSkeletonLogout span {
+  width: 74px;
+  height: 74px;
+  border-radius: 14px;
+}
+
+.adminSkeletonLogout i {
+  width: 58px;
+  height: 15px;
+}
+
+.adminSkeletonSection,
+.adminSkeletonFilters,
+.adminSkeletonCards {
+  width: min(100%, 768px);
+  margin-inline: auto;
+}
+
+.adminSkeletonSection {
+  padding-top: 30px;
+}
+
+.adminSkeletonHeading {
+  width: 150px;
+  height: 28px;
+}
+
+.adminSkeletonMetricGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.adminSkeletonMetric {
+  position: relative;
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  min-height: 198px;
+  overflow: hidden;
+  border: 1px solid rgba(213, 132, 122, 0.16);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 24px 18px;
+}
+
+.adminSkeletonMetric > span {
+  width: 84px;
+  height: 84px;
+  border-radius: 22px;
+}
+
+.adminSkeletonMetric div {
+  display: grid;
+  align-content: start;
+  gap: 13px;
+  padding-top: 6px;
+}
+
+.adminSkeletonMetric i {
+  width: 78px;
+  height: 16px;
+}
+
+.adminSkeletonMetric b {
+  width: 72px;
+  height: 44px;
+}
+
+.adminSkeletonMetric em {
+  width: 112px;
+  height: 17px;
+}
+
+.adminSkeletonMetric strong {
+  position: absolute;
+  right: 14px;
+  bottom: 20px;
+  width: 42%;
+  height: 38px;
+}
+
+.adminSkeletonFilters {
+  display: grid;
+  gap: 22px;
+  margin-top: 26px;
+  border: 1px solid rgba(70, 36, 28, 0.08);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.62);
+  padding: 24px;
+  box-shadow: 0 18px 55px rgba(60, 34, 25, 0.04);
+}
+
+.adminSkeletonFilters > span {
+  height: 72px;
+  border-radius: 12px;
+}
+
+.adminSkeletonFilters div {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.adminSkeletonFilters i {
+  height: 68px;
+  border-radius: 12px;
+}
+
+.adminSkeletonCards {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+}
+
+.adminSkeletonCard {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 258px;
+  gap: 0 18px;
+  min-height: 260px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 26px 28px 24px;
+  box-shadow: 0 15px 40px rgba(46, 28, 21, 0.05);
+}
+
+.adminSkeletonCard .avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+}
+
+.adminSkeletonCard .main,
+.adminSkeletonCard .side {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.adminSkeletonCard .name {
+  width: 70%;
+  height: 31px;
+}
+
+.adminSkeletonCard .phone {
+  width: 48%;
+  height: 20px;
+}
+
+.adminSkeletonCard .main i:not(.name):not(.phone) {
+  width: 82%;
+  height: 22px;
+}
+
+.adminSkeletonCard .side {
+  align-content: center;
+  border-left: 1px solid rgba(89, 47, 40, 0.1);
+  padding-left: 32px;
+}
+
+.adminSkeletonCard .side i {
+  width: 82%;
+  height: 22px;
+}
+
+.adminSkeletonBottom {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 145;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 114px;
+  border-top: 1px solid rgba(118, 64, 48, 0.14);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.adminSkeletonBottom span {
+  align-self: center;
+  justify-self: center;
+  width: 104px;
+  height: 48px;
+}
+
+@keyframes adminSkeletonShimmer {
+  to {
+    background-position: -220% 0;
+  }
+}
+
 @keyframes loginSpin {
   to {
     transform: rotate(360deg);
@@ -712,6 +998,689 @@ button:disabled {
   padding: 12px;
   color: #8d2f24;
   font-weight: 700;
+}
+
+.mobileAdminShell {
+  min-height: 100vh;
+  overflow-x: clip;
+  padding: 0 clamp(20px, 4.8vw, 40px) 150px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 248, 244, 0.96) 44%, rgba(255, 255, 255, 0.98)),
+    #fffaf8;
+  color: #241412;
+}
+
+.mobileAdminTopbar {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 92px;
+  align-items: center;
+  min-height: 184px;
+  margin: 0 calc(clamp(20px, 4.8vw, 40px) * -1);
+  border-bottom: 1px solid rgba(118, 64, 48, 0.18);
+  padding: 24px clamp(34px, 5.8vw, 50px) 18px;
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.mobileIconButton,
+.mobileMoreButton {
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #2f1715;
+}
+
+.mobileIconButton {
+  width: 52px;
+  height: 52px;
+  justify-self: start;
+}
+
+.mobileBrand {
+  display: grid;
+  min-width: 0;
+  justify-items: center;
+  color: #a86543;
+  text-align: center;
+}
+
+.mobileBrandName {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(3.6rem, 11vw, 5.65rem);
+  font-weight: 400;
+  line-height: 0.84;
+  text-transform: uppercase;
+}
+
+.mobileBrandAdmin {
+  display: inline-grid;
+  grid-template-columns: 42px auto 42px;
+  align-items: center;
+  gap: 14px;
+  margin-top: 9px;
+  color: #9f6d5a;
+  font-size: clamp(1rem, 2.6vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+}
+
+.mobileBrandAdmin span {
+  height: 1px;
+  background: rgba(163, 96, 60, 0.45);
+}
+
+.mobileBrand p {
+  margin: 8px 0 0;
+  color: #8a7370;
+  font-size: clamp(1.05rem, 3.2vw, 1.42rem);
+  font-weight: 500;
+}
+
+.mobileLogoutForm {
+  justify-self: end;
+}
+
+.mobileLogoutButton {
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  border: 0;
+  background: transparent;
+  color: #3b211f;
+  font-size: 1.12rem;
+  font-weight: 600;
+}
+
+.mobileLogoutButton span {
+  display: grid;
+  width: 74px;
+  height: 74px;
+  place-items: center;
+  border-radius: 14px;
+  background: #fdebe9;
+  color: #2f1715;
+}
+
+.mobileOverview,
+.mobileAppointmentsHero,
+.mobileFilterPanel,
+.mobileStatusTabs,
+.mobileAppointmentList,
+.mobileEmptyState {
+  width: min(100%, 768px);
+  margin-inline: auto;
+}
+
+.mobileOverview {
+  padding-top: 26px;
+}
+
+.mobileOverview h1,
+.mobileAppointmentsHero h1,
+.mobileAppointmentCard h2,
+.mobileEmptyState h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.mobileOverview h1 {
+  font-size: clamp(1.62rem, 4.2vw, 2rem);
+}
+
+.mobileOverviewGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+
+.mobileMetricCard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  min-height: 198px;
+  overflow: hidden;
+  border: 1px solid rgba(213, 132, 122, 0.22);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.58);
+  padding: 24px 18px;
+  box-shadow: inset 0 0 44px rgba(244, 208, 202, 0.18);
+}
+
+.mobileMetricIcon {
+  display: grid;
+  width: 84px;
+  height: 84px;
+  place-items: center;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fdebea, #fae0db);
+  color: #cf605e;
+}
+
+.mobileMetricCard p {
+  margin: 5px 0 10px;
+  color: #604a46;
+  font-size: clamp(0.96rem, 2.4vw, 1.15rem);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.mobileMetricCard strong {
+  display: block;
+  color: #241412;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.45rem, 6vw, 3.2rem);
+  font-weight: 400;
+  line-height: 0.95;
+}
+
+.mobileMetricCard span {
+  display: block;
+  margin-top: 10px;
+  color: #3b2522;
+  font-size: clamp(1rem, 2.7vw, 1.18rem);
+  font-weight: 500;
+}
+
+.mobileSparkline {
+  position: absolute;
+  right: 12px;
+  bottom: 18px;
+  width: 43%;
+  height: 55px;
+  fill: none;
+  stroke: #df6968;
+  stroke-linecap: round;
+  stroke-width: 1.7;
+}
+
+.mobileFilterPanel {
+  position: relative;
+  display: grid;
+  gap: 22px;
+  margin-top: 26px;
+  border: 1px solid rgba(70, 36, 28, 0.1);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 24px;
+  box-shadow: 0 18px 55px rgba(60, 34, 25, 0.06);
+}
+
+.mobileSearchField,
+.mobileSelectField {
+  position: relative;
+  display: grid;
+  align-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(72, 43, 36, 0.14);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #6b4d4b;
+}
+
+.mobileSearchField {
+  grid-template-columns: 55px minmax(0, 1fr);
+  min-height: 72px;
+}
+
+.mobileSearchField svg,
+.mobileSelectField svg {
+  justify-self: center;
+  color: #6f4e4c;
+}
+
+.mobileSearchField input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: #2e1a18;
+  font-size: clamp(1.08rem, 2.9vw, 1.38rem);
+  outline: 0;
+}
+
+.mobileSearchField input::placeholder {
+  color: #8f8382;
+}
+
+.mobileFilterGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.mobileFilterGrid.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mobileSelectField {
+  grid-template-columns: 54px minmax(0, 1fr) 34px;
+  min-height: 68px;
+  padding-right: 12px;
+}
+
+.mobileSelectField::after {
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid #4e2724;
+  border-bottom: 2px solid #4e2724;
+  content: "";
+  transform: rotate(45deg) translateY(-3px);
+}
+
+.mobileSelectField span {
+  min-width: 0;
+  overflow: hidden;
+  color: #201211;
+  font-size: clamp(1.02rem, 2.8vw, 1.28rem);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobileSelectField input,
+.mobileSelectField select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  opacity: 0;
+}
+
+.mobileFilterSubmit {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.mobileAppointmentsHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  padding-top: 34px;
+}
+
+.mobileAppointmentsTitle {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+
+.mobileAppointmentsTitle > div {
+  min-width: 0;
+}
+
+.mobileAppointmentsTitle > span {
+  display: grid;
+  width: 60px;
+  height: 60px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 999px;
+  background: #fdebea;
+  color: #3a211f;
+}
+
+.mobileAppointmentsHero h1 {
+  font-size: clamp(2rem, 5.4vw, 2.65rem);
+  line-height: 1;
+}
+
+.mobileNewAppointment {
+  display: inline-flex;
+  width: min(100%, 255px);
+  min-width: 0;
+  min-height: 61px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #d95d66, #ca6861);
+  color: #fff9f6;
+  padding: 0 24px;
+  font-size: clamp(1rem, 2.8vw, 1.28rem);
+  font-weight: 600;
+  line-height: 1.12;
+  text-align: center;
+  box-shadow: 0 16px 35px rgba(203, 93, 93, 0.2);
+}
+
+.mobileNewAppointment svg {
+  flex: 0 0 auto;
+}
+
+.mobileStatusTabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 26px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.mobileStatusTabs a {
+  display: inline-flex;
+  min-height: 52px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 14px;
+  border-radius: 12px;
+  padding: 0 27px;
+  color: #2c1817;
+  font-size: clamp(1rem, 2.9vw, 1.24rem);
+}
+
+.mobileStatusTabs a.active {
+  background: #fdebea;
+  color: #dd6664;
+}
+
+.mobileStatusTabs strong {
+  min-width: 38px;
+  border-radius: 999px;
+  background: #fff;
+  padding: 4px 10px;
+  color: currentColor;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.mobileStatusTabs a:nth-child(2) strong {
+  background: #dcefdc;
+  color: #2f512b;
+}
+
+.mobileStatusTabs a:nth-child(3) strong {
+  background: #fee7d8;
+  color: #e27221;
+}
+
+.mobileStatusTabs a:nth-child(4) strong {
+  background: #fde4e2;
+  color: #d65856;
+}
+
+.mobileAppointmentList {
+  display: grid;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.mobileStatusTabs + .mobileAppointmentList {
+  margin-top: 22px;
+}
+
+.mobileAppointmentCard {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 258px;
+  grid-template-areas:
+    "avatar main actions"
+    "avatar main facts";
+  gap: 0 18px;
+  min-height: 260px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 26px 28px 24px;
+  box-shadow: 0 15px 40px rgba(46, 28, 21, 0.08);
+}
+
+.mobileAvatar {
+  position: relative;
+  grid-area: avatar;
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 36%, #dfb1a9 0 15%, transparent 16%),
+    radial-gradient(circle at 50% 92%, #dea9a0 0 36%, transparent 37%),
+    #fde3df;
+}
+
+.mobileAvatar span {
+  position: absolute;
+  right: 2px;
+  bottom: 8px;
+  width: 18px;
+  height: 18px;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: #e06f6c;
+}
+
+.mobileAvatar i {
+  display: none;
+}
+
+.mobileAppointmentMain {
+  grid-area: main;
+  min-width: 0;
+}
+
+.mobileAppointmentMain h2 {
+  overflow: hidden;
+  color: #251210;
+  font-size: clamp(1.65rem, 4.5vw, 2.05rem);
+  line-height: 1.03;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobilePhone {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 22px;
+  color: #8b625d;
+  font-size: clamp(1rem, 2.9vw, 1.22rem);
+}
+
+.mobileServiceMeta {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+}
+
+.mobileServiceMeta div {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.mobileServiceMeta dt {
+  color: #e25e5c;
+  font-size: clamp(1.02rem, 3vw, 1.25rem);
+  font-weight: 500;
+}
+
+.mobileServiceMeta dd {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #16100f;
+  font-size: clamp(1.02rem, 3vw, 1.22rem);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mobileAppointmentActions {
+  display: flex;
+  grid-area: actions;
+  align-items: start;
+  justify-content: flex-end;
+  gap: 24px;
+}
+
+.mobileMoreButton {
+  width: 38px;
+  height: 42px;
+  color: #52231f;
+}
+
+.mobileAppointmentFacts {
+  display: grid;
+  grid-area: facts;
+  align-content: end;
+  gap: 16px;
+  border-left: 1px solid rgba(89, 47, 40, 0.14);
+  padding-left: 32px;
+}
+
+.mobileAppointmentFacts span {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+  color: #1e1312;
+  font-size: clamp(1.02rem, 3vw, 1.25rem);
+  font-weight: 500;
+}
+
+.mobilePhone svg,
+.mobileAppointmentFacts svg {
+  flex: 0 0 auto;
+  color: #df5f5d;
+}
+
+.mobileDetailsButton {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  justify-self: start;
+  margin-top: 24px;
+  border-radius: 12px;
+  background: #fdebea;
+  padding: 0 26px;
+  color: #241412;
+  font-size: clamp(1rem, 2.8vw, 1.18rem);
+  font-weight: 500;
+}
+
+.mobileStatusControl {
+  position: relative;
+  display: grid;
+  min-width: 164px;
+  gap: 0;
+}
+
+.mobileStatusControl select {
+  width: 100%;
+  min-height: 47px;
+  appearance: none;
+  border: 0;
+  border-radius: 999px;
+  background:
+    linear-gradient(45deg, transparent 50%, #4b221f 50%) calc(100% - 25px) 20px / 7px 7px no-repeat,
+    linear-gradient(135deg, #4b221f 50%, transparent 50%) calc(100% - 19px) 20px / 7px 7px no-repeat,
+    #fde0dc;
+  color: #241412;
+  padding: 0 43px 0 22px;
+  font-size: clamp(0.98rem, 2.8vw, 1.16rem);
+  font-weight: 500;
+  outline: 0;
+  text-transform: none;
+}
+
+.mobileStatusControl[data-status="booked"] select {
+  background-color: #fee2cf;
+}
+
+.mobileStatusControl[data-status="confirmed"] select {
+  background-color: #fbd8d4;
+}
+
+.mobileStatusControl[data-status="completed"] select {
+  background-color: #dcefdc;
+}
+
+.mobileStatusControl[data-status="cancelled"] select,
+.mobileStatusControl[data-status="no_show"] select {
+  background-color: #f8d9d8;
+}
+
+.mobileStatusControl .statusSaved,
+.mobileStatusControl .statusError {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-height: 0;
+  margin-top: 4px;
+  font-size: 0.72rem;
+}
+
+.mobileStatusControl .statusSaved:empty,
+.mobileStatusControl .statusError:empty {
+  display: none;
+}
+
+.mobileEmptyState {
+  margin-top: 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.86);
+  padding: 34px 24px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(46, 28, 21, 0.08);
+}
+
+.mobileEmptyState h2 {
+  font-size: 1.6rem;
+}
+
+.mobileEmptyState p {
+  margin: 10px 0 0;
+  color: #785f5a;
+}
+
+.mobileBottomNav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 70;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-height: 114px;
+  border-top: 1px solid rgba(118, 64, 48, 0.18);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 -16px 40px rgba(47, 27, 20, 0.05);
+  backdrop-filter: blur(18px);
+}
+
+.mobileBottomNav a {
+  position: relative;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 9px;
+  color: #724c47;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.mobileBottomNav a.active {
+  color: #d75f5f;
+}
+
+.mobileBottomNav a.active::after {
+  position: absolute;
+  bottom: 17px;
+  width: 64px;
+  height: 3px;
+  border-radius: 999px;
+  background: currentColor;
+  content: "";
 }
 
 .pwaInstallShell {
@@ -816,6 +1785,45 @@ button:disabled {
 }
 
 @media (max-width: 900px) {
+  .adminSkeletonShell {
+    padding-inline: clamp(18px, 4.8vw, 40px);
+  }
+
+  .adminSkeletonTopbar {
+    grid-template-columns: 74px minmax(0, 1fr) 74px;
+    min-height: 154px;
+    padding-inline: clamp(22px, 5vw, 44px);
+  }
+
+  .adminSkeletonBrand span {
+    width: min(290px, 52vw);
+    height: 48px;
+  }
+
+  .adminSkeletonLogout span {
+    width: 64px;
+    height: 64px;
+  }
+
+  .mobileAdminShell {
+    padding-inline: clamp(18px, 4.8vw, 40px);
+  }
+
+  .mobileAdminTopbar {
+    grid-template-columns: 74px minmax(0, 1fr) 74px;
+    min-height: 154px;
+    padding-inline: clamp(22px, 5vw, 44px);
+  }
+
+  .mobileBrandName {
+    font-size: clamp(3rem, 10.5vw, 5rem);
+  }
+
+  .mobileLogoutButton span {
+    width: 64px;
+    height: 64px;
+  }
+
   .adminHeader {
     display: grid;
   }
@@ -837,6 +1845,486 @@ button:disabled {
 }
 
 @media (max-width: 600px) {
+  .adminSkeletonShell {
+    padding-inline: 16px;
+    padding-bottom: 128px;
+  }
+
+  .adminSkeletonTopbar {
+    grid-template-columns: 50px minmax(0, 1fr) 58px;
+    min-height: 128px;
+    margin-inline: -16px;
+    padding: 16px 18px 13px;
+  }
+
+  .adminSkeletonLine.menu {
+    width: 33px;
+    height: 3px;
+    box-shadow:
+      0 11px 0 #ead4cf,
+      0 22px 0 #ead4cf;
+  }
+
+  .adminSkeletonBrand {
+    gap: 7px;
+  }
+
+  .adminSkeletonBrand span {
+    width: min(190px, 52vw);
+    height: 36px;
+  }
+
+  .adminSkeletonBrand i {
+    width: 112px;
+    height: 12px;
+  }
+
+  .adminSkeletonBrand em {
+    width: 140px;
+    height: 14px;
+  }
+
+  .adminSkeletonLogout span {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  .adminSkeletonLogout i {
+    width: 42px;
+    height: 11px;
+  }
+
+  .adminSkeletonSection {
+    padding-top: 20px;
+  }
+
+  .adminSkeletonHeading {
+    width: 112px;
+    height: 24px;
+  }
+
+  .adminSkeletonMetricGrid {
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .adminSkeletonMetric {
+    grid-template-columns: 58px minmax(0, 1fr);
+    min-height: 146px;
+    border-radius: 16px;
+    padding: 18px 12px;
+  }
+
+  .adminSkeletonMetric > span {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+  }
+
+  .adminSkeletonMetric div {
+    gap: 9px;
+    padding-top: 3px;
+  }
+
+  .adminSkeletonMetric i {
+    width: 62px;
+    height: 12px;
+  }
+
+  .adminSkeletonMetric b {
+    width: 50px;
+    height: 34px;
+  }
+
+  .adminSkeletonMetric em {
+    width: 82px;
+    height: 13px;
+  }
+
+  .adminSkeletonMetric strong {
+    right: 8px;
+    bottom: 12px;
+    width: 45%;
+    height: 28px;
+  }
+
+  .adminSkeletonFilters {
+    gap: 14px;
+    margin-top: 20px;
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .adminSkeletonFilters > span {
+    height: 58px;
+  }
+
+  .adminSkeletonFilters div {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .adminSkeletonFilters i {
+    height: 56px;
+  }
+
+  .adminSkeletonCards {
+    gap: 14px;
+    margin-top: 18px;
+  }
+
+  .adminSkeletonCard {
+    grid-template-columns: 66px minmax(0, 1fr) 118px;
+    min-height: 192px;
+    border-radius: 14px;
+    padding: 18px 14px;
+  }
+
+  .adminSkeletonCard .avatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .adminSkeletonCard .main,
+  .adminSkeletonCard .side {
+    gap: 11px;
+  }
+
+  .adminSkeletonCard .name {
+    height: 24px;
+  }
+
+  .adminSkeletonCard .phone {
+    width: 62%;
+    height: 16px;
+  }
+
+  .adminSkeletonCard .main i:not(.name):not(.phone),
+  .adminSkeletonCard .side i {
+    height: 17px;
+  }
+
+  .adminSkeletonCard .side {
+    padding-left: 14px;
+  }
+
+  .adminSkeletonBottom {
+    min-height: 94px;
+  }
+
+  .adminSkeletonBottom span {
+    width: 78px;
+    height: 38px;
+  }
+
+  .mobileAdminShell {
+    padding-inline: 16px;
+    padding-bottom: 128px;
+  }
+
+  .mobileAdminTopbar {
+    grid-template-columns: 50px minmax(0, 1fr) 58px;
+    min-height: 128px;
+    margin-inline: -16px;
+    padding: 16px 18px 13px;
+  }
+
+  .mobileIconButton {
+    width: 42px;
+    height: 42px;
+  }
+
+  .mobileIconButton svg {
+    width: 31px;
+    height: 31px;
+  }
+
+  .mobileBrandName {
+    font-size: clamp(2.35rem, 11.8vw, 3.45rem);
+  }
+
+  .mobileBrandAdmin {
+    grid-template-columns: 24px auto 24px;
+    gap: 9px;
+    margin-top: 6px;
+    font-size: 0.76rem;
+    letter-spacing: 0.35em;
+  }
+
+  .mobileBrand p {
+    margin-top: 5px;
+    font-size: 0.92rem;
+  }
+
+  .mobileLogoutButton {
+    gap: 5px;
+    font-size: 0.78rem;
+  }
+
+  .mobileLogoutButton span {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+  }
+
+  .mobileLogoutButton svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mobileOverview {
+    padding-top: 20px;
+  }
+
+  .mobileOverviewGrid {
+    gap: 12px;
+    margin-top: 18px;
+  }
+
+  .mobileMetricCard {
+    grid-template-columns: 58px minmax(0, 1fr);
+    min-height: 146px;
+    border-radius: 16px;
+    padding: 18px 12px;
+  }
+
+  .mobileMetricIcon {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+  }
+
+  .mobileMetricIcon svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .mobileMetricCard p {
+    margin: 2px 0 8px;
+    font-size: 0.72rem;
+  }
+
+  .mobileMetricCard strong {
+    font-size: 2.1rem;
+  }
+
+  .mobileMetricCard span {
+    margin-top: 8px;
+    font-size: 0.86rem;
+  }
+
+  .mobileSparkline {
+    right: 8px;
+    bottom: 12px;
+    width: 46%;
+    height: 42px;
+  }
+
+  .mobileFilterPanel {
+    gap: 14px;
+    margin-top: 20px;
+    border-radius: 16px;
+    padding: 14px;
+  }
+
+  .mobileSearchField {
+    min-height: 58px;
+    grid-template-columns: 46px minmax(0, 1fr);
+  }
+
+  .mobileSearchField input {
+    font-size: 0.98rem;
+  }
+
+  .mobileFilterGrid,
+  .mobileFilterGrid.three {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .mobileSelectField {
+    min-height: 56px;
+    grid-template-columns: 44px minmax(0, 1fr) 28px;
+  }
+
+  .mobileSelectField span {
+    font-size: 0.98rem;
+  }
+
+  .mobileAppointmentsHero {
+    align-items: start;
+    padding-top: 26px;
+  }
+
+  .mobileAppointmentsTitle {
+    gap: 12px;
+  }
+
+  .mobileAppointmentsTitle > span {
+    width: 48px;
+    height: 48px;
+  }
+
+  .mobileAppointmentsHero h1 {
+    font-size: 1.8rem;
+  }
+
+  .mobileNewAppointment {
+    width: min(100%, 210px);
+    min-height: 48px;
+    gap: 7px;
+    margin-top: 9px;
+    padding: 0 14px;
+    font-size: 0.9rem;
+    white-space: normal;
+  }
+
+  .mobileStatusTabs {
+    justify-content: flex-start;
+    gap: 10px;
+    margin-inline: -16px;
+    padding: 0 16px 2px;
+  }
+
+  .mobileStatusTabs a {
+    min-height: 42px;
+    gap: 9px;
+    border-radius: 10px;
+    padding: 0 14px;
+    font-size: 0.92rem;
+  }
+
+  .mobileStatusTabs strong {
+    min-width: 30px;
+    padding: 3px 8px;
+    font-size: 0.82rem;
+  }
+
+  .mobileAppointmentCard {
+    grid-template-columns: 66px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "avatar heading actions"
+      "avatar phone actions"
+      "meta meta meta"
+      "details details details"
+      "facts facts facts";
+    gap: 10px 10px;
+    min-height: 0;
+    border-radius: 14px;
+    padding: 18px 14px;
+  }
+
+  .mobileAvatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .mobileAvatar span {
+    right: -1px;
+    bottom: 5px;
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+  }
+
+  .mobileAppointmentMain {
+    display: contents;
+  }
+
+  .mobileAppointmentMain h2,
+  .mobilePhone {
+    grid-column: 2 / 3;
+  }
+
+  .mobileAppointmentMain h2 {
+    grid-area: heading;
+    align-self: end;
+    font-size: 1.45rem;
+  }
+
+  .mobilePhone {
+    grid-area: phone;
+    align-self: start;
+    margin: 2px 0 8px;
+    font-size: 0.92rem;
+  }
+
+  .mobileServiceMeta {
+    grid-area: meta;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .mobileServiceMeta div {
+    grid-template-columns: 86px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .mobileServiceMeta dt,
+  .mobileServiceMeta dd {
+    font-size: 0.98rem;
+  }
+
+  .mobileDetailsButton {
+    grid-area: details;
+    min-height: 42px;
+    margin-top: 6px;
+    padding: 0 20px;
+    font-size: 0.95rem;
+  }
+
+  .mobileAppointmentActions {
+    grid-area: actions;
+    gap: 6px;
+  }
+
+  .mobileMoreButton {
+    width: 28px;
+  }
+
+  .mobileStatusControl {
+    min-width: 128px;
+  }
+
+  .mobileStatusControl select {
+    min-height: 40px;
+    background-position:
+      calc(100% - 19px) 17px,
+      calc(100% - 13px) 17px,
+      0 0;
+    padding-inline: 14px 30px;
+    font-size: 0.86rem;
+  }
+
+  .mobileAppointmentFacts {
+    grid-area: facts;
+    gap: 10px;
+    border-left: 0;
+    border-top: 1px solid rgba(89, 47, 40, 0.12);
+    margin-top: 8px;
+    padding: 12px 0 0 0;
+  }
+
+  .mobileAppointmentFacts span {
+    gap: 12px;
+    font-size: 0.95rem;
+  }
+
+  .mobileBottomNav {
+    min-height: 94px;
+  }
+
+  .mobileBottomNav a {
+    gap: 5px;
+    font-size: 0.82rem;
+  }
+
+  .mobileBottomNav a.active::after {
+    bottom: 11px;
+    width: 48px;
+  }
+
   .adminShell {
     padding: 18px 12px;
   }

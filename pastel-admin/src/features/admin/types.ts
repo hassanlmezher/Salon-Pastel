@@ -30,4 +30,5 @@ export type AdminAppointmentFilters = {
   date?: string;
   status?: AppointmentStatus | "";
   search?: string;
+  sort?: "newest" | "oldest";
 };

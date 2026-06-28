@@ -54,5 +54,6 @@ export async function updateAppointmentStatus(appointmentId: string, status: str
   if (error) return { ok: false, message: error.message };
 
   revalidatePath("/");
+  revalidatePath("/appointments");
   return { ok: true, message: "Status updated." };
 }
