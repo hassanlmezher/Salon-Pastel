@@ -7,7 +7,6 @@ import {
   Grid2X2,
   ListFilter,
   LogOut,
-  Menu,
   MoreVertical,
   Phone,
   Plus,
@@ -105,10 +104,6 @@ function getStatusCount(appointments: AdminAppointment[], status: string) {
 export function AdminTopBar() {
   return (
     <header className="mobileAdminTopbar">
-      <button type="button" className="mobileIconButton" aria-label="Open menu">
-        <Menu size={36} strokeWidth={1.9} />
-      </button>
-
       <div className="mobileBrand" aria-label="Pastel Admin Owner Dashboard">
         <div className="mobileBrandName">Pastel</div>
         <div className="mobileBrandAdmin">

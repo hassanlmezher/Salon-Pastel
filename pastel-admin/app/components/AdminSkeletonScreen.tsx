@@ -3,7 +3,6 @@ export function AdminSkeletonScreen({ overlay = false }: { overlay?: boolean }) 
     <div className={overlay ? "adminSkeletonOverlay" : "adminSkeletonRoute"} role="status" aria-live="polite" aria-label="Loading">
       <div className="adminSkeletonShell">
         <header className="adminSkeletonTopbar">
-          <span className="adminSkeletonLine menu" />
           <div className="adminSkeletonBrand">
             <span />
             <i />
