@@ -27,6 +27,18 @@ type RawService = Record<string, unknown> & {
 type RawSlot = Record<string, unknown> | string;
 
 const activeServicesCache = new Map<ServiceGroupId, Promise<ServiceMenuItem[]>>();
+const SUPABASE_QUERY_TIMEOUT_MS = 8000;
+
+async function withSupabaseTimeout<T>(query: (signal: AbortSignal) => T): Promise<Awaited<T>> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), SUPABASE_QUERY_TIMEOUT_MS);
+
+  try {
+    return await query(controller.signal);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 function formatPrice(value: unknown) {
   if (value === null || value === undefined || value === "") return "";
@@ -82,11 +94,14 @@ function mapService(service: RawService): ServiceMenuItem | null {
 
 async function loadActiveServices(groupId: ServiceGroupId) {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase
-    .from("services")
-    .select("*, service_categories(*)")
-    .eq("is_active", true)
-    .order("name", { ascending: true });
+  const { data, error } = await withSupabaseTimeout((signal) =>
+    supabase
+      .from("services")
+      .select("*, service_categories(*)")
+      .eq("is_active", true)
+      .order("name", { ascending: true })
+      .abortSignal(signal),
+  );
 
   if (error) throw error;
 
@@ -138,10 +153,14 @@ function formatSlotLabel(date: Date) {
 
 export async function fetchAvailableSlots(serviceId: string, dateIso: string): Promise<AvailableSlot[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc("get_available_slots", {
-    p_service_id: serviceId,
-    p_date: dateIso,
-  });
+  const { data, error } = await withSupabaseTimeout((signal) =>
+    supabase
+      .rpc("get_available_slots", {
+        p_service_id: serviceId,
+        p_date: dateIso,
+      })
+      .abortSignal(signal),
+  );
 
   if (error) throw error;
 
@@ -173,10 +192,14 @@ function getMonthDates(monthStartIso: string) {
 
 export async function fetchAvailableSlotsForMonth(serviceId: string, monthStartIso: string): Promise<AvailableSlot[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc("get_available_slots_for_month", {
-    p_service_id: serviceId,
-    p_month_start: monthStartIso,
-  });
+  const { data, error } = await withSupabaseTimeout((signal) =>
+    supabase
+      .rpc("get_available_slots_for_month", {
+        p_service_id: serviceId,
+        p_month_start: monthStartIso,
+      })
+      .abortSignal(signal),
+  );
 
   if (!error) {
     return ((data ?? []) as RawSlot[])
@@ -221,28 +244,36 @@ export async function createAppointment(input: {
   totalDurationMinutes?: number;
 }) {
   const supabase = getSupabaseClient();
-  const { data, error } = await supabase.rpc("create_appointment", {
-    p_service_id: input.serviceId,
-    p_customer_full_name: input.customerFullName,
-    p_customer_phone: input.customerPhone,
-    p_appointment_start: input.appointmentStart,
-    p_customer_first_name: input.customerFirstName ?? null,
-    p_customer_last_name: input.customerLastName ?? null,
-    p_selected_services: input.selectedServices ?? null,
-    p_total_price: input.totalPrice ?? null,
-    p_total_duration_minutes: input.totalDurationMinutes ?? null,
-  });
+  const { data, error } = await withSupabaseTimeout((signal) =>
+    supabase
+      .rpc("create_appointment", {
+        p_service_id: input.serviceId,
+        p_customer_full_name: input.customerFullName,
+        p_customer_phone: input.customerPhone,
+        p_appointment_start: input.appointmentStart,
+        p_customer_first_name: input.customerFirstName ?? null,
+        p_customer_last_name: input.customerLastName ?? null,
+        p_selected_services: input.selectedServices ?? null,
+        p_total_price: input.totalPrice ?? null,
+        p_total_duration_minutes: input.totalDurationMinutes ?? null,
+      })
+      .abortSignal(signal),
+  );
 
   if (!error) return String(data ?? "");
 
   if (!isCreateAppointmentSignatureError(error)) throw error;
 
-  const { data: fallbackData, error: fallbackError } = await supabase.rpc("create_appointment", {
-    p_service_id: input.serviceId,
-    p_customer_full_name: input.customerFullName,
-    p_customer_phone: input.customerPhone,
-    p_appointment_start: input.appointmentStart,
-  });
+  const { data: fallbackData, error: fallbackError } = await withSupabaseTimeout((signal) =>
+    supabase
+      .rpc("create_appointment", {
+        p_service_id: input.serviceId,
+        p_customer_full_name: input.customerFullName,
+        p_customer_phone: input.customerPhone,
+        p_appointment_start: input.appointmentStart,
+      })
+      .abortSignal(signal),
+  );
 
   if (fallbackError) throw fallbackError;
   return String(fallbackData ?? "");

@@ -2,6 +2,19 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getSupabaseConfig } from "./src/lib/supabase/config";
 
+const MIDDLEWARE_QUERY_TIMEOUT_MS = 8000;
+
+async function withMiddlewareQueryTimeout<T>(query: (signal: AbortSignal) => T): Promise<Awaited<T>> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), MIDDLEWARE_QUERY_TIMEOUT_MS);
+
+  try {
+    return await query(controller.signal);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   let response = NextResponse.next({ request });
@@ -27,11 +40,14 @@ export async function middleware(request: NextRequest) {
   if (pathname === "/login") {
     if (!user) return response;
 
-    const { data: ownerUser } = await supabase
-      .from("owner_users")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    const { data: ownerUser } = await withMiddlewareQueryTimeout((signal) =>
+      supabase
+        .from("owner_users")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .abortSignal(signal)
+        .maybeSingle(),
+    );
 
     if (ownerUser) return NextResponse.redirect(new URL("/", request.url));
     return response;
@@ -47,11 +63,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    const { data: ownerUser } = await supabase
-      .from("owner_users")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+    const { data: ownerUser } = await withMiddlewareQueryTimeout((signal) =>
+      supabase
+        .from("owner_users")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .abortSignal(signal)
+        .maybeSingle(),
+    );
 
     if (!ownerUser) {
       const loginUrl = new URL("/login", request.url);

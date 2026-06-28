@@ -115,7 +115,7 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     let isCurrent = true;
 
     async function loadService() {
-      if (initialService?.slug === serviceSlug) {
+      if (initialService?.slug === serviceSlug && initialService.id) {
         setService(initialService);
         setServiceError("");
         setServiceLoading(false);
@@ -123,13 +123,13 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
       }
 
       try {
-        setServiceLoading(true);
+        setServiceLoading(!initialService);
         setServiceError("");
         const activeService = await fetchServiceBySlug(groupId, serviceSlug);
         if (!isCurrent) return;
 
         if (!activeService?.id) {
-          setService(null);
+          setService(initialService?.slug === serviceSlug ? initialService : null);
           setServiceError("This service is not available right now.");
           return;
         }

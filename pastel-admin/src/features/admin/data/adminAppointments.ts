@@ -29,6 +29,19 @@ type RawAppointment = {
   services?: RawService | RawService[] | null;
 };
 
+const ADMIN_QUERY_TIMEOUT_MS = 8000;
+
+async function withAdminQueryTimeout<T>(query: (signal: AbortSignal) => T): Promise<Awaited<T>> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), ADMIN_QUERY_TIMEOUT_MS);
+
+  try {
+    return await query(controller.signal);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 function isAppointmentStatus(value: string | undefined): value is AppointmentStatus {
   return appointmentStatuses.includes(value as AppointmentStatus);
 }
@@ -171,11 +184,14 @@ export async function requireOwnerUser() {
 
   if (!user) redirect("/login");
 
-  const { data: ownerUser } = await supabase
-    .from("owner_users")
-    .select("user_id")
-    .eq("user_id", user.id)
-    .maybeSingle();
+  const { data: ownerUser } = await withAdminQueryTimeout((signal) =>
+    supabase
+      .from("owner_users")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .abortSignal(signal)
+      .maybeSingle(),
+  );
 
   if (!ownerUser) redirect("/login?error=not_owner");
 
@@ -227,7 +243,7 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
     );
   }
 
-  const { data, error } = await query;
+  const { data, error } = await withAdminQueryTimeout((signal) => query.abortSignal(signal));
   if (error) throw error;
 
   return ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
