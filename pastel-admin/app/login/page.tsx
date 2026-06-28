@@ -1,6 +1,7 @@
 import { UserRound } from "lucide-react";
 import { loginOwner, logoutOwner } from "../actions";
 import { LoginPasswordField } from "../components/LoginPasswordField";
+import { LoginSubmitButton } from "../components/LoginSubmitButton";
 import { createSupabaseServerClient } from "../../src/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -84,7 +85,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                 <span className="forgotPassword">Forgot password?</span>
               </div>
 
-              <button type="submit" className="loginSubmit">Sign In</button>
+              <LoginSubmitButton />
               <p className="loginAccessNote">Only authorized owner can access this dashboard.</p>
             </form>
           )}
