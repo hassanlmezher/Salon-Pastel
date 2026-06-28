@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { AdminNavigationLoader } from "./components/AdminNavigationLoader";
 import { PwaInstallPrompt } from "./components/PwaInstallPrompt";
 import "./globals.css";
+import "./booking.css";
 
 export const metadata: Metadata = {
   applicationName: "Pastel Admin",

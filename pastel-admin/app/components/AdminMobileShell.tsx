@@ -352,8 +352,6 @@ export function AppointmentCardList({
 }
 
 export function AppointmentsPageHeader() {
-  const bookingUrl = process.env.NEXT_PUBLIC_BOOKING_URL || "http://127.0.0.1:5173/book";
-
   return (
     <section className="mobileAppointmentsHero">
       <div className="mobileAppointmentsTitle">
@@ -362,7 +360,7 @@ export function AppointmentsPageHeader() {
         </span>
         <div>
           <h1>Appointments</h1>
-          <a href={bookingUrl} className="mobileNewAppointment">
+          <a href="/book" className="mobileNewAppointment">
             <Plus size={27} strokeWidth={1.9} />
             New Appointment
           </a>
