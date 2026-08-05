@@ -158,6 +158,26 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     };
   }, [groupId, initialService, serviceSlug]);
 
+  const availableAddOns = useMemo(
+    () => (service ? getServiceAddOns(groupId, service.slug) : []),
+    [groupId, service],
+  );
+
+  const selectedAddOns = useMemo(
+    () => availableAddOns.filter((addOn) => selectedAddOnSlugs.includes(addOn.slug)),
+    [availableAddOns, selectedAddOnSlugs],
+  );
+
+  const totalPrice = useMemo(() => {
+    const servicePrice = service ? parseServicePrice(service.price) : 0;
+    return servicePrice + selectedAddOns.reduce((total, addOn) => total + addOn.priceValue, 0);
+  }, [selectedAddOns, service]);
+
+  const totalDurationMin = useMemo(() => {
+    const serviceDuration = service ? parseServiceDuration(service.duration) : 0;
+    return serviceDuration + selectedAddOns.reduce((total, addOn) => total + addOn.durationMin, 0);
+  }, [selectedAddOns, service]);
+
   const loadMonthAvailability = useCallback(async () => {
     if (!service?.id) return;
 
@@ -167,7 +187,7 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     try {
       const daysInMonth = new Date(selectedMonth.year, selectedMonth.monthIndex + 1, 0).getDate();
       const monthStartIso = formatDateIso(selectedMonth.year, selectedMonth.monthIndex, 1);
-      const monthSlots = await fetchAvailableSlotsForMonth(service.id as string, monthStartIso);
+      const monthSlots = await fetchAvailableSlotsForMonth(service.id as string, monthStartIso, totalDurationMin);
       const slotsByDate = monthSlots.reduce<Map<string, AvailableSlot[]>>((groups, slot) => {
         const dateIso = getSlotDateIso(slot);
         const currentSlots = groups.get(dateIso) ?? [];
@@ -205,7 +225,7 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     } finally {
       setAvailabilityLoading(false);
     }
-  }, [selectedMonth.monthIndex, selectedMonth.year, service?.id]);
+  }, [selectedMonth.monthIndex, selectedMonth.year, service?.id, totalDurationMin]);
 
   useEffect(() => {
     loadMonthAvailability();
@@ -229,30 +249,10 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
     [selectedDaySlots, selectedSlotStart],
   );
 
-  const availableAddOns = useMemo(
-    () => (service ? getServiceAddOns(groupId, service.slug) : []),
-    [groupId, service],
-  );
-
-  const selectedAddOns = useMemo(
-    () => availableAddOns.filter((addOn) => selectedAddOnSlugs.includes(addOn.slug)),
-    [availableAddOns, selectedAddOnSlugs],
-  );
-
   const serviceInclusions = useMemo(
     () => (service ? getServiceInclusions(service.slug) : []),
     [service],
   );
-
-  const totalPrice = useMemo(() => {
-    const servicePrice = service ? parseServicePrice(service.price) : 0;
-    return servicePrice + selectedAddOns.reduce((total, addOn) => total + addOn.priceValue, 0);
-  }, [selectedAddOns, service]);
-
-  const totalDurationMin = useMemo(() => {
-    const serviceDuration = service ? parseServiceDuration(service.duration) : 0;
-    return serviceDuration + selectedAddOns.reduce((total, addOn) => total + addOn.durationMin, 0);
-  }, [selectedAddOns, service]);
 
   useEffect(() => {
     setSelectedAddOnSlugs([]);

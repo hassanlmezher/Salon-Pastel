@@ -159,12 +159,24 @@ async function loadActiveServices(groupId: ServiceGroupId) {
 
   if (error) throw error;
 
-  return ((data ?? []) as RawService[])
+  const candidates = ((data ?? []) as RawService[])
     .filter((service) => belongsToGroup(service, groupId))
-    .map(mapService)
-    .filter((service): service is ServiceMenuItem => Boolean(service))
-    .filter((service) => isPrimaryServiceSlug(groupId, service.slug))
-    .filter((service, index, list) => list.findIndex((item) => item.slug === service.slug) === index);
+    .map((rawService) => ({
+      service: mapService(rawService),
+      backendDurationMinutes: Number(rawService.duration_minutes ?? rawService.duration ?? 0),
+    }))
+    .filter((candidate): candidate is { service: ServiceMenuItem; backendDurationMinutes: number } => Boolean(candidate.service))
+    .filter((candidate) => isPrimaryServiceSlug(groupId, candidate.service.slug));
+
+  const bestCandidateBySlug = new Map<string, (typeof candidates)[number]>();
+  for (const candidate of candidates) {
+    const current = bestCandidateBySlug.get(candidate.service.slug);
+    if (!current || candidate.backendDurationMinutes > current.backendDurationMinutes) {
+      bestCandidateBySlug.set(candidate.service.slug, candidate);
+    }
+  }
+
+  return [...bestCandidateBySlug.values()].map((candidate) => candidate.service);
 }
 
 export async function fetchActiveServices(groupId: ServiceGroupId) {
@@ -270,18 +282,45 @@ function formatSlotLabel(date: Date) {
   });
 }
 
-export async function fetchAvailableSlots(serviceId: string, dateIso: string): Promise<AvailableSlot[]> {
+function isDurationAwareAvailabilityMissing(error: unknown) {
+  const details = typeof error === "object" && error !== null ? error as Record<string, unknown> : {};
+  const message = String(details.message ?? details.details ?? details.hint ?? error ?? "").toLowerCase();
+
+  return (
+    String(details.code ?? "") === "PGRST202" ||
+    message.includes("could not find the function") ||
+    message.includes("p_duration_minutes")
+  );
+}
+
+export async function fetchAvailableSlots(
+  serviceId: string,
+  dateIso: string,
+  durationMinutes?: number,
+): Promise<AvailableSlot[]> {
   if (dateIso < getTodayDateIso()) return [];
 
   const supabase = getSupabaseClient();
-  const { data, error } = await withSupabaseTimeout((signal) =>
+  const durationAwareResult = await withSupabaseTimeout((signal) =>
     supabase
       .rpc("get_available_slots", {
         p_service_id: serviceId,
         p_date: dateIso,
+        p_duration_minutes: durationMinutes ?? null,
       })
       .abortSignal(signal),
   );
+
+  const { data, error } = durationAwareResult.error && isDurationAwareAvailabilityMissing(durationAwareResult.error)
+    ? await withSupabaseTimeout((signal) =>
+        supabase
+          .rpc("get_available_slots", {
+            p_service_id: serviceId,
+            p_date: dateIso,
+          })
+          .abortSignal(signal),
+      )
+    : durationAwareResult;
 
   if (error) throw error;
 
@@ -298,23 +337,39 @@ function getMonthDates(monthStartIso: string) {
   });
 }
 
-export async function fetchAvailableSlotsForMonth(serviceId: string, monthStartIso: string): Promise<AvailableSlot[]> {
+export async function fetchAvailableSlotsForMonth(
+  serviceId: string,
+  monthStartIso: string,
+  durationMinutes?: number,
+): Promise<AvailableSlot[]> {
   const supabase = getSupabaseClient();
-  const { data, error } = await withSupabaseTimeout((signal) =>
+  const durationAwareResult = await withSupabaseTimeout((signal) =>
     supabase
       .rpc("get_available_slots_for_month", {
         p_service_id: serviceId,
         p_month_start: monthStartIso,
+        p_duration_minutes: durationMinutes ?? null,
       })
       .abortSignal(signal),
   );
+
+  const { data, error } = durationAwareResult.error && isDurationAwareAvailabilityMissing(durationAwareResult.error)
+    ? await withSupabaseTimeout((signal) =>
+        supabase
+          .rpc("get_available_slots_for_month", {
+            p_service_id: serviceId,
+            p_month_start: monthStartIso,
+          })
+          .abortSignal(signal),
+      )
+    : durationAwareResult;
 
   if (!error) {
     return mapAvailableSlots((data ?? []) as RawSlot[]);
   }
 
   const dailySlots = await Promise.all(
-    getMonthDates(monthStartIso).map((dateIso) => fetchAvailableSlots(serviceId, dateIso)),
+    getMonthDates(monthStartIso).map((dateIso) => fetchAvailableSlots(serviceId, dateIso, durationMinutes)),
   );
 
   return dailySlots.flat();
