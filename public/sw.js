@@ -1,4 +1,4 @@
-const CACHE_VERSION = "pastel-pwa-v3";
+const CACHE_VERSION = "pastel-pwa-v4";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
@@ -42,6 +42,17 @@ function isSupabaseRequest(url) {
   return url.hostname.endsWith(".supabase.co") || url.pathname.startsWith("/api/");
 }
 
+function isViteDevelopmentRequest(url) {
+  return (
+    url.pathname.startsWith("/@vite/") ||
+    url.pathname === "/@react-refresh" ||
+    url.pathname.startsWith("/src/") ||
+    url.pathname.startsWith("/@fs/") ||
+    url.pathname.startsWith("/@id/") ||
+    url.pathname.includes("/node_modules/")
+  );
+}
+
 function isStaticAsset(request, url) {
   return (
     request.destination === "style" ||
@@ -57,7 +68,13 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  if (request.method !== "GET" || isSupabaseRequest(url)) {
+  // Cache Storage supports HTTP(S) requests only. Returning without
+  // respondWith lets the browser handle extension and other schemes normally.
+  if (url.protocol !== "http:" && url.protocol !== "https:") {
+    return;
+  }
+
+  if (request.method !== "GET" || isSupabaseRequest(url) || isViteDevelopmentRequest(url)) {
     return;
   }
 

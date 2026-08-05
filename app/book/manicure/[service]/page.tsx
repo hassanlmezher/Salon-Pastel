@@ -1,5 +1,4 @@
 import { ServiceDetail } from "../../ServiceDetail";
-import { fetchServiceBySlug } from "../../../../src/features/booking/data/supabaseBooking";
 import { getServiceBySlug, manicureServices } from "../../../../src/features/booking/data/serviceMenu";
 
 type PageProps = {
@@ -14,9 +13,7 @@ export function generateStaticParams() {
 
 export default async function ManicureServicePage({ params }: PageProps) {
   const { service: serviceSlug } = await params;
-  const initialService =
-    (await fetchServiceBySlug("manicure", serviceSlug).catch(() => null)) ??
-    getServiceBySlug("manicure", serviceSlug);
+  const initialService = getServiceBySlug("manicure", serviceSlug);
 
   return <ServiceDetail groupId="manicure" serviceSlug={serviceSlug} initialService={initialService} />;
 }

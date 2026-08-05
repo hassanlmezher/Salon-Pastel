@@ -128,15 +128,24 @@ export function ServiceDetail({ groupId, serviceSlug, initialService = null }: S
         const activeService = await fetchServiceBySlug(groupId, serviceSlug);
         if (!isCurrent) return;
 
-        if (!activeService?.id) {
+        if (!activeService) {
           setService(initialService?.slug === serviceSlug ? initialService : null);
           setServiceError("This service is not available right now.");
           return;
         }
 
         setService(activeService);
+        if (!activeService.id) {
+          setAvailabilityError("Online booking is not available for this service right now.");
+        }
       } catch {
-        if (isCurrent) setServiceError("Unable to load this service. Please try again.");
+        if (!isCurrent) return;
+        if (initialService?.slug === serviceSlug) {
+          setService(initialService);
+          setAvailabilityError("Online booking is not available for this service right now.");
+        } else {
+          setServiceError("Unable to load this service. Please try again.");
+        }
       } finally {
         if (isCurrent) setServiceLoading(false);
       }

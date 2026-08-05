@@ -8,7 +8,17 @@ import {
   getBookingErrorMessage,
   type AvailableSlot,
 } from "../data/supabaseBooking";
-import { getServiceArabicCopy, type ServiceGroupId, type ServiceMenuItem } from "../data/serviceMenu";
+import {
+  formatServiceDuration,
+  getServiceAddOns,
+  getServiceArabicCopy,
+  getServiceBySlug,
+  parseServiceDuration,
+  parseServicePrice,
+  type ServiceAddOnOption,
+  type ServiceGroupId,
+  type ServiceMenuItem,
+} from "../data/serviceMenu";
 import { requestAppointmentReminderSubscription, type ReminderSubscriptionResult } from "../pwa/reminders";
 
 type ServiceDetailPageProps = {
@@ -27,6 +37,9 @@ type DayAvailability = {
 type SuccessDetails = {
   appointmentId: string;
   serviceName: string;
+  addOnNames: string[];
+  totalPrice: string;
+  totalDuration: string;
   date: string;
   time: string;
   phone: string;
@@ -66,12 +79,17 @@ function createMonthOptions() {
   });
 }
 
+function formatServicePrice(value: number) {
+  return `$${Number.isInteger(value) ? value : value.toFixed(2)}`;
+}
+
 export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPageProps) {
   const navigate = useNavigate();
   const monthOptions = useMemo(() => createMonthOptions(), []);
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0]);
-  const [service, setService] = useState<ServiceMenuItem | null>(null);
-  const [serviceLoading, setServiceLoading] = useState(true);
+  const hardcodedService = useMemo(() => getServiceBySlug(groupId, serviceSlug), [groupId, serviceSlug]);
+  const [service, setService] = useState<ServiceMenuItem | null>(hardcodedService);
+  const [serviceLoading, setServiceLoading] = useState(!hardcodedService);
   const [serviceError, setServiceError] = useState("");
   const [days, setDays] = useState<DayAvailability[]>([]);
   const [selectedDateIso, setSelectedDateIso] = useState("");
@@ -80,6 +98,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
   const [availabilityError, setAvailabilityError] = useState("");
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedAddOnSlugs, setSelectedAddOnSlugs] = useState<string[]>([]);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successDetails, setSuccessDetails] = useState<SuccessDetails | null>(null);
@@ -90,21 +109,30 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     let isCurrent = true;
 
     async function loadService() {
+      if (!hardcodedService) {
+        setService(null);
+        setServiceError("This service is not available.");
+        setServiceLoading(false);
+        return;
+      }
+
       try {
-        setServiceLoading(true);
+        setService(hardcodedService);
+        setServiceLoading(false);
         setServiceError("");
         const activeService = await fetchServiceBySlug(groupId, serviceSlug);
         if (!isCurrent) return;
 
-        if (!activeService?.id) {
-          setService(null);
-          setServiceError("This service is not available right now.");
-          return;
-        }
+        if (!activeService) return;
 
         setService(activeService);
+        if (!activeService.id) {
+          setAvailabilityError("Online booking is not available for this service right now.");
+        }
       } catch {
-        if (isCurrent) setServiceError("Unable to load this service. Please try again.");
+        if (!isCurrent) return;
+        setService(hardcodedService);
+        setAvailabilityError("Online booking is not available for this service right now.");
       } finally {
         if (isCurrent) setServiceLoading(false);
       }
@@ -115,7 +143,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     return () => {
       isCurrent = false;
     };
-  }, [groupId, serviceSlug]);
+  }, [groupId, hardcodedService, serviceSlug]);
 
   const loadMonthAvailability = useCallback(async () => {
     if (!service?.id) return;
@@ -188,10 +216,52 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     [selectedDaySlots, selectedSlotStart],
   );
 
+  const availableAddOns = useMemo(
+    () => (service ? getServiceAddOns(groupId, service.slug) : []),
+    [groupId, service],
+  );
+
+  const selectedAddOns = useMemo(
+    () => availableAddOns.filter((addOn) => selectedAddOnSlugs.includes(addOn.slug)),
+    [availableAddOns, selectedAddOnSlugs],
+  );
+
+  const totalPrice = useMemo(() => {
+    const servicePrice = service ? parseServicePrice(service.price) : 0;
+    return servicePrice + selectedAddOns.reduce((total, addOn) => total + addOn.priceValue, 0);
+  }, [selectedAddOns, service]);
+
+  const totalDurationMin = useMemo(() => {
+    const serviceDuration = service ? parseServiceDuration(service.duration) : 0;
+    return serviceDuration + selectedAddOns.reduce((total, addOn) => total + addOn.durationMin, 0);
+  }, [selectedAddOns, service]);
+
+  useEffect(() => {
+    setSelectedAddOnSlugs([]);
+  }, [serviceSlug]);
+
   const chooseMonth = (month: (typeof monthOptions)[number]) => {
     setSelectedMonth(month);
     setSelectedDateIso("");
     setSelectedSlotStart("");
+  };
+
+  const toggleAddOn = (addOn: ServiceAddOnOption) => {
+    setSelectedAddOnSlugs((current) => {
+      if (current.includes(addOn.slug)) {
+        return current.filter((slug) => slug !== addOn.slug);
+      }
+
+      const blockedSlugs = new Set(addOn.conflictsWith ?? []);
+      const next = current.filter((slug) => {
+        const existing = availableAddOns.find((option) => option.slug === slug);
+        if (blockedSlugs.has(slug)) return false;
+        if (addOn.exclusiveGroup && existing?.exclusiveGroup === addOn.exclusiveGroup) return false;
+        return true;
+      });
+
+      return [...next, addOn.slug];
+    });
   };
 
   const submitCustomerForm = async (event: FormEvent<HTMLFormElement>) => {
@@ -218,13 +288,37 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       const appointmentId = await createAppointment({
         serviceId: service.id,
         customerFullName: `${firstName} ${lastName}`,
+        customerFirstName: firstName,
+        customerLastName: lastName,
         customerPhone: phone,
         appointmentStart: selectedSlot.startIso,
+        selectedServices: [
+          {
+            id: service.id,
+            slug: service.slug,
+            kind: "service",
+            name: service.name,
+            price: parseServicePrice(service.price),
+            duration_minutes: parseServiceDuration(service.duration),
+          },
+          ...selectedAddOns.map((addOn) => ({
+            slug: addOn.slug,
+            kind: "add_on" as const,
+            name: addOn.name,
+            price: addOn.priceValue,
+            duration_minutes: addOn.durationMin,
+          })),
+        ],
+        totalPrice,
+        totalDurationMinutes: totalDurationMin,
       });
 
       setSuccessDetails({
         appointmentId,
         serviceName: service.name,
+        addOnNames: selectedAddOns.map((addOn) => addOn.name),
+        totalPrice: formatServicePrice(totalPrice),
+        totalDuration: formatServiceDuration(totalDurationMin),
         date: formatLongDate(selectedDateIso),
         time: selectedSlot.label,
         phone,
@@ -307,18 +401,52 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
               </span>
             </h1>
             <p className="mt-4 text-[2rem] font-medium leading-none text-[#b46f65]">
-              {service.price}
+              {formatServicePrice(totalPrice)}
             </p>
             <p className="mt-5 max-w-md text-base leading-7 text-[#4d4039]">
               {service.description}
             </p>
 
             <div className="mt-6 grid gap-4">
-              <DetailRow icon="◷" label="Duration" arabicLabel="المدة" value={service.duration || "Based on service"} />
+              <DetailRow icon="◷" label="Duration" arabicLabel="المدة" value={formatServiceDuration(totalDurationMin)} />
               <DetailRow icon="▣" label="Service type" arabicLabel="نوع الخدمة" value={service.serviceType} />
             </div>
           </div>
         </section>
+
+        {availableAddOns.length > 0 ? (
+          <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8" aria-labelledby="add-ons-title">
+            <h2 id="add-ons-title" className="font-display text-[1.65rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
+              Add to your service
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-[#6d5648]">Choose any compatible extras. French and Ombré replace one another.</p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {availableAddOns.map((addOn) => {
+                const selected = selectedAddOnSlugs.includes(addOn.slug);
+                return (
+                  <button
+                    key={addOn.slug}
+                    type="button"
+                    aria-pressed={selected}
+                    onClick={() => toggleAddOn(addOn)}
+                    className={`flex min-h-28 items-center gap-4 border p-3 text-left transition ${
+                      selected
+                        ? "border-[#bd736b] bg-[#f9e9e5] shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
+                        : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b]"
+                    }`}
+                  >
+                    <img src={decodeURIComponent(addOn.imageSrc)} alt="" aria-hidden="true" className="h-20 w-20 flex-none object-cover" />
+                    <span className="min-w-0">
+                      <strong className="block font-display text-lg leading-tight text-[#231814]">{addOn.name}</strong>
+                      <span className="mt-1 block text-sm font-medium text-[#b46f65]">+{addOn.price} · {addOn.duration}</span>
+                      <span className="mt-1 block text-xs leading-5 text-[#6d5648]">{addOn.description}</span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
 
         <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8">
           <h2 className="whitespace-nowrap font-display text-[1.2rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
@@ -501,6 +629,9 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             {successDetails ? (
               <p className="mt-3 text-sm leading-6 text-white/90">
                 {successDetails.serviceName}
+                {successDetails.addOnNames.length > 0 ? ` + ${successDetails.addOnNames.join(" + ")}` : ""}
+                <br />
+                {successDetails.totalPrice} · {successDetails.totalDuration}
                 <br />
                 {successDetails.date} at {successDetails.time}
                 <br />

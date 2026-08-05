@@ -1,10 +1,12 @@
 import { getSupabaseClient } from "../../../lib/supabaseClient";
 import {
   getServiceBySlugFromList,
+  getServiceBySlug,
   getServiceImage,
   getServiceSlug,
   isPrimaryServiceSlug,
   normalizeServiceMenuItem,
+  pedicureServices,
   type ServiceGroupId,
   type ServiceMenuItem,
 } from "./serviceMenu";
@@ -93,6 +95,10 @@ function mapService(service: RawService): ServiceMenuItem | null {
 }
 
 async function loadActiveServices(groupId: ServiceGroupId) {
+  if (groupId === "pedicure") {
+    return [...pedicureServices];
+  }
+
   const supabase = getSupabaseClient();
   const { data, error } = await withSupabaseTimeout((signal) =>
     supabase
@@ -127,8 +133,73 @@ export async function fetchActiveServices(groupId: ServiceGroupId) {
 }
 
 export async function fetchServiceBySlug(groupId: ServiceGroupId, serviceSlug: string) {
+  if (groupId === "pedicure") {
+    const service = getServiceBySlug(groupId, serviceSlug);
+    if (!service) return null;
+
+    const serviceId = await fetchPedicureBookingServiceId(service.slug);
+    return serviceId ? { ...service, id: serviceId } : service;
+  }
+
+  const hardcodedService = getServiceBySlug(groupId, serviceSlug);
+  if (!hardcodedService) return null;
+
   const services = await fetchActiveServices(groupId);
-  return getServiceBySlugFromList(services, serviceSlug);
+  const backendService = getServiceBySlugFromList(services, serviceSlug);
+  return backendService?.id ? { ...hardcodedService, id: backendService.id } : hardcodedService;
+}
+
+const pedicureBookingNamesBySlug: Record<string, string[]> = {
+  "luxury-pedicure-massage-scrub": [
+    "Luxury Pedicure + Massage & Scrub",
+    "Massage + Scrub + Paraffin",
+    "Massage + Scrub",
+  ],
+  "paraffin-therapy": ["Paraffin Therapy", "Paraffin Hand Therapy"],
+  "pedicure-classic-french": ["Pedicure + Classic French", "Pedicure + Classic French Manicure"],
+  "pedicure-french-gelish": ["Pedicure + French Gelish"],
+  "pedicure-gel-color": ["Pedicure + Gel Color", "Pedicure + Gel Color (Gelish)", "Pedicure + Gelish"],
+  "pedicure-pose": ["Pedicure + Pose"],
+};
+
+const pedicureBookingIdCache = new Map<string, Promise<string | null>>();
+
+async function fetchPedicureBookingServiceId(serviceSlug: string) {
+  if (!pedicureBookingIdCache.has(serviceSlug)) {
+    pedicureBookingIdCache.set(serviceSlug, loadPedicureBookingServiceId(serviceSlug));
+  }
+
+  try {
+    return await pedicureBookingIdCache.get(serviceSlug)!;
+  } catch (error) {
+    pedicureBookingIdCache.delete(serviceSlug);
+    throw error;
+  }
+}
+
+async function loadPedicureBookingServiceId(serviceSlug: string) {
+  const names = pedicureBookingNamesBySlug[serviceSlug] ?? [];
+  if (names.length === 0) return null;
+
+  const supabase = getSupabaseClient();
+  const { data, error } = await withSupabaseTimeout((signal) =>
+    supabase
+      .from("services")
+      .select("id, name")
+      .eq("is_active", true)
+      .in("name", names)
+      .abortSignal(signal),
+  );
+
+  if (error) throw error;
+
+  const matches = (data ?? []) as Array<{ id?: string; name?: string }>;
+  for (const name of names) {
+    const match = matches.find((service) => service.name === name && service.id);
+    if (match?.id) return match.id;
+  }
+
+  return null;
 }
 
 function getSlotStart(slot: RawSlot) {

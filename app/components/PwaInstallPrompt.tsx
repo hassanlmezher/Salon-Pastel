@@ -38,7 +38,7 @@ export function PwaInstallPrompt() {
   const ios = useMemo(() => isIosDevice(), []);
 
   useEffect(() => {
-    if ("serviceWorker" in navigator) {
+    if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(() => {
         // The app should continue normally if registration fails on an unsupported browser.
       });

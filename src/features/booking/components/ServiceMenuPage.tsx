@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { fetchActiveServices } from "../data/supabaseBooking";
-import { getServiceArabicCopy, type ServiceGroupId, type ServiceMenuItem } from "../data/serviceMenu";
+import { getServiceArabicCopy, serviceGroups, type ServiceGroupId } from "../data/serviceMenu";
 
 type ServiceMenuPageProps = {
   groupId: ServiceGroupId;
@@ -9,32 +7,7 @@ type ServiceMenuPageProps = {
 };
 
 export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
-  const [services, setServices] = useState<ServiceMenuItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  useEffect(() => {
-    let isCurrent = true;
-
-    async function loadServices() {
-      try {
-        setIsLoading(true);
-        setErrorMessage("");
-        const activeServices = await fetchActiveServices(groupId);
-        if (isCurrent) setServices(activeServices);
-      } catch {
-        if (isCurrent) setErrorMessage("Unable to load services. Please try again.");
-      } finally {
-        if (isCurrent) setIsLoading(false);
-      }
-    }
-
-    loadServices();
-
-    return () => {
-      isCurrent = false;
-    };
-  }, [groupId]);
+  const services = serviceGroups[groupId];
 
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-8 text-[#231814] sm:px-5 lg:px-8">
@@ -67,17 +40,7 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
         </section>
 
         <section className="mt-8 grid w-full grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-7" aria-label={title}>
-          {isLoading ? (
-            <p className="col-span-full border border-[#ead5cd] bg-[#fffaf6]/92 p-5 text-sm text-[#6d5648]">
-              Loading services...
-            </p>
-          ) : null}
-          {!isLoading && errorMessage ? (
-            <p className="col-span-full border border-[#ead5cd] bg-[#fffaf6]/92 p-5 text-sm text-[#6d5648]">
-              {errorMessage}
-            </p>
-          ) : null}
-          {!isLoading && !errorMessage && services.length === 0 ? (
+          {services.length === 0 ? (
             <p className="col-span-full border border-[#ead5cd] bg-[#fffaf6]/92 p-5 text-sm text-[#6d5648]">
               No services are available right now.
             </p>
@@ -92,7 +55,7 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
                 className="service-menu-card flex min-h-[18rem] flex-col items-center bg-[#fffaf6] px-3 py-5 text-center shadow-[0_16px_34px_rgba(97,58,24,0.12)] sm:min-h-[22rem] sm:px-5 sm:py-7 lg:min-h-[27rem] lg:px-7 lg:py-8"
               >
                 <img
-                  src={service.imageSrc}
+                  src={decodeURIComponent(service.imageSrc)}
                   alt={service.name}
                   className="service-menu-image aspect-square w-[76%] max-w-[13rem] object-cover shadow-[0_10px_24px_rgba(97,58,24,0.1)]"
                 />

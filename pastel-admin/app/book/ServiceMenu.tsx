@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { fetchActiveServices } from "../../src/features/booking/data/supabaseBooking";
 import {
   getOptimizedServiceImage,
   getServiceArabicCopy,
   serviceGroups,
   type ServiceGroupId,
-  type ServiceMenuItem,
 } from "../../src/features/booking/data/serviceMenu";
 
 type ServiceMenuProps = {
@@ -13,16 +11,8 @@ type ServiceMenuProps = {
   title: string;
 };
 
-async function getServices(groupId: ServiceGroupId): Promise<ServiceMenuItem[]> {
-  try {
-    return await fetchActiveServices(groupId);
-  } catch {
-    return [...serviceGroups[groupId]];
-  }
-}
-
 export async function ServiceMenu({ groupId, title }: ServiceMenuProps) {
-  const services = await getServices(groupId);
+  const services = [...serviceGroups[groupId]];
 
   return (
     <main className="serviceMenuPage">

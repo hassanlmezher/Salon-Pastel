@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "composite": true,
+    "composite": false,
     "noEmit": true,
     "skipLibCheck": true,
     "module": "ESNext",

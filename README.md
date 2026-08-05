@@ -1,15 +1,16 @@
 # Salon Pastel
 
-Salon Pastel is a mobile-first luxury salon booking website built with Next.js, React, and TypeScript. The product focuses on a premium first impression, clear service discovery, and a simple appointment request flow.
+Salon Pastel is a mobile-first luxury salon booking website built with Vite, React, and TypeScript. The product focuses on a premium first impression, clear service discovery, and a simple appointment request flow.
 
 ## Scripts
 
 - `npm install`
 - `npm run dev`
 - `npm run build`
-- `npm run start`
+- `npm run preview`
+- `npm run typecheck`
 
-`npm run dev` starts the Next.js dev server locally on `http://127.0.0.1:5173`.
+`npm run dev` starts the Vite development server locally on `http://127.0.0.1:5173`.
 
 ## Architecture
 
