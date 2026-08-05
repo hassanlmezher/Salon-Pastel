@@ -1,4 +1,5 @@
 :root {
+  --corner-radius: 0;
   color-scheme: light;
   --canvas: #f6efe9;
   --ink: #231814;
@@ -8,6 +9,13 @@
   --sage: #607b69;
   --clay: #a65f46;
   --cream: #fffaf5;
+}
+
+/* Canonical luxury geometry: every surface and control uses a sharp edge. */
+*,
+*::before,
+*::after {
+  border-radius: var(--corner-radius) !important;
 }
 
 * {

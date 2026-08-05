@@ -381,7 +381,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       <div className="mx-auto max-w-[76rem]">
         <section className="service-detail-hero grid overflow-hidden bg-[#fffaf6] shadow-[0_18px_44px_rgba(97,58,24,0.12)] lg:grid-cols-[1.15fr_0.95fr]">
           <div className="relative min-h-[18rem] overflow-hidden sm:min-h-[20rem] lg:min-h-[24rem]">
-            <img src={service.imageSrc} alt={service.name} className="h-full w-full object-cover" />
+            <img src={decodeURIComponent(service.imageSrc)} alt={service.name} className="h-full w-full object-cover" />
             <Link
               to={`/book/${groupId}`}
               className="service-detail-back absolute left-5 top-5 inline-flex items-center gap-3 bg-white/88 px-4 py-3 text-sm font-medium text-[#4d4039] shadow-[0_12px_24px_rgba(97,58,24,0.12)] backdrop-blur-md sm:text-base"

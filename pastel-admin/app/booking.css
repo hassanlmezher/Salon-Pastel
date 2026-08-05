@@ -9,6 +9,14 @@
   padding: clamp(40px, 6vw, 72px) 16px;
 }
 
+/* This stylesheet loads after the admin shell; keep its booking surfaces in
+   the same sharp-edged system as the rest of the product. */
+*,
+*::before,
+*::after {
+  border-radius: var(--corner-radius, 0) !important;
+}
+
 .bookingChoiceInner {
   width: min(72rem, 100%);
   margin-inline: auto;
