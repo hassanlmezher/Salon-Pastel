@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { appointmentStatuses, type AppointmentStatus } from "../src/features/admin/types";
 import { createSupabaseServerClient } from "../src/lib/supabase/server";
+import { isSupabaseConfigured } from "../src/lib/supabase/config";
 
 const ADMIN_ACTION_TIMEOUT_MS = 8000;
 
@@ -23,6 +24,8 @@ function isAppointmentStatus(value: string): value is AppointmentStatus {
 }
 
 export async function loginOwner(formData: FormData) {
+  if (!isSupabaseConfigured()) redirect("/login?error=not_configured");
+
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 

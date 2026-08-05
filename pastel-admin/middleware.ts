@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { getSupabaseConfig } from "./src/lib/supabase/config";
+import { getSupabaseConfig, isSupabaseConfigured } from "./src/lib/supabase/config";
 
 const MIDDLEWARE_QUERY_TIMEOUT_MS = 8000;
 
@@ -17,6 +17,15 @@ async function withMiddlewareQueryTimeout<T>(query: (signal: AbortSignal) => T):
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (!isSupabaseConfigured()) {
+    if (pathname === "/login") return NextResponse.next({ request });
+
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("error", "not_configured");
+    return NextResponse.redirect(loginUrl);
+  }
+
   let response = NextResponse.next({ request });
   const { url, anonKey } = getSupabaseConfig();
 

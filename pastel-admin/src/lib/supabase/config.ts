@@ -27,3 +27,7 @@ export function getSupabaseConfig() {
     anonKey: supabaseAnonKey.trim(),
   };
 }
+
+export function isSupabaseConfigured() {
+  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim());
+}
