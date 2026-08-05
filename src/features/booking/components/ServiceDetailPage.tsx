@@ -6,6 +6,7 @@ import {
   fetchAvailableSlotsForMonth,
   fetchServiceBySlug,
   getBookingErrorMessage,
+  getTodayDateIso,
   type AvailableSlot,
 } from "../data/supabaseBooking";
 import {
@@ -68,9 +69,9 @@ function formatLongDate(dateIso: string) {
 }
 
 function createMonthOptions() {
-  const today = new Date();
+  const [todayYear, todayMonth] = getTodayDateIso().split("-").map(Number);
   return Array.from({ length: 12 }, (_, index) => {
-    const date = new Date(today.getFullYear(), today.getMonth() + index, 1);
+    const date = new Date(todayYear, todayMonth - 1 + index, 1);
     return {
       month: date.toLocaleDateString("en-US", { month: "long" }),
       monthIndex: date.getMonth(),
@@ -154,6 +155,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     try {
       const daysInMonth = new Date(selectedMonth.year, selectedMonth.monthIndex + 1, 0).getDate();
       const monthStartIso = formatDateIso(selectedMonth.year, selectedMonth.monthIndex, 1);
+      const todayDateIso = getTodayDateIso();
       const monthSlots = await fetchAvailableSlotsForMonth(service.id as string, monthStartIso);
       const slotsByDate = monthSlots.reduce<Map<string, AvailableSlot[]>>((groups, slot) => {
         const dateIso = getSlotDateIso(slot);
@@ -176,7 +178,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             available: slots.length,
             slots,
           };
-        });
+        }).filter((day) => day.dateIso >= todayDateIso);
 
       setDays(monthDays);
       setSelectedDateIso((currentDate) => {
@@ -270,6 +272,12 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
 
     if (!service?.id || !selectedSlot || !selectedDateIso) {
       setFormError("Please choose an available appointment time.");
+      return;
+    }
+
+    if (selectedDateIso < getTodayDateIso()) {
+      setFormError("Appointments must be booked for today or a future date.");
+      await loadMonthAvailability();
       return;
     }
 

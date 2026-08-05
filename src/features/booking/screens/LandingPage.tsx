@@ -48,6 +48,13 @@ const sectionTitleStyle = {
   textShadow: "0 1px 0 rgba(255, 246, 229, 0.6), 0 10px 24px rgba(61, 36, 18, 0.18)",
 };
 
+const heroTextStyle = {
+  WebkitTextStroke: "1px rgba(40, 24, 18, 0.72)",
+  paintOrder: "stroke fill",
+  textShadow:
+    "0 2px 2px rgba(22, 13, 10, 0.9), 0 5px 14px rgba(22, 13, 10, 0.78), 0 12px 32px rgba(22, 13, 10, 0.62)",
+};
+
 export function LandingPage() {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLElement | null>(null);
@@ -144,29 +151,25 @@ export function LandingPage() {
 
         <div className="relative flex h-full flex-col justify-center gap-14 px-4 sm:gap-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
           <motion.div
-            className="max-w-[32rem] border border-white/20 bg-[rgba(47,33,27,0.86)] px-4 py-4 text-[#fffaf6] shadow-[0_18px_48px_rgba(28,18,14,0.28)] backdrop-blur-md sm:max-w-[38rem] sm:px-6 sm:py-5 lg:max-w-[42rem]"
+            className="max-w-[32rem] px-4 py-4 text-[#fffaf6] sm:max-w-[38rem] sm:px-6 sm:py-5 lg:max-w-[42rem]"
             style={reduceMotion ? undefined : { y: bubbleY }}
           >
             <p
               className="text-left font-body text-[1.9rem] font-extrabold leading-[1.02] tracking-[-0.04em] text-[#fffaf6] sm:text-[2.7rem] sm:tracking-[-0.03em] lg:text-[3.6rem]"
-              style={{
-                textShadow: "0 2px 16px rgba(0, 0, 0, 0.28)",
-              }}
+              style={heroTextStyle}
             >
               Welcome to Pastel Nail Salon.
             </p>
           </motion.div>
           <motion.div
-            className="ml-auto max-w-[30rem] border border-white/20 bg-[rgba(47,33,27,0.86)] px-4 py-4 text-right text-[#fffaf6] shadow-[0_18px_48px_rgba(28,18,14,0.28)] backdrop-blur-md sm:px-6 sm:py-5 lg:max-w-[36rem]"
+            className="ml-auto max-w-[30rem] px-4 py-4 text-right text-[#fffaf6] sm:px-6 sm:py-5 lg:max-w-[36rem]"
             style={reduceMotion ? undefined : { y: bubbleY }}
           >
             <p
               className="font-body text-[1.65rem] font-extrabold leading-[1.22] tracking-normal text-[#fffaf6] sm:text-[2.3rem] lg:text-[3.25rem]"
               lang="ar"
               dir="rtl"
-              style={{
-                textShadow: "0 2px 16px rgba(0, 0, 0, 0.28)",
-              }}
+              style={heroTextStyle}
             >
               أهلاً بك في صالون باستيل للأظافر.
             </p>

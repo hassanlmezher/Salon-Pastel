@@ -85,7 +85,7 @@ create policy "Owners can read appointments"
 
 drop function if exists public.create_appointment(uuid, text, text, timestamp);
 
-create function public.create_appointment(
+create or replace function public.create_appointment(
   p_service_id uuid,
   p_customer_full_name text,
   p_customer_phone text,
@@ -131,6 +131,10 @@ begin
 
   if nullif(trim(p_customer_phone), '') is null then
     raise exception 'Customer phone is required';
+  end if;
+
+  if p_appointment_start < (now() at time zone 'Asia/Beirut') then
+    raise exception 'Appointments must be booked for today or a future time';
   end if;
 
   select duration_minutes, category_id

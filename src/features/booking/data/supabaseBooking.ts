@@ -30,6 +30,54 @@ type RawSlot = Record<string, unknown> | string;
 
 const activeServicesCache = new Map<ServiceGroupId, Promise<ServiceMenuItem[]>>();
 const SUPABASE_QUERY_TIMEOUT_MS = 8000;
+const SALON_TIME_ZONE = "Asia/Beirut";
+
+function getSalonDateTimeParts(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: SALON_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+
+  return Object.fromEntries(parts.map((part) => [part.type, part.value]));
+}
+
+export function getTodayDateIso() {
+  const { year, month, day } = getSalonDateTimeParts();
+  return `${year}-${month}-${day}`;
+}
+
+function getCurrentSalonDateTimeIso() {
+  const { year, month, day, hour, minute, second } = getSalonDateTimeParts();
+  return `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+}
+
+function isFutureSlot(slot: AvailableSlot) {
+  return slot.startIso.slice(0, 19) >= getCurrentSalonDateTimeIso();
+}
+
+function mapAvailableSlots(data: RawSlot[]): AvailableSlot[] {
+  return data
+    .map((slot) => {
+      const rawStart = getSlotStart(slot);
+      if (!rawStart) return null;
+
+      const date = new Date(String(rawStart));
+      if (Number.isNaN(date.getTime())) return null;
+
+      return {
+        startIso: String(rawStart),
+        label: formatSlotLabel(date),
+      };
+    })
+    .filter((slot): slot is AvailableSlot => Boolean(slot))
+    .filter(isFutureSlot);
+}
 
 async function withSupabaseTimeout<T>(query: (signal: AbortSignal) => T): Promise<Awaited<T>> {
   const controller = new AbortController();
@@ -223,6 +271,8 @@ function formatSlotLabel(date: Date) {
 }
 
 export async function fetchAvailableSlots(serviceId: string, dateIso: string): Promise<AvailableSlot[]> {
+  if (dateIso < getTodayDateIso()) return [];
+
   const supabase = getSupabaseClient();
   const { data, error } = await withSupabaseTimeout((signal) =>
     supabase
@@ -235,20 +285,7 @@ export async function fetchAvailableSlots(serviceId: string, dateIso: string): P
 
   if (error) throw error;
 
-  return ((data ?? []) as RawSlot[])
-    .map((slot) => {
-      const rawStart = getSlotStart(slot);
-      if (!rawStart) return null;
-
-      const date = new Date(String(rawStart));
-      if (Number.isNaN(date.getTime())) return null;
-
-      return {
-        startIso: String(rawStart),
-        label: formatSlotLabel(date),
-      };
-    })
-    .filter((slot): slot is AvailableSlot => Boolean(slot));
+  return mapAvailableSlots((data ?? []) as RawSlot[]);
 }
 
 function getMonthDates(monthStartIso: string) {
@@ -273,20 +310,7 @@ export async function fetchAvailableSlotsForMonth(serviceId: string, monthStartI
   );
 
   if (!error) {
-    return ((data ?? []) as RawSlot[])
-      .map((slot) => {
-        const rawStart = getSlotStart(slot);
-        if (!rawStart) return null;
-
-        const date = new Date(String(rawStart));
-        if (Number.isNaN(date.getTime())) return null;
-
-        return {
-          startIso: String(rawStart),
-          label: formatSlotLabel(date),
-        };
-      })
-      .filter((slot): slot is AvailableSlot => Boolean(slot));
+    return mapAvailableSlots((data ?? []) as RawSlot[]);
   }
 
   const dailySlots = await Promise.all(
@@ -331,7 +355,7 @@ export async function createAppointment(input: {
       .abortSignal(signal),
   );
 
-  if (!error) return String(data ?? "");
+  if (!error) return requireAppointmentId(data);
 
   if (!isCreateAppointmentSignatureError(error)) throw error;
 
@@ -347,7 +371,15 @@ export async function createAppointment(input: {
   );
 
   if (fallbackError) throw fallbackError;
-  return String(fallbackData ?? "");
+  return requireAppointmentId(fallbackData);
+}
+
+function requireAppointmentId(value: unknown) {
+  const appointmentId = String(value ?? "").trim();
+  if (!appointmentId) {
+    throw new Error("The appointment was not saved. Please try again.");
+  }
+  return appointmentId;
 }
 
 function isCreateAppointmentSignatureError(error: unknown) {
@@ -375,6 +407,10 @@ export function getBookingErrorMessage(error: unknown) {
     normalized.includes("available")
   ) {
     return "This time was just booked. Please choose another time.";
+  }
+
+  if (normalized.includes("past") || normalized.includes("future")) {
+    return "Appointments must be booked for today or a future date.";
   }
 
   return "Something went wrong while booking your appointment. Please try again.";

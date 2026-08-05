@@ -91,6 +91,10 @@ declare
   v_closes_at time;
   v_day_of_week int;
 begin
+  if p_date < (now() at time zone 'Asia/Beirut')::date then
+    return;
+  end if;
+
   select duration_minutes, category_id
   into v_duration_minutes, v_category_id
   from public.services
@@ -140,7 +144,8 @@ begin
   )
   select slots.slot_start
   from slots
-  where not exists (
+  where slots.slot_start >= (now() at time zone 'Asia/Beirut')
+    and not exists (
     select 1
     from public.appointments appointments
     where appointments.employee_id = v_employee_id
@@ -197,6 +202,10 @@ begin
 
   if nullif(trim(p_customer_phone), '') is null then
     raise exception 'Customer phone is required';
+  end if;
+
+  if p_appointment_start < (now() at time zone 'Asia/Beirut') then
+    raise exception 'Appointments must be booked for today or a future time';
   end if;
 
   select duration_minutes, category_id
