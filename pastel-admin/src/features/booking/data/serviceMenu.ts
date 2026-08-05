@@ -220,24 +220,24 @@ export const manicureServices: ServiceMenuItem[] = [
   { name: "Full Set Gel Extension", slug: "full-set-gel-extension", imageSrc: "/Full%20Set%20Gel%20Extension.png", price: "$35", description: "Gel extensions shaped and finished for an elegant full set.", duration: "2 hr", serviceType: "Nail Extension" },
   { name: "Full Set Fiber", slug: "full-set-fiber", imageSrc: "/Full%20Set%20Fiber.png", price: "$50", description: "Full fiber set designed for lightweight strength and a refined finish.", duration: "2 hr 30 min", serviceType: enhancementType },
   { name: "Fungal", slug: "fungal", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused hand nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
-  { name: "Hard Gel + Color", slug: "hard-gel-color", imageSrc: "/Hard%20Gel%20%2B%20Color.png", price: "$30", description: "Durable hard gel structure finished with your selected color.", duration: "1 hr 30 min", serviceType: enhancementType },
-  { name: "Massage + Scrub", slug: "massage-scrub", imageSrc: "/Massage%20%2B%20Scrub%20for%20Hands.png", price: "$15", description: "Hand exfoliation and massage for softer, refreshed skin.", duration: "25 min", serviceType: "Hand Spa" },
+  { name: "Hard Gel + Color", slug: "hard-gel-color", imageSrc: "/services/manicure/hard-gel-color.png", price: "$30", description: "Durable hard gel structure finished with your selected color.", duration: "1 hr 30 min", serviceType: enhancementType },
+  { name: "Massage + Scrub", slug: "massage-scrub", imageSrc: "/services/manicure/massage-scrub.png", price: "$15", description: "Hand exfoliation and massage for softer, refreshed skin.", duration: "25 min", serviceType: "Hand Spa" },
   { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$10", description: "A neat nail application service finished with a clean salon look.", duration: "30 min", serviceType: manicureType },
   { name: "Refill", slug: "refill", imageSrc: "/refill.png", price: "$25", description: "Refresh existing nail enhancement growth with balanced structure and finish.", duration: "1 hr 30 min", serviceType: "Nail Maintenance" },
   { name: "Rubber", slug: "rubber", imageSrc: "/Rubber.png", price: "$20", description: "Strengthen natural nails with a flexible rubber base treatment.", duration: "60 min", serviceType: enhancementType },
-  { name: "Rubber + Cover Up", slug: "rubber-cover-up", imageSrc: "/Rubber%20%2B%20Cover%20Up.png", price: "$25", description: "Rubber base with soft coverage for a smooth, even nail finish.", duration: "60 min", serviceType: enhancementType },
-  { name: "Rubber + Gel Color", slug: "rubber-gel-color", imageSrc: "/Rubber%20%2B%20Gel%20Color.png", price: "$25", description: "Strengthen natural nails with rubber base and finish with long-lasting gel color.", duration: "1 hr 30 min", serviceType: enhancementType },
+  { name: "Rubber + Cover Up", slug: "rubber-cover-up", imageSrc: "/services/manicure/rubber-cover-up.png", price: "$25", description: "Rubber base with soft coverage for a smooth, even nail finish.", duration: "60 min", serviceType: enhancementType },
+  { name: "Rubber + Gel Color", slug: "rubber-gel-color", imageSrc: "/services/manicure/rubber-gel-color.png", price: "$25", description: "Strengthen natural nails with rubber base and finish with long-lasting gel color.", duration: "1 hr 30 min", serviceType: enhancementType },
   { name: "Classic Manicure", slug: "classic-manicure", imageSrc: "/Russian%20Manicure.png", price: "$25", description: "Detailed cuticle work and clean shaping for a polished natural nail finish.", duration: "60 min", serviceType: manicureType },
   { name: "Soak Off", slug: "soak-off", imageSrc: "/Soak%20Off.png", price: "$15", description: "Gentle product removal that protects the natural nail surface.", duration: "30 min", serviceType: "Nail Removal" },
 ];
 
 export const pedicureServices: ServiceMenuItem[] = [
-  { name: "Luxury Pedicure + Massage & Scrub", slug: "luxury-pedicure-massage-scrub", imageSrc: "/pedicure/Massage%20%2B%20Scrub.png", price: "$40", description: "Luxury pedicure care with a relaxing massage and smoothing foot scrub.", duration: "2 hr", serviceType: "Foot Spa" },
-  { name: "Paraffin Therapy", slug: "paraffin-therapy", imageSrc: "/pedicure/Paraffin%20Hand%20Therapy.png", price: "$15", description: "Warm paraffin therapy to soften, hydrate, and comfort dry feet.", duration: "15 min", serviceType: "Foot Therapy" },
-  { name: "Pedicure + Classic French", slug: "pedicure-classic-french", imageSrc: "/pedicure/Pedicure%20%2B%20Classic%20French%20Manicure.png", price: "$17", description: "Pedicure care finished with classic French styling.", duration: "1 hr 30 min", serviceType: pedicureType },
-  { name: "Pedicure + French Gelish", slug: "pedicure-french-gelish", imageSrc: "/pedicure/Pedicure%20%2B%20French%20Gelish.png", price: "$20", description: "French pedicure styling with the durability of Gelish polish.", duration: "2 hr", serviceType: pedicureType },
-  { name: "Pedicure + Gel Color", slug: "pedicure-gel-color", imageSrc: "/pedicure/Pedicure%20%2B%20Gel%20Color%20(Gelish).png", price: "$17", description: "Relaxed pedicure care finished with long-lasting gel color.", duration: "2 hr", serviceType: pedicureType },
-  { name: "Pedicure + Pose", slug: "pedicure-pose", imageSrc: "/pedicure/Pedicure%20%2B%20Pose.png", price: "$15", description: "Classic pedicure care finished with a neat pose application.", duration: "1 hr 30 min", serviceType: pedicureType },
+  { name: "Luxury Pedicure + Massage & Scrub", slug: "luxury-pedicure-massage-scrub", imageSrc: "/services/pedicure/luxury-pedicure-massage-scrub.png", price: "$40", description: "Luxury pedicure care with a relaxing massage and smoothing foot scrub.", duration: "2 hr", serviceType: "Foot Spa" },
+  { name: "Paraffin Therapy", slug: "paraffin-therapy", imageSrc: "/services/pedicure/paraffin-therapy.png", price: "$15", description: "Warm paraffin therapy to soften, hydrate, and comfort dry feet.", duration: "15 min", serviceType: "Foot Therapy" },
+  { name: "Pedicure + Classic French", slug: "pedicure-classic-french", imageSrc: "/services/pedicure/pedicure-classic-french.png", price: "$17", description: "Pedicure care finished with classic French styling.", duration: "1 hr 30 min", serviceType: pedicureType },
+  { name: "Pedicure + French Gelish", slug: "pedicure-french-gelish", imageSrc: "/services/pedicure/pedicure-french-gelish.png", price: "$20", description: "French pedicure styling with the durability of Gelish polish.", duration: "2 hr", serviceType: pedicureType },
+  { name: "Pedicure + Gel Color", slug: "pedicure-gel-color", imageSrc: "/services/pedicure/pedicure-gel-color.png", price: "$17", description: "Relaxed pedicure care finished with long-lasting gel color.", duration: "2 hr", serviceType: pedicureType },
+  { name: "Pedicure + Pose", slug: "pedicure-pose", imageSrc: "/services/pedicure/pedicure-pose.png", price: "$15", description: "Classic pedicure care finished with a neat pose application.", duration: "1 hr 30 min", serviceType: pedicureType },
 ];
 
 const slugAliases: Record<string, string> = {
@@ -358,7 +358,7 @@ const addOnOptions: Record<string, ServiceAddOnOption> = {
   "gel-color": {
     name: "Gel Color",
     slug: "gel-color",
-    imageSrc: "/Rubber%20%2B%20Gel%20Color.png",
+    imageSrc: "/services/manicure/gel-color.png",
     price: "$5",
     priceValue: 5,
     duration: "30 min",
@@ -369,7 +369,7 @@ const addOnOptions: Record<string, ServiceAddOnOption> = {
   "massage-scrub": {
     name: "Massage + Scrub",
     slug: "massage-scrub",
-    imageSrc: "/Massage%20%2B%20Scrub%20for%20Hands.png",
+    imageSrc: "/services/manicure/massage-scrub.png",
     price: "$15",
     priceValue: 15,
     duration: "25 min",
@@ -525,8 +525,8 @@ export function getServiceImage(name: string, categoryName = "") {
   if (knownService) return knownService.imageSrc;
 
   const pedicureImageAliases: Record<string, string> = {
-    "paraffin-therapy": "/pedicure/Paraffin%20Hand%20Therapy.png",
-    "pedicure-gel-color": "/pedicure/Pedicure%20%2B%20Gel%20Color%20(Gelish).png",
+    "paraffin-therapy": "/services/pedicure/paraffin-therapy.png",
+    "pedicure-gel-color": "/services/pedicure/pedicure-gel-color.png",
   };
 
   if (isPedicure && pedicureImageAliases[slug]) {

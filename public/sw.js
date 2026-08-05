@@ -1,4 +1,4 @@
-const CACHE_VERSION = "pastel-pwa-v4";
+const CACHE_VERSION = "pastel-pwa-v5";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
