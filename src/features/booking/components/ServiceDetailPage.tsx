@@ -422,6 +422,22 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
           </div>
         </section>
 
+        <div
+          className="sticky top-0 z-40 mt-5 flex min-h-16 items-center justify-between gap-4 border border-[#ead5cd] bg-[#fffaf6]/95 px-5 py-3 shadow-[0_10px_28px_rgba(97,58,24,0.14)] backdrop-blur-md sm:px-6"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#6d5648]">Total</span>
+          <span className="flex items-baseline gap-2 text-right">
+            <strong className="font-display text-[1.65rem] font-semibold leading-none text-[#b46f65]">
+              {formatServicePrice(totalPrice)}
+            </strong>
+            <span className="text-xs font-medium text-[#6d5648] sm:text-sm">
+              {formatServiceDuration(totalDurationMin)}
+            </span>
+          </span>
+        </div>
+
         {availableAddOns.length > 0 ? (
           <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8" aria-labelledby="add-ons-title">
             <h2 id="add-ons-title" className="font-display text-[1.65rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
