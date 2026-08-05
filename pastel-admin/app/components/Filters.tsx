@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { Search, SlidersHorizontal } from "lucide-react";
-import { appointmentStatuses, type AdminAppointmentFilters } from "../../src/features/admin/types";
+import { type AdminAppointmentFilters } from "../../src/features/admin/types";
+
+const statusOptions = [
+  { value: "booked", label: "Pending" },
+  { value: "confirmed", label: "Confirmed" },
+  { value: "completed", label: "Completed" },
+  { value: "cancelled", label: "Cancelled" },
+] as const;
 
 export function Filters({ filters }: { filters: AdminAppointmentFilters }) {
   return (
@@ -13,9 +20,9 @@ export function Filters({ filters }: { filters: AdminAppointmentFilters }) {
         <span>Status</span>
         <select name="status" defaultValue={filters.status ?? ""}>
           <option value="">All statuses</option>
-          {appointmentStatuses.map((status) => (
-            <option key={status} value={status}>
-              {status.replace("_", " ")}
+          {statusOptions.map((status) => (
+            <option key={status.value} value={status.value}>
+              {status.label}
             </option>
           ))}
         </select>

@@ -2,6 +2,10 @@ export const appointmentStatuses = ["booked", "confirmed", "completed", "cancell
 
 export type AppointmentStatus = (typeof appointmentStatuses)[number];
 
+export const editableAppointmentStatuses = ["booked", "confirmed", "cancelled"] as const;
+
+export type EditableAppointmentStatus = (typeof editableAppointmentStatuses)[number];
+
 export type AdminSelectedService = {
   id?: string | null;
   slug?: string | null;

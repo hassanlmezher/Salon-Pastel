@@ -2,7 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { appointmentStatuses, type AppointmentStatus } from "../src/features/admin/types";
+import {
+  editableAppointmentStatuses,
+  type EditableAppointmentStatus,
+} from "../src/features/admin/types";
 import { createSupabaseServerClient } from "../src/lib/supabase/server";
 import { isSupabaseConfigured } from "../src/lib/supabase/config";
 
@@ -19,8 +22,8 @@ async function withAdminActionTimeout<T>(query: (signal: AbortSignal) => T): Pro
   }
 }
 
-function isAppointmentStatus(value: string): value is AppointmentStatus {
-  return appointmentStatuses.includes(value as AppointmentStatus);
+function isEditableAppointmentStatus(value: string): value is EditableAppointmentStatus {
+  return editableAppointmentStatuses.includes(value as EditableAppointmentStatus);
 }
 
 export async function loginOwner(formData: FormData) {
@@ -60,7 +63,7 @@ export async function logoutOwner() {
 }
 
 export async function updateAppointmentStatus(appointmentId: string, status: string) {
-  if (!appointmentId || !isAppointmentStatus(status)) {
+  if (!appointmentId || !isEditableAppointmentStatus(status)) {
     return { ok: false, message: "Invalid appointment status." };
   }
 
@@ -74,7 +77,10 @@ export async function updateAppointmentStatus(appointmentId: string, status: str
       .abortSignal(signal),
   );
 
-  if (error) return { ok: false, message: error.message };
+  if (error) {
+    console.error("Unable to update appointment status", error);
+    return { ok: false, message: "Status could not be updated. Please try again." };
+  }
 
   revalidatePath("/");
   revalidatePath("/appointments");

@@ -25,11 +25,13 @@ type RawAppointment = {
   total_price?: number | string | null;
   total_duration_minutes?: number | null;
   appointment_start?: string | null;
+  appointment_end?: string | null;
   status?: string | null;
   services?: RawService | RawService[] | null;
 };
 
 const ADMIN_QUERY_TIMEOUT_MS = 8000;
+const SALON_TIME_ZONE = "Asia/Beirut";
 
 async function withAdminQueryTimeout<T>(query: (signal: AbortSignal) => T): Promise<Awaited<T>> {
   const controller = new AbortController();
@@ -68,6 +70,43 @@ function parseNumeric(value: number | string | null | undefined) {
   }
 
   return 0;
+}
+
+function parseWallClockTimestamp(value: string) {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) return Number.NaN;
+
+  return Date.UTC(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3]),
+    Number(match[4]),
+    Number(match[5]),
+    Number(match[6] ?? 0),
+  );
+}
+
+function getSalonWallClockTimestamp(date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: SALON_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return Date.UTC(
+    Number(values.year),
+    Number(values.month) - 1,
+    Number(values.day),
+    Number(values.hour),
+    Number(values.minute),
+    Number(values.second),
+  );
 }
 
 function splitFullName(fullName: string) {
@@ -158,7 +197,18 @@ function normalizeAppointment(raw: RawAppointment): AdminAppointment {
   const totalDurationMinutes = raw.total_duration_minutes ?? fallbackService?.duration_minutes ?? 0;
   const dateTime = formatDateTime(raw.appointment_start);
   const rawStatus = raw.status ?? undefined;
-  const status: AppointmentStatus = isAppointmentStatus(rawStatus) ? rawStatus : "booked";
+  const storedStatus: AppointmentStatus = isAppointmentStatus(rawStatus) ? rawStatus : "booked";
+  const appointmentStart = raw.appointment_start ?? "";
+  const startTime = parseWallClockTimestamp(appointmentStart);
+  const explicitEndTime = parseWallClockTimestamp(raw.appointment_end ?? "");
+  const calculatedEndTime = startTime + totalDurationMinutes * 60_000;
+  const endTime = Number.isNaN(explicitEndTime) ? calculatedEndTime : explicitEndTime;
+  const isFinished = Number.isFinite(endTime) && endTime <= getSalonWallClockTimestamp();
+  const status: AppointmentStatus = storedStatus === "no_show"
+    ? "cancelled"
+    : storedStatus !== "cancelled" && (storedStatus === "completed" || isFinished)
+      ? "completed"
+      : storedStatus;
 
   return {
     id: raw.id,
@@ -169,7 +219,7 @@ function normalizeAppointment(raw: RawAppointment): AdminAppointment {
     selectedServices,
     appointmentDate: dateTime.date,
     appointmentTime: dateTime.time,
-    appointmentStart: raw.appointment_start ?? "",
+    appointmentStart,
     totalPrice,
     totalDurationMinutes,
     status,
@@ -214,6 +264,7 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
         "total_price",
         "total_duration_minutes",
         "appointment_start",
+        "appointment_end",
         "status",
         "services(id,name,price,duration_minutes)",
       ].join(","),
@@ -227,7 +278,9 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
     query = query.gte("appointment_start", start).lt("appointment_start", end);
   }
 
-  if (filters.status) {
+  if (filters.status === "cancelled") {
+    query = query.in("status", ["cancelled", "no_show"]);
+  } else if (filters.status && filters.status !== "completed") {
     query = query.eq("status", filters.status);
   }
 
@@ -246,5 +299,9 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
   const { data, error } = await withAdminQueryTimeout((signal) => query.abortSignal(signal));
   if (error) throw error;
 
-  return ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
+  const appointments = ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
+
+  return filters.status
+    ? appointments.filter((appointment) => appointment.status === filters.status)
+    : appointments;
 }

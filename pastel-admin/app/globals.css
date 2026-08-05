@@ -1201,13 +1201,25 @@ button:disabled {
 .mobileFilterPanel {
   position: relative;
   display: grid;
-  gap: 22px;
+  gap: 0;
   margin-top: 26px;
   border: 1px solid rgba(70, 36, 28, 0.1);
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.72);
-  padding: 24px;
-  box-shadow: 0 18px 55px rgba(60, 34, 25, 0.06);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 10px;
+  box-shadow: 0 14px 42px rgba(60, 34, 25, 0.055);
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.mobileFilterPanel.isOpen {
+  border-color: rgba(207, 96, 94, 0.22);
+  box-shadow: 0 20px 55px rgba(60, 34, 25, 0.08);
+}
+
+.mobileFilterToolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 56px;
+  gap: 9px;
 }
 
 .mobileSearchField,
@@ -1223,8 +1235,10 @@ button:disabled {
 }
 
 .mobileSearchField {
-  grid-template-columns: 55px minmax(0, 1fr);
-  min-height: 72px;
+  grid-template-columns: 50px minmax(0, 1fr);
+  min-height: 56px;
+  border-color: transparent;
+  background: transparent;
 }
 
 .mobileSearchField svg,
@@ -1245,6 +1259,108 @@ button:disabled {
 
 .mobileSearchField input::placeholder {
   color: #8f8382;
+}
+
+.mobileFilterToggle {
+  position: relative;
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  align-self: center;
+  border: 1px solid rgba(207, 96, 94, 0.2);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fdefed, #fae2de);
+  color: #b84f50;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.mobileFilterToggle:hover {
+  background: linear-gradient(145deg, #fce7e4, #f8d9d4);
+  box-shadow: 0 8px 18px rgba(190, 84, 81, 0.13);
+}
+
+.mobileFilterToggle:active {
+  transform: scale(0.96);
+}
+
+.mobileFilterToggle:focus-visible {
+  outline: 3px solid rgba(207, 96, 94, 0.24);
+  outline-offset: 2px;
+}
+
+.mobileFilterToggle > span {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  display: grid;
+  min-width: 20px;
+  height: 20px;
+  place-items: center;
+  border: 2px solid #fffaf8;
+  border-radius: 999px;
+  background: #b94e50;
+  padding-inline: 4px;
+  color: white;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.mobileFilterOptions {
+  padding: 18px 4px 4px;
+  animation: mobileFiltersIn 180ms ease-out both;
+}
+
+.mobileFilterOptions[hidden] {
+  display: none;
+}
+
+.mobileFilterHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 4px 14px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(72, 43, 36, 0.09);
+}
+
+.mobileFilterHeading span,
+.mobileFilterHeading small {
+  display: block;
+}
+
+.mobileFilterHeading span {
+  color: #2b1715;
+  font-size: 0.96rem;
+  font-weight: 700;
+}
+
+.mobileFilterHeading small {
+  margin-top: 3px;
+  color: #927d79;
+  font-size: 0.78rem;
+}
+
+.mobileFilterHeading strong {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: #fbe6e2;
+  padding: 6px 10px;
+  color: #a94a4b;
+  font-size: 0.72rem;
+}
+
+@keyframes mobileFiltersIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .mobileFilterGrid {
@@ -1397,17 +1513,22 @@ button:disabled {
   text-align: center;
 }
 
-.mobileStatusTabs a:nth-child(2) strong {
+.mobileStatusTabs a[data-status="confirmed"] strong {
   background: #dcefdc;
   color: #2f512b;
 }
 
-.mobileStatusTabs a:nth-child(3) strong {
+.mobileStatusTabs a[data-status="booked"] strong {
   background: #fee7d8;
   color: #e27221;
 }
 
-.mobileStatusTabs a:nth-child(4) strong {
+.mobileStatusTabs a[data-status="completed"] strong {
+  background: #e5eee3;
+  color: #466343;
+}
+
+.mobileStatusTabs a[data-status="cancelled"] strong {
   background: #fde4e2;
   color: #d65856;
 }
@@ -1424,7 +1545,7 @@ button:disabled {
 
 .mobileAppointmentCard {
   display: grid;
-  grid-template-columns: 96px minmax(0, 1fr) 258px;
+  grid-template-columns: 96px minmax(0, 1fr) 190px;
   grid-template-areas:
     "avatar main actions"
     "avatar main facts";
@@ -1469,10 +1590,14 @@ button:disabled {
 }
 
 .mobileAppointmentMain h2 {
-  overflow: hidden;
   color: #251210;
-  font-size: clamp(1.65rem, 4.5vw, 2.05rem);
-  line-height: 1.03;
+  font-size: clamp(1.35rem, 3.7vw, 1.75rem);
+  line-height: 0.98;
+}
+
+.mobileAppointmentMain h2 span {
+  display: block;
+  overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1623,6 +1748,30 @@ button:disabled {
 .mobileStatusControl .statusSaved:empty,
 .mobileStatusControl .statusError:empty {
   display: none;
+}
+
+.statusAnnouncement {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.mobileCompletedStatus {
+  display: inline-flex;
+  min-width: 128px;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #dcefdc;
+  padding: 0 18px;
+  color: #2f512b;
+  font-size: 0.86rem;
+  font-weight: 600;
 }
 
 .mobileEmptyState {
@@ -2104,19 +2253,43 @@ button:disabled {
   }
 
   .mobileFilterPanel {
-    gap: 14px;
+    gap: 0;
     margin-top: 20px;
     border-radius: 16px;
-    padding: 14px;
+    padding: 8px;
+  }
+
+  .mobileFilterToolbar {
+    grid-template-columns: minmax(0, 1fr) 50px;
+    gap: 6px;
   }
 
   .mobileSearchField {
-    min-height: 58px;
+    min-height: 50px;
     grid-template-columns: 46px minmax(0, 1fr);
   }
 
   .mobileSearchField input {
     font-size: 0.98rem;
+  }
+
+  .mobileFilterToggle {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+  }
+
+  .mobileFilterOptions {
+    padding: 14px 2px 2px;
+  }
+
+  .mobileFilterHeading {
+    margin-bottom: 12px;
+    padding-top: 13px;
+  }
+
+  .mobileFilterHeading small {
+    max-width: 220px;
   }
 
   .mobileFilterGrid,
@@ -2222,7 +2395,8 @@ button:disabled {
   .mobileAppointmentMain h2 {
     grid-area: heading;
     align-self: end;
-    font-size: 1.45rem;
+    font-size: 1.18rem;
+    line-height: 1.02;
   }
 
   .mobilePhone {

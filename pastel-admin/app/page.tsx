@@ -1,10 +1,10 @@
 import {
   AdminBottomNav,
-  AdminFilterPanel,
   AdminTopBar,
   AppointmentCardList,
   OverviewCards,
 } from "./components/AdminMobileShell";
+import { AdminFilterPanel } from "./components/AdminFilterPanel";
 import { getAdminAppointments, parseAdminFilters } from "../src/features/admin/data/adminAppointments";
 
 export const dynamic = "force-dynamic";

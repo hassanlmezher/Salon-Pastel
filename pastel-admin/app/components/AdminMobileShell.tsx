@@ -1,38 +1,26 @@
 import Link from "next/link";
 import {
-  ArrowDownUp,
   CalendarDays,
   CalendarRange,
   Clock3,
   Grid2X2,
-  ListFilter,
   LogOut,
-  MoreVertical,
   Phone,
   Plus,
-  Search,
   Tag,
   XCircle,
 } from "lucide-react";
 import { logoutOwner } from "../actions";
-import { FilterAutoSubmit } from "./FilterAutoSubmit";
 import { StatusSelect } from "./StatusSelect";
-import type { AdminAppointment, AdminAppointmentFilters, AppointmentStatus } from "../../src/features/admin/types";
+import type { AdminAppointment, AdminAppointmentFilters } from "../../src/features/admin/types";
 
 type AdminPage = "dashboard" | "appointments";
 
-const statusLabels: Record<AppointmentStatus, string> = {
-  booked: "Pending",
-  confirmed: "Confirmed",
-  completed: "Completed",
-  cancelled: "Cancelled",
-  no_show: "No-show",
-};
-
 const statusTabs = [
   { label: "All", value: "" },
-  { label: "Confirmed", value: "confirmed" },
   { label: "Pending", value: "booked" },
+  { label: "Confirmed", value: "confirmed" },
+  { label: "Completed", value: "completed" },
   { label: "Cancelled", value: "cancelled" },
 ] as const;
 
@@ -40,17 +28,6 @@ function toDateInputValue(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${date.getFullYear()}-${month}-${day}`;
-}
-
-function formatFilterDate(value?: string) {
-  const date = value ? new Date(`${value}T12:00:00`) : new Date();
-  if (Number.isNaN(date.getTime())) return "Select date";
-
-  return date.toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
 }
 
 function formatMoney(value: number) {
@@ -186,63 +163,6 @@ export function OverviewCards({ appointments }: { appointments: AdminAppointment
   );
 }
 
-export function AdminFilterPanel({
-  filters,
-  action,
-  includeSort = false,
-}: {
-  filters: AdminAppointmentFilters;
-  action: string;
-  includeSort?: boolean;
-}) {
-  const dateValue = filters.date || toDateInputValue(new Date());
-  const formId = includeSort ? "appointments-filters" : "dashboard-filters";
-
-  return (
-    <form id={formId} className="mobileFilterPanel" action={action}>
-      <label className="mobileSearchField">
-        <Search size={28} strokeWidth={1.75} aria-hidden="true" />
-        <input name="search" type="search" placeholder="Search name or phone..." defaultValue={filters.search ?? ""} />
-      </label>
-
-      <div className={includeSort ? "mobileFilterGrid three" : "mobileFilterGrid"}>
-        <label className="mobileSelectField">
-          <CalendarDays size={25} strokeWidth={1.75} aria-hidden="true" />
-          <span>{formatFilterDate(dateValue)}</span>
-          <input name="date" type="date" defaultValue={dateValue} aria-label="Appointment date" />
-        </label>
-
-        <label className="mobileSelectField">
-          <ListFilter size={25} strokeWidth={1.75} aria-hidden="true" />
-          <span>{filters.status ? statusLabels[filters.status] : "All Status"}</span>
-          <select name="status" defaultValue={filters.status ?? ""} aria-label="Appointment status">
-            <option value="">All Status</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="booked">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-            <option value="no_show">No-show</option>
-          </select>
-        </label>
-
-        {includeSort ? (
-          <label className="mobileSelectField">
-            <ArrowDownUp size={25} strokeWidth={1.75} aria-hidden="true" />
-            <span>{filters.sort === "oldest" ? "Oldest" : "Newest"}</span>
-            <select name="sort" defaultValue={filters.sort ?? "newest"} aria-label="Sort appointments">
-              <option value="newest">Newest</option>
-              <option value="oldest">Oldest</option>
-            </select>
-          </label>
-        ) : null}
-      </div>
-
-      <button type="submit" className="mobileFilterSubmit">Apply filters</button>
-      <FilterAutoSubmit formId={formId} />
-    </form>
-  );
-}
-
 export function AppointmentStatusTabs({
   appointments,
   filters,
@@ -264,7 +184,7 @@ export function AppointmentStatusTabs({
         const active = (filters.status ?? "") === tab.value;
 
         return (
-          <Link href={href} key={tab.label} className={active ? "active" : ""}>
+          <Link href={href} key={tab.label} className={active ? "active" : ""} data-status={tab.value || "all"}>
             <span>{tab.label}</span>
             <strong>{getStatusCount(appointments, tab.value)}</strong>
           </Link>
@@ -300,7 +220,10 @@ export function AppointmentCardList({
           </div>
 
           <div className="mobileAppointmentMain">
-            <h2>{appointment.customerFullName}</h2>
+            <h2 aria-label={appointment.customerFullName}>
+              <span>{appointment.customerFirstName || "Unknown"}</span>
+              {appointment.customerLastName ? <span>{appointment.customerLastName}</span> : null}
+            </h2>
             <p className="mobilePhone">
               <Phone size={21} strokeWidth={1.8} />
               {appointment.customerPhone || "Not provided"}
@@ -326,9 +249,6 @@ export function AppointmentCardList({
 
           <div className="mobileAppointmentActions">
             <StatusSelect appointmentId={appointment.id} status={appointment.status} />
-            <button type="button" className="mobileMoreButton" aria-label={`More actions for ${appointment.customerFullName}`}>
-              <MoreVertical size={30} strokeWidth={2.2} />
-            </button>
           </div>
 
           <div className="mobileAppointmentFacts">
