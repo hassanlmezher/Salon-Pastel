@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  customer-build:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
@@ -27,4 +27,28 @@ jobs:
         run: npm ci
 
       - name: Build production app
+        run: npm run build
+
+  admin-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: pastel-admin
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: pastel-admin/package-lock.json
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Build admin production app
         run: npm run build
