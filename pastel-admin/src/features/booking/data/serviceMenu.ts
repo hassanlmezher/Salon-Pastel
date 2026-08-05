@@ -214,21 +214,21 @@ export function getServiceArabicCopy(serviceSlug: string): ServiceArabicCopy {
 }
 
 export const manicureServices: ServiceMenuItem[] = [
-  { name: "Broken Tip Repair", slug: "broken-tip-repair", imageSrc: "/Broken%20Tip%20Repair.png", price: "$1.50", description: "Repair a damaged or broken nail tip with careful shaping and finish.", duration: "10 min", serviceType: "Nail Repair" },
   { name: "Full Set Poly Gel", slug: "full-set-poly-gel", imageSrc: "/Full%20Set%20Builder%20Gel.png", price: "$45", description: "Full poly gel set for added shape, strength, and length.", duration: "2 hr 30 min", serviceType: enhancementType },
   { name: "Full Set Hard Gel", slug: "full-set-hard-gel", imageSrc: "/Full%20Set%20Builder%20Gel.png", price: "$45", description: "Full hard gel set built for strong structure and a clean finish.", duration: "2 hr 30 min", serviceType: enhancementType },
   { name: "Full Set Gel Extension", slug: "full-set-gel-extension", imageSrc: "/Full%20Set%20Gel%20Extension.png", price: "$35", description: "Gel extensions shaped and finished for an elegant full set.", duration: "2 hr", serviceType: "Nail Extension" },
   { name: "Full Set Fiber", slug: "full-set-fiber", imageSrc: "/Full%20Set%20Fiber.png", price: "$50", description: "Full fiber set designed for lightweight strength and a refined finish.", duration: "2 hr 30 min", serviceType: enhancementType },
-  { name: "Fungal", slug: "fungal", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused hand nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
   { name: "Hard Gel + Color", slug: "hard-gel-color", imageSrc: "/services/manicure/hard-gel-color.png", price: "$30", description: "Durable hard gel structure finished with your selected color.", duration: "1 hr 30 min", serviceType: enhancementType },
-  { name: "Massage + Scrub", slug: "massage-scrub", imageSrc: "/services/manicure/massage-scrub.png", price: "$15", description: "Hand exfoliation and massage for softer, refreshed skin.", duration: "25 min", serviceType: "Hand Spa" },
-  { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$10", description: "A neat nail application service finished with a clean salon look.", duration: "30 min", serviceType: manicureType },
+  { name: "Rubber + Gel Color", slug: "rubber-gel-color", imageSrc: "/services/manicure/rubber-gel-color.png", price: "$25", description: "Strengthen natural nails with rubber base and finish with long-lasting gel color.", duration: "1 hr 30 min", serviceType: enhancementType },
+  { name: "Rubber + Cover Up", slug: "rubber-cover-up", imageSrc: "/services/manicure/rubber-cover-up.png", price: "$25", description: "Rubber base with soft coverage for a smooth, even nail finish.", duration: "60 min", serviceType: enhancementType },
   { name: "Refill", slug: "refill", imageSrc: "/refill.png", price: "$25", description: "Refresh existing nail enhancement growth with balanced structure and finish.", duration: "1 hr 30 min", serviceType: "Nail Maintenance" },
   { name: "Rubber", slug: "rubber", imageSrc: "/Rubber.png", price: "$20", description: "Strengthen natural nails with a flexible rubber base treatment.", duration: "60 min", serviceType: enhancementType },
-  { name: "Rubber + Cover Up", slug: "rubber-cover-up", imageSrc: "/services/manicure/rubber-cover-up.png", price: "$25", description: "Rubber base with soft coverage for a smooth, even nail finish.", duration: "60 min", serviceType: enhancementType },
-  { name: "Rubber + Gel Color", slug: "rubber-gel-color", imageSrc: "/services/manicure/rubber-gel-color.png", price: "$25", description: "Strengthen natural nails with rubber base and finish with long-lasting gel color.", duration: "1 hr 30 min", serviceType: enhancementType },
   { name: "Classic Manicure", slug: "classic-manicure", imageSrc: "/Russian%20Manicure.png", price: "$25", description: "Detailed cuticle work and clean shaping for a polished natural nail finish.", duration: "60 min", serviceType: manicureType },
+  { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$10", description: "A neat nail application service finished with a clean salon look.", duration: "30 min", serviceType: manicureType },
+  { name: "Fungal", slug: "fungal", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused hand nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
+  { name: "Massage + Scrub", slug: "massage-scrub", imageSrc: "/services/manicure/massage-scrub.png", price: "$15", description: "Hand exfoliation and massage for softer, refreshed skin.", duration: "25 min", serviceType: "Hand Spa" },
   { name: "Soak Off", slug: "soak-off", imageSrc: "/Soak%20Off.png", price: "$15", description: "Gentle product removal that protects the natural nail surface.", duration: "30 min", serviceType: "Nail Removal" },
+  { name: "Broken Tip Repair", slug: "broken-tip-repair", imageSrc: "/Broken%20Tip%20Repair.png", price: "$1.50", description: "Repair a damaged or broken nail tip with careful shaping and finish.", duration: "10 min", serviceType: "Nail Repair" },
 ];
 
 export const pedicureServices: ServiceMenuItem[] = [
