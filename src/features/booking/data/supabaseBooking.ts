@@ -1,6 +1,5 @@
 import { getSupabaseClient } from "../../../lib/supabaseClient";
 import {
-  getServiceBySlugFromList,
   getServiceBySlug,
   getServiceImage,
   getServiceSlug,
@@ -193,73 +192,61 @@ export async function fetchActiveServices(groupId: ServiceGroupId) {
 }
 
 export async function fetchServiceBySlug(groupId: ServiceGroupId, serviceSlug: string) {
-  if (groupId === "pedicure") {
-    const service = getServiceBySlug(groupId, serviceSlug);
-    if (!service) return null;
-
-    const serviceId = await fetchPedicureBookingServiceId(service.slug);
-    return serviceId ? { ...service, id: serviceId } : service;
-  }
-
   const hardcodedService = getServiceBySlug(groupId, serviceSlug);
   if (!hardcodedService) return null;
 
-  const services = await fetchActiveServices(groupId);
-  const backendService = getServiceBySlugFromList(services, serviceSlug);
-  return backendService?.id ? { ...hardcodedService, id: backendService.id } : hardcodedService;
+  const serviceId = await fetchBookingServiceId(groupId, hardcodedService.slug);
+  return serviceId ? { ...hardcodedService, id: serviceId } : hardcodedService;
 }
 
-const pedicureBookingNamesBySlug: Record<string, string[]> = {
-  "luxury-pedicure-massage-scrub": [
-    "Luxury Pedicure + Massage & Scrub",
-    "Massage + Scrub + Paraffin",
-    "Massage + Scrub",
-  ],
-  "paraffin-therapy": ["Paraffin Therapy", "Paraffin Hand Therapy"],
-  "pedicure-classic-french": ["Pedicure + Classic French", "Pedicure + Classic French Manicure"],
-  "pedicure-french-gelish": ["Pedicure + French Gelish"],
-  "pedicure-gel-color": ["Pedicure + Gel Color", "Pedicure + Gel Color (Gelish)", "Pedicure + Gelish"],
-  "pedicure-pose": ["Pedicure + Pose"],
+type BookingServiceRecord = RawService & {
+  id: string;
+  name: string;
 };
 
-const pedicureBookingIdCache = new Map<string, Promise<string | null>>();
+const bookingServiceIdCache = new Map<string, Promise<string | null>>();
 
-async function fetchPedicureBookingServiceId(serviceSlug: string) {
-  if (!pedicureBookingIdCache.has(serviceSlug)) {
-    pedicureBookingIdCache.set(serviceSlug, loadPedicureBookingServiceId(serviceSlug));
+function isBookingServiceInGroup(service: RawService, groupId: ServiceGroupId) {
+  const categoryGroup = getServiceGroupFromCategory(getCategoryName(service));
+  if (categoryGroup === groupId) return true;
+
+  // This legacy row is a hand service that was entered under Pedicure.
+  return groupId === "manicure" && getServiceSlug(String(service.name ?? "")) === "luxary-spa-for-hands";
+}
+
+async function fetchBookingServiceId(groupId: ServiceGroupId, serviceSlug: string) {
+  const cacheKey = `${groupId}:${serviceSlug}`;
+  if (!bookingServiceIdCache.has(cacheKey)) {
+    bookingServiceIdCache.set(cacheKey, loadBookingServiceId(groupId, serviceSlug));
   }
 
   try {
-    return await pedicureBookingIdCache.get(serviceSlug)!;
+    return await bookingServiceIdCache.get(cacheKey)!;
   } catch (error) {
-    pedicureBookingIdCache.delete(serviceSlug);
+    bookingServiceIdCache.delete(cacheKey);
     throw error;
   }
 }
 
-async function loadPedicureBookingServiceId(serviceSlug: string) {
-  const names = pedicureBookingNamesBySlug[serviceSlug] ?? [];
-  if (names.length === 0) return null;
-
+async function loadBookingServiceId(groupId: ServiceGroupId, serviceSlug: string) {
   const supabase = getSupabaseClient();
   const { data, error } = await withSupabaseTimeout((signal) =>
     supabase
       .from("services")
-      .select("id, name")
+      .select("id, name, duration_minutes, service_categories(name)")
       .eq("is_active", true)
-      .in("name", names)
       .abortSignal(signal),
   );
 
   if (error) throw error;
 
-  const matches = (data ?? []) as Array<{ id?: string; name?: string }>;
-  for (const name of names) {
-    const match = matches.find((service) => service.name === name && service.id);
-    if (match?.id) return match.id;
-  }
+  const candidates = ((data ?? []) as unknown as BookingServiceRecord[])
+    .filter((service) => service.id && service.name)
+    .filter((service) => isBookingServiceInGroup(service, groupId))
+    .filter((service) => getServiceBySlug(groupId, getServiceSlug(service.name))?.slug === serviceSlug)
+    .sort((left, right) => Number(right.duration_minutes ?? 0) - Number(left.duration_minutes ?? 0));
 
-  return null;
+  return candidates[0]?.id ?? null;
 }
 
 function getSlotStart(slot: RawSlot) {
