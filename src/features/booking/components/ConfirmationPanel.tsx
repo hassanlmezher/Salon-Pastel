@@ -20,7 +20,7 @@ export function ConfirmationPanel({ booking }: { booking: Booking }) {
         <h1 className="mt-4 font-display text-[42px] leading-none text-white sm:text-[58px]">
           Your appointment is confirmed.
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/78">
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/90">
           Booking code <span className="font-semibold text-white">{booking.code}</span>. Your confirmation keeps the next actions practical: add to calendar, reschedule, or cancel.
         </p>
       </div>

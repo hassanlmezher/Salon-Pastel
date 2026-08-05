@@ -19,7 +19,7 @@ export function Button({
   const reducedMotion = useReducedMotion();
   const styles = {
     primary:
-      "bg-button-gradient text-white shadow-luxe",
+      "bg-button-gradient text-[#fffaf6] shadow-luxe",
     secondary:
       "border border-stroke bg-surface text-text shadow-soft",
     ghost: "bg-transparent text-text-secondary",

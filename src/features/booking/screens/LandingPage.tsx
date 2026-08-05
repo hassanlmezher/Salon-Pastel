@@ -30,7 +30,7 @@ const serviceOfferings = [
 ] as const;
 
 const bookButtonClass =
-  "min-h-16 flex-col gap-1 border border-[#f7d6df] bg-[#f6c9b8] px-6 text-[#4d2a16] shadow-[0_18px_38px_rgba(214,133,153,0.34)] hover:bg-[#f3b8c8] focus-visible:ring-[#d68599] sm:px-8";
+  "inline-flex min-h-16 flex-col items-center justify-center gap-1 border border-[#e4a994] bg-[#f6c9b8] px-6 py-3 text-center text-[#3d2113] shadow-[0_18px_38px_rgba(123,67,46,0.28)] hover:bg-[#f3b8c8] focus-visible:ring-[#8a4545] sm:px-8";
 
 const wordmarkStyle = {
   backgroundImage: "linear-gradient(135deg, #6d3f1f 0%, #b78643 42%, #f2d39a 58%, #8a4f24 100%)",
@@ -69,7 +69,6 @@ export function LandingPage() {
   const videoScale = useTransform(smoothProgress, [0, 1], [1.16, 1.04]);
   const overlayY = useTransform(smoothProgress, [0, 1], [-24, 44]);
   const bubbleY = useTransform(smoothProgress, [0, 1], [18, -12]);
-  const quoteOpacity = useTransform(smoothProgress, [0.1, 0.32, 0.9], [0, 1, 1]);
   useEffect(() => {
     let frame = 0;
 
@@ -108,7 +107,7 @@ export function LandingPage() {
             <p className="font-display text-[42px] font-semibold leading-none sm:text-[56px]" style={wordmarkStyle}>
               Pastel
             </p>
-            <p className="-mt-1 pl-1 text-[10px] uppercase tracking-[0.26em] text-[#b89a7c] sm:text-[11px]">
+            <p className="mt-0.5 pl-1 text-[11px] font-medium uppercase tracking-[0.22em] text-[#745d4d] sm:text-xs sm:tracking-[0.26em]">
               Nail and beauty lounge
             </p>
           </button>
@@ -134,7 +133,7 @@ export function LandingPage() {
         </motion.video>
 
         <motion.div
-          className="absolute inset-0 will-change-transform bg-[linear-gradient(180deg,rgba(255,255,255,0.14)_0%,rgba(255,255,255,0.06)_36%,rgba(42,24,19,0.18)_100%)]"
+          className="absolute inset-0 will-change-transform bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(42,24,19,0.12)_42%,rgba(42,24,19,0.38)_100%)]"
           style={reduceMotion ? undefined : { y: overlayY }}
         />
 
@@ -145,28 +144,28 @@ export function LandingPage() {
 
         <div className="relative flex h-full flex-col justify-center gap-14 px-4 sm:gap-20 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
           <motion.div
-            className="max-w-[32rem] bg-transparent px-0 py-0 text-[#f6c9b8]/70 shadow-none backdrop-blur-0 mix-blend-screen sm:max-w-[38rem] lg:max-w-[42rem]"
-            style={reduceMotion ? undefined : { y: bubbleY, opacity: quoteOpacity }}
+            className="max-w-[32rem] border border-white/20 bg-[rgba(47,33,27,0.86)] px-4 py-4 text-[#fffaf6] shadow-[0_18px_48px_rgba(28,18,14,0.28)] backdrop-blur-md sm:max-w-[38rem] sm:px-6 sm:py-5 lg:max-w-[42rem]"
+            style={reduceMotion ? undefined : { y: bubbleY }}
           >
             <p
-              className="text-left font-body text-[1.9rem] font-black leading-[0.96] tracking-[-0.08em] text-[#f6c9b8]/70 sm:text-[2.7rem] lg:text-[3.6rem]"
+              className="text-left font-body text-[1.9rem] font-extrabold leading-[1.02] tracking-[-0.04em] text-[#fffaf6] sm:text-[2.7rem] sm:tracking-[-0.03em] lg:text-[3.6rem]"
               style={{
-                WebkitTextStroke: "1px rgba(255, 244, 238, 0.12)",
+                textShadow: "0 2px 16px rgba(0, 0, 0, 0.28)",
               }}
             >
               Welcome to Pastel Nail Salon.
             </p>
           </motion.div>
           <motion.div
-            className="ml-auto max-w-[30rem] bg-transparent px-0 py-0 text-right text-[#f6c9b8]/70 shadow-none backdrop-blur-0 mix-blend-screen lg:max-w-[36rem]"
-            style={reduceMotion ? undefined : { y: bubbleY, opacity: quoteOpacity }}
+            className="ml-auto max-w-[30rem] border border-white/20 bg-[rgba(47,33,27,0.86)] px-4 py-4 text-right text-[#fffaf6] shadow-[0_18px_48px_rgba(28,18,14,0.28)] backdrop-blur-md sm:px-6 sm:py-5 lg:max-w-[36rem]"
+            style={reduceMotion ? undefined : { y: bubbleY }}
           >
             <p
-              className="font-body text-[1.65rem] font-black leading-[1.08] tracking-normal text-[#f6c9b8]/70 sm:text-[2.3rem] lg:text-[3.25rem]"
+              className="font-body text-[1.65rem] font-extrabold leading-[1.22] tracking-normal text-[#fffaf6] sm:text-[2.3rem] lg:text-[3.25rem]"
               lang="ar"
               dir="rtl"
               style={{
-                WebkitTextStroke: "1px rgba(255, 244, 238, 0.12)",
+                textShadow: "0 2px 16px rgba(0, 0, 0, 0.28)",
               }}
             >
               أهلاً بك في صالون باستيل للأظافر.
@@ -272,7 +271,7 @@ export function LandingPage() {
             <p className="font-display text-[38px] font-semibold leading-none sm:text-[56px]" style={wordmarkStyle}>
               Pastel
             </p>
-            <p className="mt-1 text-[10px] uppercase tracking-[0.26em] text-[#b89a7c] sm:text-xs sm:tracking-[0.32em]">
+            <p className="mt-1 text-[11px] font-medium uppercase tracking-[0.22em] text-[#745d4d] sm:text-xs sm:tracking-[0.26em]">
               Nail and beauty lounge
             </p>
             <p className="mt-3 max-w-md text-sm leading-6 text-[#6d5648] sm:mt-4 sm:leading-7">
@@ -308,7 +307,7 @@ export function LandingPage() {
           </div>
         </div>
 
-        <div className="relative mx-auto mt-6 flex max-w-[88rem] items-center justify-between border-t border-[#dccab8]/70 pt-3 text-[10px] uppercase tracking-[0.18em] text-[#a78b74] sm:mt-10 sm:pt-4 sm:text-xs sm:tracking-[0.24em]">
+        <div className="relative mx-auto mt-6 flex max-w-[88rem] items-center justify-between border-t border-[#dccab8]/70 pt-3 text-[11px] font-medium uppercase tracking-[0.16em] text-[#6d5648] sm:mt-10 sm:pt-4 sm:text-xs sm:tracking-[0.2em]">
           <span>Pastel Salon</span>
           <span>© 2026</span>
         </div>

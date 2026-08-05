@@ -37,7 +37,7 @@ export function BookingChoiceScreen() {
         </div>
 
         <div className="mt-14 max-w-2xl">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#d68599]">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8a4545]">
             Book an appointment
           </p>
           <h1 className="mt-4 font-display text-[3.5rem] font-semibold leading-none text-[#4d2a16] sm:text-[5rem]">

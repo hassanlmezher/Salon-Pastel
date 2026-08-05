@@ -10,11 +10,11 @@ export default {
         "surface-muted": "#F3E4D6",
         "surface-raised": "#E6D1BD",
         text: "#221814",
-        "text-secondary": "#6E5C4F",
+        "text-secondary": "#5F4D42",
         stroke: "#D7C6B4",
         "gold-soft": "#F2D39A",
         "gold-deep": "#6D3F1F",
-        "gold-rich": "#B78643",
+        "gold-rich": "#7A4A24",
         success: "#355B4B",
         error: "#8A4545",
       },
@@ -28,7 +28,7 @@ export default {
         soft: "0 12px 26px rgba(48, 30, 19, 0.07)"
       },
       backgroundImage: {
-        "button-gradient": "linear-gradient(135deg, #B78643 0%, #E0B85F 48%, #F7E1A4 100%)",
+        "button-gradient": "linear-gradient(135deg, #6D3F1F 0%, #87522A 52%, #986633 100%)",
         "editorial-panel":
           "linear-gradient(180deg, rgba(255,253,249,0.98) 0%, rgba(247,241,234,0.98) 100%)",
         "dark-panel":

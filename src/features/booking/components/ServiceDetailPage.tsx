@@ -454,7 +454,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
           </h2>
 
           <AppointmentStep icon="□" number="1" title="Choose Month">
-            <div className="flex gap-3 overflow-x-auto px-0.5 pb-2">
+            <div className="flex w-full max-w-full gap-3 overflow-x-auto px-0.5 pb-2">
               {monthOptions.map((item) => (
                 <button
                   key={`${item.month}-${item.year}`}
@@ -477,7 +477,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             {availabilityLoading ? <p className="text-sm text-[#6d5648]">Loading available days...</p> : null}
             {!availabilityLoading && availabilityError ? <p className="text-sm text-[#8a4545]">{availabilityError}</p> : null}
             {!availabilityLoading && !availabilityError ? (
-              <div className="flex gap-3 overflow-x-auto px-0.5 pb-2">
+              <div className="flex w-full max-w-full gap-3 overflow-x-auto px-0.5 pb-2">
                 {days.map((day) => {
                   const disabled = day.available === 0;
                   return (
@@ -709,11 +709,11 @@ function AppointmentStep({
       <span className="service-detail-icon hidden h-11 w-11 place-items-center bg-[#f2e7e2] text-[#a25b54] lg:grid">
         {icon}
       </span>
-      <div>
+      <div className="min-w-0">
         <h3 className="font-display text-lg leading-none text-[#231814] sm:text-xl">
           {number}. {title}
         </h3>
-        <div className="mt-4">{children}</div>
+        <div className="mt-4 min-w-0 max-w-full">{children}</div>
       </div>
     </div>
   );

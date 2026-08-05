@@ -28,7 +28,7 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
         </div>
 
         <section className="mt-10 sm:mt-14" aria-labelledby="service-menu-title">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#d68599]">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8a4545]">
             Book an appointment
           </p>
           <h1
@@ -59,7 +59,7 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
                   alt={service.name}
                   className="service-menu-image aspect-square w-[76%] max-w-[13rem] object-cover shadow-[0_10px_24px_rgba(97,58,24,0.1)]"
                 />
-                <span className="service-menu-icon -mt-5 grid h-10 w-10 place-items-center border-2 border-white bg-[#dfb9aa] text-sm font-semibold text-white shadow-[0_8px_18px_rgba(97,58,24,0.16)] sm:h-12 sm:w-12">
+                <span className="service-menu-icon -mt-5 grid h-10 w-10 place-items-center border-2 border-white bg-[#8a4545] text-sm font-semibold text-white shadow-[0_8px_18px_rgba(97,58,24,0.16)] sm:h-12 sm:w-12">
                   +
                 </span>
                 <h2 className="mt-4 max-w-full text-balance font-display text-[1.2rem] font-semibold leading-[1.05] text-[#231814] sm:text-[1.65rem] lg:text-[2rem]">

@@ -64,7 +64,7 @@ export function BookingSummaryCard({
           <PoundSterling size={16} aria-hidden="true" />
           <span className="text-[11px] font-semibold uppercase tracking-[0.22em]">Pricing</span>
         </div>
-        <div className="mt-3 space-y-2 text-sm text-white/74">
+        <div className="mt-3 space-y-2 text-sm text-white/85">
           <div className="flex items-center justify-between">
             <span>Subtotal</span>
             <span className="text-white">{currency(quote.subtotal)}</span>
@@ -82,7 +82,7 @@ export function BookingSummaryCard({
             <span className="text-white">{quote.durationMin} min</span>
           </div>
           {draft.selectedSlotIso ? (
-            <div className="pt-2 text-xs text-white/58">
+            <div className="pt-2 text-xs text-white/80">
               Ends {dateTimeLabel(quote.endIso ?? draft.selectedSlotIso, timezone)}.
             </div>
           ) : null}

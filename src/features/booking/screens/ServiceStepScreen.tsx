@@ -160,7 +160,7 @@ function PromoLine({
 }) {
   return (
     <div className="flex items-center justify-between rounded-[18px] border border-white/10 bg-white/6 px-4 py-3">
-      <span className="inline-flex items-center gap-2 text-sm text-white/70">
+      <span className="inline-flex items-center gap-2 text-sm text-white/85">
         <span className="text-gold-soft">{icon}</span>
         {label}
       </span>
