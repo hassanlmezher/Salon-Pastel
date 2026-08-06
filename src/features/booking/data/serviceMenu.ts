@@ -88,12 +88,20 @@ export const serviceArabicCopyBySlug: Record<string, ServiceArabicCopy> = {
     description: "تقوية للأظافر باستخدام الهارد جل مع لون أنيق يمنحها مظهرًا جذابًا وثباتًا طويل الأمد.",
   },
   "massage-scrub-for-hands": {
-    title: "مساج وتقشير وبارافين لليدين",
-    description: "جلسة متكاملة لتنعيم اليدين وتجديد البشرة مع علاج بارافين مرطب.",
+    title: "سبا فاخر لليدين",
+    description: "جلسة متكاملة تشمل المساج والتقشير وعلاج البارافين لتنعيم اليدين وترطيبهما.",
   },
   "massage-scrub-paraffin-hands": {
-    title: "سبا اليدين الكامل",
-    description: "جلسة متكاملة لتنعيم اليدين وتجديد البشرة مع علاج بارافين مرطب.",
+    title: "سبا فاخر لليدين",
+    description: "جلسة متكاملة تشمل المساج والتقشير وعلاج البارافين لتنعيم اليدين وترطيبهما.",
+  },
+  "luxury-spa-for-hands": {
+    title: "سبا فاخر لليدين",
+    description: "جلسة متكاملة تشمل المساج والتقشير وعلاج البارافين لتنعيم اليدين وترطيبهما.",
+  },
+  "luxury-spa-for-legs": {
+    title: "سبا فاخر للساقين",
+    description: "جلسة متكاملة تشمل المساج والتقشير وعلاج البارافين لتنعيم القدمين والساقين وترطيبهما.",
   },
   "nail-design": {
     title: "تصميم الأظافر",
@@ -102,6 +110,10 @@ export const serviceArabicCopyBySlug: Record<string, ServiceArabicCopy> = {
   ombre: {
     title: "أومبري",
     description: "تدرج لوني ناعم وأنيق يمنح الأظافر مظهرًا عصريًا وجذابًا.",
+  },
+  "pedicure-ombre": {
+    title: "بديكير مع أومبري",
+    description: "عناية متكاملة للقدمين مع تدرج لوني ناعم وأنيق يمنح الأظافر مظهرًا عصريًا وجذابًا.",
   },
   "paraffin-hand-therapy": {
     title: "علاج اليدين بالبارافين",
@@ -214,8 +226,8 @@ export function getServiceArabicCopy(serviceSlug: string): ServiceArabicCopy {
 }
 
 export const manicureServices: ServiceMenuItem[] = [
-  { name: "Full Set Poly Gel", slug: "full-set-poly-gel", imageSrc: "/Full%20Set%20Poly%20Gel.png", price: "$45", description: "Full poly gel set for added shape, strength, and length.", duration: "2 hr 30 min", serviceType: enhancementType },
-  { name: "Full Set Hard Gel", slug: "full-set-hard-gel", imageSrc: "/Full%20Set%20Hard%20Gel.png", price: "$45", description: "Full hard gel set built for strong structure and a clean finish.", duration: "2 hr 30 min", serviceType: enhancementType },
+  { name: "Full Set Poly Gel", slug: "full-set-poly-gel", imageSrc: "/Full%20Set%20Poly%20Gel.png", price: "$45", description: "Full poly gel set for added shape, strength, and length.", duration: "2 hr", serviceType: enhancementType },
+  { name: "Full Set Hard Gel", slug: "full-set-hard-gel", imageSrc: "/Full%20Set%20Hard%20Gel.png", price: "$45", description: "Full hard gel set built for strong structure and a clean finish.", duration: "2 hr", serviceType: enhancementType },
   { name: "Full Set Gel Extension", slug: "full-set-gel-extension", imageSrc: "/Full%20Set%20Gel%20Extension.png", price: "$35", description: "Gel extensions shaped and finished for an elegant full set.", duration: "2 hr", serviceType: "Nail Extension" },
   { name: "Full Set Fiber", slug: "full-set-fiber", imageSrc: "/Full%20Set%20Fiber.png", price: "$50", description: "Full fiber set designed for lightweight strength and a refined finish.", duration: "2 hr 30 min", serviceType: enhancementType },
   { name: "Hard Gel + Color", slug: "hard-gel-color", imageSrc: "/services/manicure/hard-gel-color.png", price: "$30", description: "Durable hard gel structure finished with your selected color.", duration: "1 hr 30 min", serviceType: enhancementType },
@@ -226,18 +238,20 @@ export const manicureServices: ServiceMenuItem[] = [
   { name: "Classic Manicure", slug: "classic-manicure", imageSrc: "/Russian%20Manicure.png", price: "$25", description: "Detailed cuticle work and clean shaping for a polished natural nail finish.", duration: "60 min", serviceType: manicureType },
   { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$10", description: "A neat nail application service finished with a clean salon look.", duration: "30 min", serviceType: manicureType },
   { name: "Fungal", slug: "fungal", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused hand nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
-  { name: "Massage + Scrub", slug: "massage-scrub", imageSrc: "/services/manicure/massage-scrub.png", price: "$15", description: "Hand exfoliation and massage for softer, refreshed skin.", duration: "25 min", serviceType: "Hand Spa" },
+  { name: "Luxury Spa for Hands", slug: "luxury-spa-for-hands", imageSrc: "/services/manicure/massage-scrub.png", price: "$25", description: "Massage, scrub, and paraffin hand therapy combined into one indulgent spa treatment.", duration: "30 min", serviceType: "Hand Spa" },
   { name: "Soak Off", slug: "soak-off", imageSrc: "/Soak%20Off.png", price: "$15", description: "Gentle product removal that protects the natural nail surface.", duration: "30 min", serviceType: "Nail Removal" },
   { name: "Broken Tip Repair", slug: "broken-tip-repair", imageSrc: "/Broken%20Tip%20Repair.png", price: "$1.50", description: "Repair a damaged or broken nail tip with careful shaping and finish.", duration: "10 min", serviceType: "Nail Repair" },
 ];
 
 export const pedicureServices: ServiceMenuItem[] = [
+  { name: "Luxury Spa for Legs", slug: "luxury-spa-for-legs", imageSrc: "/services/pedicure/luxury-pedicure-massage-scrub.png", price: "$25", description: "Massage, scrub, and paraffin therapy combined into one indulgent spa treatment for legs.", duration: "30 min", serviceType: "Foot Spa" },
   { name: "Luxury Pedicure + Massage & Scrub", slug: "luxury-pedicure-massage-scrub", imageSrc: "/services/pedicure/luxury-pedicure-massage-scrub.png", price: "$40", description: "Luxury pedicure care with a relaxing massage and smoothing foot scrub.", duration: "2 hr", serviceType: "Foot Spa" },
   { name: "Paraffin Therapy", slug: "paraffin-therapy", imageSrc: "/services/pedicure/paraffin-therapy.png", price: "$15", description: "Warm paraffin therapy to soften, hydrate, and comfort dry feet.", duration: "15 min", serviceType: "Foot Therapy" },
   { name: "Pedicure + Classic French", slug: "pedicure-classic-french", imageSrc: "/services/pedicure/pedicure-classic-french.png", price: "$17", description: "Pedicure care finished with classic French styling.", duration: "1 hr 30 min", serviceType: pedicureType },
   { name: "Pedicure + French Gelish", slug: "pedicure-french-gelish", imageSrc: "/services/pedicure/pedicure-french-gelish.png", price: "$20", description: "French pedicure styling with the durability of Gelish polish.", duration: "2 hr", serviceType: pedicureType },
   { name: "Pedicure + Gel Color", slug: "pedicure-gel-color", imageSrc: "/services/pedicure/pedicure-gel-color.png", price: "$17", description: "Relaxed pedicure care finished with long-lasting gel color.", duration: "2 hr", serviceType: pedicureType },
   { name: "Pedicure + Pose", slug: "pedicure-pose", imageSrc: "/services/pedicure/pedicure-pose.png", price: "$15", description: "Classic pedicure care finished with a neat pose application.", duration: "1 hr 30 min", serviceType: pedicureType },
+  { name: "Pedicure + Ombré", slug: "pedicure-ombre", imageSrc: "/Ombr%C3%A9.png", price: "$20", description: "Pedicure care finished with a soft, blended ombré nail color.", duration: "1 hr 45 min", serviceType: pedicureType },
 ];
 
 const slugAliases: Record<string, string> = {
@@ -246,10 +260,12 @@ const slugAliases: Record<string, string> = {
   "remove-rubber-cover-up": "rubber-cover-up",
   "soak-off-classic-manicure-oil": "soak-off",
   "soak-off-manicure": "soak-off",
-  "massage-scrub-for-hands": "massage-scrub",
-  "massage-scrub-paraffin-hands": "massage-scrub",
-  "ultimate-hand-spa": "massage-scrub",
-  "luxary-spa-for-hands": "massage-scrub",
+  "massage-scrub-for-hands": "luxury-spa-for-hands",
+  "massage-scrub-paraffin-hands": "luxury-spa-for-hands",
+  "massage-scrub": "luxury-spa-for-hands",
+  "ultimate-hand-spa": "luxury-spa-for-hands",
+  "luxary-spa-for-hands": "luxury-spa-for-hands",
+  "paraffin-hand-therapy": "luxury-spa-for-hands",
   "fungal-nail-care-and-treatment": "fungal",
   "fungal-nail-care-treatment": "fungal",
   "refill-poly-gel": "refill",
@@ -352,8 +368,8 @@ const addOnOptions: Record<string, ServiceAddOnOption> = {
     imageSrc: "/Nail%20Design.png",
     price: "From $2",
     priceValue: 2,
-    duration: "10 min",
-    durationMin: 10,
+    duration: "5 min",
+    durationMin: 5,
     description: "Custom nail detail.",
     serviceType: "Nail Art",
   },
@@ -368,26 +384,15 @@ const addOnOptions: Record<string, ServiceAddOnOption> = {
     description: "Long-lasting gel color finish.",
     serviceType: addOnType,
   },
-  "massage-scrub": {
-    name: "Massage + Scrub",
-    slug: "massage-scrub",
+  "luxury-spa-for-hands": {
+    name: "Luxury Spa for Hands",
+    slug: "luxury-spa-for-hands",
     imageSrc: "/services/manicure/massage-scrub.png",
-    price: "$15",
-    priceValue: 15,
-    duration: "25 min",
-    durationMin: 25,
-    description: "Hand massage and exfoliating scrub.",
-    serviceType: "Hand Spa",
-  },
-  "paraffin-hand-therapy": {
-    name: "Paraffin Hand Therapy",
-    slug: "paraffin-hand-therapy",
-    imageSrc: "/Paraffin%20Hand%20Therapy.png",
-    price: "$15",
-    priceValue: 15,
-    duration: "25 min",
-    durationMin: 25,
-    description: "Warm paraffin therapy to deeply soften and hydrate the hands.",
+    price: "$25",
+    priceValue: 25,
+    duration: "30 min",
+    durationMin: 30,
+    description: "Massage, scrub, and paraffin hand therapy in one indulgent treatment.",
     serviceType: "Hand Spa",
   },
   "russian-manicure": {
@@ -431,10 +436,8 @@ const supportedManicureAddOns = [
   "chrome",
   "french",
   "ombre",
-  "massage-scrub",
+  "luxury-spa-for-hands",
   "nail-design",
-  "gel-color",
-  "paraffin-hand-therapy",
   "russian-manicure",
 ];
 const enhancementAddOns = [...supportedManicureAddOns, "broken-tip-repair"];
@@ -447,7 +450,7 @@ const manicureAddOnsByService: Record<string, string[]> = {
   "full-set-fiber": supportedManicureAddOns,
   fungal: ["russian-manicure"],
   "hard-gel-color": enhancementAddOns,
-  "massage-scrub": ["paraffin-hand-therapy", "russian-manicure"],
+  "luxury-spa-for-hands": ["russian-manicure"],
   pose: ["russian-manicure", "pose-design", "pose-french"],
   refill: enhancementAddOns,
   rubber: enhancementAddOns,
