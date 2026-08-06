@@ -1,4 +1,5 @@
 import { Outlet } from "react-router-dom";
+import { InstallPrompt } from "../features/booking/pwa/InstallPrompt";
 
 export function AppShell() {
   return (
@@ -12,6 +13,7 @@ export function AppShell() {
       <main id="main-content">
         <Outlet />
       </main>
+      <InstallPrompt />
     </div>
   );
 }

@@ -251,7 +251,7 @@ export const pedicureServices: ServiceMenuItem[] = [
   { name: "Pedicure + French Gelish", slug: "pedicure-french-gelish", imageSrc: "/services/pedicure/pedicure-french-gelish.png", price: "$20", description: "French pedicure styling with the durability of Gelish polish.", duration: "2 hr", serviceType: pedicureType },
   { name: "Pedicure + Gel Color", slug: "pedicure-gel-color", imageSrc: "/services/pedicure/pedicure-gel-color.png", price: "$17", description: "Relaxed pedicure care finished with long-lasting gel color.", duration: "2 hr", serviceType: pedicureType },
   { name: "Pedicure + Pose", slug: "pedicure-pose", imageSrc: "/services/pedicure/pedicure-pose.png", price: "$15", description: "Classic pedicure care finished with a neat pose application.", duration: "1 hr 30 min", serviceType: pedicureType },
-  { name: "Pedicure + Ombré", slug: "pedicure-ombre", imageSrc: "/Ombr%C3%A9.png", price: "$20", description: "Pedicure care finished with a soft, blended ombré nail color.", duration: "1 hr 45 min", serviceType: pedicureType },
+  { name: "Pedicure + Ombré", slug: "pedicure-ombre", imageSrc: "/services/pedicure/pedicure-ombre.png", price: "$20", description: "Pedicure care finished with a soft, blended ombré nail color.", duration: "1 hr 45 min", serviceType: pedicureType },
 ];
 
 const slugAliases: Record<string, string> = {
@@ -559,7 +559,7 @@ export function getOptimizedServiceImage(imageSrc: string) {
     return imageSrc;
   }
 
-  const optimizedPath = `/optimized${path.replace(/\.png$/i, ".webp")}`;
+  const optimizedPath = `/optimized${path.replace(/\.(png|jpg|jpeg)$/i, ".webp")}`;
   return query ? `${optimizedPath}?${query}` : optimizedPath;
 }
 
