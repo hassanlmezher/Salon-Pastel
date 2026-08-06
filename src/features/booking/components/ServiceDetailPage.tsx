@@ -84,10 +84,6 @@ function formatServicePrice(value: number) {
   return `$${Number.isInteger(value) ? value : value.toFixed(2)}`;
 }
 
-function getOptimizedImage(src: string) {
-  return `/optimized${src.replace(/\.png$/i, ".webp")}`;
-}
-
 export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPageProps) {
   const navigate = useNavigate();
   const monthOptions = useMemo(() => createMonthOptions(), []);
@@ -370,12 +366,12 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
 
   if (serviceLoading || serviceError || !service) {
     return (
-      <main className="min-h-screen bg-[#fbf7f3] px-4 py-8 text-[#241b18] sm:px-6 lg:px-8">
+      <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-4 text-[#231814] sm:px-5 lg:px-6">
         <div className="mx-auto max-w-[76rem]">
-          <div className="rounded-[1.5rem] border border-[#ead5cd] bg-white p-6 text-sm leading-6 text-[#6d5648] shadow-sm">
+          <div className="border border-[#ead5cd] bg-[#fffaf6]/92 p-6 text-sm leading-6 text-[#6d5648]">
             <Link
               to={`/book/${groupId}`}
-              className="mb-4 inline-flex min-h-10 items-center rounded-full border border-[#e7c9c2] bg-[#fffaf6]/92 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[#6d3f1f]"
+              className="mb-4 inline-flex min-h-10 items-center border border-[#e7c9c2] bg-[#fffaf6]/92 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[#6d3f1f]"
             >
               Back
             </Link>
@@ -389,51 +385,37 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
   const arabicCopy = getServiceArabicCopy(service.slug);
 
   return (
-    <main className="min-h-screen bg-[#fbf7f3] px-4 pb-20 pt-4 text-[#241b18] sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[86rem]">
-        <nav className="mb-4 flex h-14 items-center justify-between" aria-label="Booking navigation">
-          <Link to="/" className="font-display text-[2rem] font-semibold tracking-[-0.04em] text-[#7d463d]" aria-label="Pastel home">Pastel</Link>
-          <div className="hidden items-center gap-3 text-xs font-semibold text-[#88736c] sm:flex">
-            <span>1 · Service</span><span>—</span><span className="rounded-full bg-[#8d5147] px-3 py-1.5 text-white">2 · Time</span><span>—</span><span>3 · Confirm</span>
-          </div>
-        </nav>
-
-        <section className="service-detail-hero grid overflow-hidden rounded-[2rem] border border-[#eadfda] bg-[#fffdfa] shadow-[0_20px_60px_rgba(79,50,43,0.1)] lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="relative min-h-[18rem] overflow-hidden bg-[#eaded8] sm:min-h-[22rem] lg:min-h-[28rem]">
-            <img
-              src={getOptimizedImage(service.imageSrc)}
-              alt={service.name}
-              className="h-full w-full object-cover"
-              onError={(event) => {
-                event.currentTarget.onerror = null;
-                event.currentTarget.src = decodeURIComponent(service.imageSrc);
-              }}
-            />
+    <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-4 text-[#231814] sm:px-5 lg:px-6">
+      <div className="mx-auto max-w-[76rem]">
+        <section className="service-detail-hero grid overflow-hidden bg-[#fffaf6] shadow-[0_18px_44px_rgba(97,58,24,0.12)] lg:grid-cols-[1.15fr_0.95fr]">
+          <div className="relative min-h-[18rem] overflow-hidden sm:min-h-[20rem] lg:min-h-[24rem]">
+            <img src={decodeURIComponent(service.imageSrc)} alt={service.name} className="h-full w-full object-cover" />
             <Link
               to={`/book/${groupId}`}
-              className="service-detail-back absolute left-4 top-4 inline-flex min-h-11 items-center gap-2 rounded-full border border-white/50 bg-white/88 px-4 text-sm font-semibold text-[#4d4039] shadow-[0_12px_24px_rgba(97,58,24,0.12)] backdrop-blur-md sm:left-5 sm:top-5"
+              className="service-detail-back absolute left-5 top-5 inline-flex items-center gap-3 bg-white/88 px-4 py-3 text-sm font-medium text-[#4d4039] shadow-[0_12px_24px_rgba(97,58,24,0.12)] backdrop-blur-md sm:text-base"
             >
-              <span aria-hidden="true">‹</span>
+              <span className="grid h-9 w-9 place-items-center bg-white text-2xl leading-none text-[#231814] shadow-[0_6px_18px_rgba(97,58,24,0.12)]">
+                ‹
+              </span>
               Back
             </Link>
           </div>
 
-          <div className="flex flex-col px-6 py-7 sm:px-8 lg:px-10 lg:py-10">
-            <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[#9a5c52]">{service.serviceType}</p>
-            <h1 className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-2 font-display text-[2.25rem] font-semibold leading-[0.95] tracking-[-0.035em] text-[#342521] sm:text-[3.4rem]">
+          <div className="px-6 py-7 sm:px-8 lg:px-10 lg:py-10">
+            <h1 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-display text-[1.55rem] font-semibold leading-none text-[#231814] sm:text-[2.7rem]">
               <span>{service.name}</span>
-              <span lang="ar" dir="rtl" className="text-[0.62em] leading-tight text-[#98594f]">
+              <span lang="ar" dir="rtl" className="text-[0.82em] leading-tight text-[#5a2f1b]">
                 {arabicCopy.title}
               </span>
             </h1>
-            <p className="mt-5 font-display text-[2.35rem] font-semibold leading-none text-[#9a5b51]">
+            <p className="mt-4 text-[2rem] font-medium leading-none text-[#b46f65]">
               {formatServicePrice(totalPrice)}
             </p>
-            <p className="mt-5 max-w-md text-sm leading-7 text-[#66534d] sm:text-base">
+            <p className="mt-5 max-w-md text-base leading-7 text-[#4d4039]">
               {service.description}
             </p>
 
-            <div className="mt-auto grid gap-4 pt-7 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+            <div className="mt-6 grid gap-4">
               <DetailRow icon="◷" label="Duration" arabicLabel="المدة" value={formatServiceDuration(totalDurationMin)} />
               <DetailRow icon="▣" label="Service type" arabicLabel="نوع الخدمة" value={service.serviceType} />
             </div>
@@ -441,7 +423,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         </section>
 
         <div
-          className="sticky top-3 z-40 mt-5 flex min-h-16 items-center justify-between gap-4 rounded-full border border-[#e4d5d0] bg-[#fffdfa]/92 px-5 py-3 shadow-[0_12px_32px_rgba(79,50,43,0.12)] backdrop-blur-xl sm:px-6"
+          className="sticky top-0 z-40 mt-5 flex min-h-16 items-center justify-between gap-4 border border-[#ead5cd] bg-[#fffaf6]/95 px-5 py-3 shadow-[0_10px_28px_rgba(97,58,24,0.14)] backdrop-blur-md sm:px-6"
           aria-live="polite"
           aria-atomic="true"
         >
@@ -457,7 +439,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         </div>
 
         {availableAddOns.length > 0 ? (
-          <section className="service-detail-panel mt-5 rounded-[2rem] border border-[#eadfda] bg-[#fffdfa] p-5 shadow-[0_16px_45px_rgba(79,50,43,0.07)] sm:p-6 lg:p-8" aria-labelledby="add-ons-title">
+          <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8" aria-labelledby="add-ons-title">
             <h2 id="add-ons-title" className="font-display text-[1.65rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
               Add to your service
             </h2>
@@ -471,13 +453,13 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                     type="button"
                     aria-pressed={selected}
                     onClick={() => toggleAddOn(addOn)}
-                    className={`flex min-h-28 items-center gap-4 rounded-[1.25rem] border p-3 text-left transition ${
+                    className={`flex min-h-28 items-center gap-4 border p-3 text-left transition ${
                       selected
-                        ? "border-[#b76f64] bg-[#f6e5e1] shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
-                        : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b] hover:bg-white"
+                        ? "border-[#bd736b] bg-[#f9e9e5] shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
+                        : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b]"
                     }`}
                   >
-                    <img src={getOptimizedImage(addOn.imageSrc)} alt="" aria-hidden="true" className="h-20 w-20 flex-none rounded-[0.9rem] object-cover" onError={(event) => { event.currentTarget.onerror = null; event.currentTarget.src = decodeURIComponent(addOn.imageSrc); }} />
+                    <img src={decodeURIComponent(addOn.imageSrc)} alt="" aria-hidden="true" className="h-20 w-20 flex-none object-cover" />
                     <span className="min-w-0">
                       <strong className="block font-display text-lg leading-tight text-[#231814]">{addOn.name}</strong>
                       <span className="mt-1 block text-sm font-medium text-[#b46f65]">+{addOn.price} · {addOn.duration}</span>
@@ -490,8 +472,8 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
           </section>
         ) : null}
 
-        <section className="service-detail-panel mt-5 rounded-[2rem] border border-[#eadfda] bg-[#fffdfa] p-5 shadow-[0_16px_45px_rgba(79,50,43,0.07)] sm:p-6 lg:p-8">
-          <h2 className="font-display text-[1.8rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
+        <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8">
+          <h2 className="whitespace-nowrap font-display text-[1.2rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
             Select Your Appointment
           </h2>
 
@@ -502,9 +484,9 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                   key={`${item.month}-${item.year}`}
                   type="button"
                   onClick={() => chooseMonth(item)}
-                  className={`min-h-16 flex-[0_0_7.2rem] rounded-[1rem] border px-3 text-center text-sm font-medium leading-6 transition sm:flex-[0_0_8.25rem] ${
+                  className={`min-h-16 flex-[0_0_7.2rem] border px-3 text-center text-base leading-6 transition sm:flex-[0_0_8.25rem] ${
                     selectedMonth.monthIndex === item.monthIndex && selectedMonth.year === item.year
-                      ? "border-[#8d5147] bg-[#8d5147] text-white shadow-sm"
+                      ? "border-[#bd736b] bg-[#bd736b] text-white"
                       : "border-[#ead5cd] bg-white/50 text-[#231814] hover:border-[#bd736b]"
                   }`}
                 >
@@ -528,11 +510,11 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                       type="button"
                       disabled={disabled}
                       onClick={() => setSelectedDateIso(day.dateIso)}
-                      className={`min-h-24 flex-[0_0_5.85rem] rounded-[1rem] border px-2 py-3 text-center transition sm:flex-[0_0_6.5rem] ${
+                      className={`min-h-24 flex-[0_0_5.85rem] border px-2 py-3 text-center transition sm:flex-[0_0_6.5rem] ${
                         disabled
                           ? "cursor-not-allowed border-dashed border-[#8c7c75] bg-[#7d726d]/20 text-[#5f514b]"
                           : selectedDateIso === day.dateIso
-                            ? "border-[#8d5147] bg-[#8d5147] text-white shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
+                            ? "border-[#bd736b] bg-[#bd736b] text-white shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
                             : "border-[#ead5cd] bg-white/50 text-[#231814] hover:border-[#bd736b]"
                       }`}
                     >
@@ -564,9 +546,9 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                     key={slot.startIso}
                     type="button"
                     onClick={() => setSelectedSlotStart(slot.startIso)}
-                    className={`min-h-[3.25rem] rounded-full border px-3 text-base font-medium transition ${
+                    className={`min-h-[3.25rem] border px-3 text-base transition ${
                       selectedSlotStart === slot.startIso
-                        ? "border-[#8d5147] bg-[#8d5147] text-white shadow-sm"
+                        ? "border-[#bd736b] bg-[#bd736b] text-white"
                         : "border-[#ead5cd] bg-white/50 text-[#4d4039] hover:border-[#bd736b]"
                     }`}
                   >
@@ -581,7 +563,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             type="button"
             disabled={availabilityLoading || !selectedSlot}
             onClick={() => setShowCustomerForm(true)}
-            className="mt-8 flex min-h-[4.25rem] w-full items-center justify-center gap-5 rounded-full bg-[#8d5147] px-5 text-center font-display text-[1.35rem] text-white shadow-[0_14px_28px_rgba(141,81,71,0.25)] transition hover:-translate-y-0.5 hover:bg-[#754138] disabled:cursor-not-allowed disabled:translate-y-0 disabled:bg-[#7d726d]/45 disabled:shadow-none sm:text-[1.65rem]"
+            className="mt-6 flex min-h-[4.25rem] w-full items-center justify-center gap-5 bg-[#bd736b] px-5 text-center font-display text-[1.35rem] text-white shadow-[0_14px_28px_rgba(189,115,107,0.28)] transition hover:bg-[#a9615b] disabled:cursor-not-allowed disabled:bg-[#7d726d]/45 disabled:shadow-none sm:text-[1.65rem]"
           >
             <span className="grid gap-1 leading-none">
               <span>Continue to Booking</span>
@@ -596,7 +578,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
 
       {showCustomerForm ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-[#231814]/28 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="customer-form-title">
-          <form className="booking-form-popup max-h-[calc(100svh-2rem)] w-full max-w-[26rem] overflow-y-auto rounded-[2rem] bg-[#fffdfa] p-6 shadow-[0_24px_70px_rgba(97,58,24,0.26)] sm:p-7" onSubmit={submitCustomerForm}>
+          <form className="booking-form-popup w-full max-w-[24rem] bg-[#fffaf6] p-6 shadow-[0_24px_70px_rgba(97,58,24,0.26)]" onSubmit={submitCustomerForm}>
             <h2 id="customer-form-title" className="font-display text-[2rem] font-semibold leading-none text-[#231814]">
               Confirm your details
             </h2>
@@ -612,7 +594,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                   الاسم الأول
                 </span>
               </span>
-              <input className="mt-2 block min-h-12 w-full rounded-xl border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b] focus:ring-4 focus:ring-[#f0dfdb]" name="firstName" autoComplete="given-name" required />
+              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="firstName" autoComplete="given-name" required />
             </label>
             <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
               <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -622,7 +604,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                   اسم العائلة
                 </span>
               </span>
-              <input className="mt-2 block min-h-12 w-full rounded-xl border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b] focus:ring-4 focus:ring-[#f0dfdb]" name="lastName" autoComplete="family-name" required />
+              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="lastName" autoComplete="family-name" required />
             </label>
             <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
               <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
@@ -632,13 +614,13 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                   رقم الهاتف
                 </span>
               </span>
-              <input className="mt-2 block min-h-12 w-full rounded-xl border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b] focus:ring-4 focus:ring-[#f0dfdb]" name="phone" type="tel" autoComplete="tel" required />
+              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="phone" type="tel" autoComplete="tel" required />
             </label>
 
             {formError ? <p className="mt-4 text-sm leading-5 text-[#8a4545]">{formError}</p> : null}
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <button type="button" disabled={isSubmitting} onClick={() => setShowCustomerForm(false)} className="grid min-h-14 place-items-center rounded-full border border-[#ead5cd] bg-white px-4 py-2 text-sm font-semibold text-[#6d3f1f] disabled:cursor-not-allowed">
+              <button type="button" disabled={isSubmitting} onClick={() => setShowCustomerForm(false)} className="grid min-h-14 place-items-center border border-[#ead5cd] bg-white px-4 py-2 text-sm font-semibold text-[#6d3f1f] disabled:cursor-not-allowed">
                 <span className="grid gap-1 leading-none">
                   <span className="uppercase tracking-[0.14em]">Back</span>
                   <span lang="ar" dir="rtl">
@@ -646,7 +628,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                   </span>
                 </span>
               </button>
-              <button type="submit" disabled={isSubmitting} className="grid min-h-14 place-items-center rounded-full bg-[#8d5147] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-[#754138] disabled:cursor-not-allowed">
+              <button type="submit" disabled={isSubmitting} className="grid min-h-14 place-items-center bg-[#bd736b] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed">
                 <span className="grid gap-1 leading-none">
                   <span className="uppercase tracking-[0.14em]">{isSubmitting ? "Submitting..." : "Submit"}</span>
                   <span lang="ar" dir="rtl">
@@ -661,8 +643,8 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
 
       {showSuccess ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-[#231814]/28 px-4 backdrop-blur-sm" role="status" aria-live="polite">
-          <div className="success-popup relative w-full max-w-[23rem] rounded-[2rem] bg-[#8d5147] px-6 pb-6 pt-10 text-center text-white shadow-[0_24px_70px_rgba(97,58,24,0.28)]">
-            <span className="success-popup-icon absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-4 border-white bg-[#8d5147] text-3xl font-semibold leading-none text-white shadow-[0_12px_28px_rgba(97,58,24,0.2)]">
+          <div className="success-popup relative w-full max-w-[22rem] bg-[#d68599] px-6 pb-6 pt-10 text-center text-white shadow-[0_24px_70px_rgba(97,58,24,0.28)]">
+            <span className="success-popup-icon absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center border-4 border-white bg-[#d68599] text-3xl font-semibold leading-none text-white shadow-[0_12px_28px_rgba(97,58,24,0.2)]">
               ✓
             </span>
             <h2 className="font-display text-[1.8rem] font-semibold leading-tight text-white">
@@ -690,7 +672,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                   type="button"
                   onClick={enableReminders}
                   disabled={reminderStatus === "loading" || reminderStatus === "success"}
-                  className="min-h-11 rounded-full bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-[#8d5147] disabled:cursor-not-allowed disabled:opacity-75"
+                  className="min-h-11 bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-[#b46f65] disabled:cursor-not-allowed disabled:opacity-75"
                 >
                   {reminderStatus === "loading" ? "Enabling..." : "Enable appointment reminders"}
                 </button>
@@ -704,7 +686,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="mt-5 min-h-11 rounded-full bg-white px-6 text-sm font-semibold uppercase tracking-[0.16em] text-[#8d5147]"
+              className="mt-5 min-h-11 bg-white px-6 text-sm font-semibold uppercase tracking-[0.16em] text-[#b46f65]"
             >
               Done
             </button>
@@ -718,7 +700,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
 function DetailRow({ icon, label, arabicLabel, value }: { icon: string; label: string; arabicLabel: string; value: string }) {
   return (
     <div className="flex items-center gap-4">
-      <span className="service-detail-icon grid h-11 w-11 place-items-center rounded-full bg-[#f2e7e2] text-lg text-[#a25b54]">
+      <span className="service-detail-icon grid h-11 w-11 place-items-center bg-[#f2e7e2] text-lg text-[#a25b54]">
         {icon}
       </span>
       <div>
@@ -748,7 +730,7 @@ function AppointmentStep({
 }) {
   return (
     <div className="mt-7 grid gap-3 lg:grid-cols-[2.75rem_1fr] lg:gap-5">
-      <span className="service-detail-icon hidden h-11 w-11 place-items-center rounded-full bg-[#f2e7e2] text-[#a25b54] lg:grid">
+      <span className="service-detail-icon hidden h-11 w-11 place-items-center bg-[#f2e7e2] text-[#a25b54] lg:grid">
         {icon}
       </span>
       <div className="min-w-0">
