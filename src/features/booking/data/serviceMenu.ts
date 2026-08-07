@@ -237,21 +237,21 @@ export const manicureServices: ServiceMenuItem[] = [
   { name: "Rubber", slug: "rubber", imageSrc: "/Rubber.png", price: "$20", description: "Strengthen natural nails with a flexible rubber base treatment.", duration: "60 min", serviceType: enhancementType },
   { name: "Classic Manicure", slug: "classic-manicure", imageSrc: "/Russian%20Manicure.png", price: "$25", description: "Detailed cuticle work and clean shaping for a polished natural nail finish.", duration: "60 min", serviceType: manicureType },
   { name: "Pose", slug: "pose", imageSrc: "/Pose.png", price: "$10", description: "A neat nail application service finished with a clean salon look.", duration: "30 min", serviceType: manicureType },
-  { name: "Fungal", slug: "fungal", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused hand nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
+  { name: "Fungal Nail Treatment", slug: "fungal", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused hand nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
   { name: "Luxury Spa for Hands", slug: "luxury-spa-for-hands", imageSrc: "/services/manicure/massage-scrub.png", price: "$25", description: "Massage, scrub, and paraffin hand therapy combined into one indulgent spa treatment.", duration: "30 min", serviceType: "Hand Spa" },
   { name: "Soak Off", slug: "soak-off", imageSrc: "/Soak%20Off.png", price: "$15", description: "Gentle product removal that protects the natural nail surface.", duration: "30 min", serviceType: "Nail Removal" },
   { name: "Broken Tip Repair", slug: "broken-tip-repair", imageSrc: "/Broken%20Tip%20Repair.png", price: "$1.50", description: "Repair a damaged or broken nail tip with careful shaping and finish.", duration: "10 min", serviceType: "Nail Repair" },
 ];
 
 export const pedicureServices: ServiceMenuItem[] = [
-  { name: "Luxury Spa for Legs", slug: "luxury-spa-for-legs", imageSrc: "/services/pedicure/luxury-pedicure-massage-scrub.png", price: "$25", description: "Massage, scrub, and paraffin therapy combined into one indulgent spa treatment for legs.", duration: "30 min", serviceType: "Foot Spa" },
-  { name: "Luxury Pedicure + Massage & Scrub", slug: "luxury-pedicure-massage-scrub", imageSrc: "/services/pedicure/luxury-pedicure-massage-scrub.png", price: "$40", description: "Luxury pedicure care with a relaxing massage and smoothing foot scrub.", duration: "2 hr", serviceType: "Foot Spa" },
+  { name: "Luxury Pedicure (Includes Paraffin)", slug: "luxury-pedicure-massage-scrub", imageSrc: "/services/pedicure/luxury-pedicure-massage-scrub.png", price: "$40", description: "Luxury pedicure care with a relaxing massage, smoothing foot scrub, and warm paraffin therapy.", duration: "2 hr", serviceType: "Foot Spa" },
   { name: "Paraffin Therapy", slug: "paraffin-therapy", imageSrc: "/services/pedicure/paraffin-therapy.png", price: "$15", description: "Warm paraffin therapy to soften, hydrate, and comfort dry feet.", duration: "15 min", serviceType: "Foot Therapy" },
   { name: "Pedicure + Classic French", slug: "pedicure-classic-french", imageSrc: "/services/pedicure/pedicure-classic-french.png", price: "$17", description: "Pedicure care finished with classic French styling.", duration: "1 hr 30 min", serviceType: pedicureType },
   { name: "Pedicure + French Gelish", slug: "pedicure-french-gelish", imageSrc: "/services/pedicure/pedicure-french-gelish.png", price: "$20", description: "French pedicure styling with the durability of Gelish polish.", duration: "2 hr", serviceType: pedicureType },
   { name: "Pedicure + Gel Color", slug: "pedicure-gel-color", imageSrc: "/services/pedicure/pedicure-gel-color.png", price: "$17", description: "Relaxed pedicure care finished with long-lasting gel color.", duration: "2 hr", serviceType: pedicureType },
   { name: "Pedicure + Pose", slug: "pedicure-pose", imageSrc: "/services/pedicure/pedicure-pose.png", price: "$15", description: "Classic pedicure care finished with a neat pose application.", duration: "1 hr 30 min", serviceType: pedicureType },
   { name: "Pedicure + Ombré", slug: "pedicure-ombre", imageSrc: "/services/pedicure/pedicure-ombre.png", price: "$20", description: "Pedicure care finished with a soft, blended ombré nail color.", duration: "1 hr 45 min", serviceType: pedicureType },
+  { name: "Fungal Toenail Treatment", slug: "pedicure-fungal-nail-care-treatment", imageSrc: "/Fungal%20Nail%20Care%20%26%20Treatment.png", price: "$20", description: "Focused foot nail care treatment for damaged or problem nails.", duration: "30 min", serviceType: "Nail Treatment" },
 ];
 
 const slugAliases: Record<string, string> = {
