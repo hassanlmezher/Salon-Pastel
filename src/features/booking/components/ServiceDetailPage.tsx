@@ -553,7 +553,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
               {!availabilityLoading && availabilityError ? (
                 <p className="py-4 text-sm leading-6 text-[#8a4545]">
                   {availabilityError} Call us on{" "}
-                  <a href="tel:+96171430542" className="font-semibold underline underline-offset-4">+961 71 430 542</a> to book.
+                  <a href="tel:+96171430542" className="inline-flex min-h-11 items-center font-semibold underline underline-offset-4">+961 71 430 542</a> to book.
                 </p>
               ) : null}
               {!availabilityLoading && !availabilityError && openDays.length === 0 ? (
