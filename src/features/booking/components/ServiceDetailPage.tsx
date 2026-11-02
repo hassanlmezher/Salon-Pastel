@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import type { FormEvent, ReactNode } from "react";
+import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   createAppointment,
@@ -20,6 +20,7 @@ import {
   type ServiceGroupId,
   type ServiceMenuItem,
 } from "../data/serviceMenu";
+import { serviceImageUrl } from "./ServiceMenuPage";
 import { requestAppointmentReminderSubscription, type ReminderSubscriptionResult } from "../pwa/reminders";
 
 type ServiceDetailPageProps = {
@@ -84,6 +85,33 @@ function formatServicePrice(value: number) {
   return `$${Number.isInteger(value) ? value : value.toFixed(2)}`;
 }
 
+const SAVED_CUSTOMER_KEY = "pastel-customer";
+
+type SavedCustomer = { fullName: string; phone: string };
+
+/** Returning customers get their name and phone filled in. */
+function loadSavedCustomer(): SavedCustomer {
+  try {
+    const saved = JSON.parse(localStorage.getItem(SAVED_CUSTOMER_KEY) ?? "null") as Partial<SavedCustomer> | null;
+    return { fullName: String(saved?.fullName ?? ""), phone: String(saved?.phone ?? "") };
+  } catch {
+    return { fullName: "", phone: "" };
+  }
+}
+
+function saveCustomer(customer: SavedCustomer) {
+  try {
+    localStorage.setItem(SAVED_CUSTOMER_KEY, JSON.stringify(customer));
+  } catch {
+    // Private mode or blocked storage: the next booking just starts empty.
+  }
+}
+
+function formatShortDate(dateIso: string) {
+  const [year, month, day] = dateIso.split("-").map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+}
+
 export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPageProps) {
   const navigate = useNavigate();
   const monthOptions = useMemo(() => createMonthOptions(), []);
@@ -95,9 +123,10 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
   const [days, setDays] = useState<DayAvailability[]>([]);
   const [selectedDateIso, setSelectedDateIso] = useState("");
   const [selectedSlotStart, setSelectedSlotStart] = useState("");
-  const [availabilityLoading, setAvailabilityLoading] = useState(false);
+  // Starts true so the page never claims "no free times" before the first lookup finishes.
+  const [availabilityLoading, setAvailabilityLoading] = useState(true);
   const [availabilityError, setAvailabilityError] = useState("");
-  const [showCustomerForm, setShowCustomerForm] = useState(false);
+  const [customer, setCustomer] = useState(loadSavedCustomer);
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAddOnSlugs, setSelectedAddOnSlugs] = useState<string[]>([]);
   const [formError, setFormError] = useState("");
@@ -124,16 +153,21 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         const activeService = await fetchServiceBySlug(groupId, serviceSlug);
         if (!isCurrent) return;
 
-        if (!activeService) return;
+        if (!activeService) {
+          setAvailabilityLoading(false);
+          return;
+        }
 
         setService(activeService);
         if (!activeService.id) {
           setAvailabilityError("Online booking is not available for this service right now.");
+          setAvailabilityLoading(false);
         }
       } catch {
         if (!isCurrent) return;
         setService(hardcodedService);
         setAvailabilityError("Online booking is not available for this service right now.");
+        setAvailabilityLoading(false);
       } finally {
         if (isCurrent) setServiceLoading(false);
       }
@@ -286,13 +320,18 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       return;
     }
 
-    const formData = new FormData(event.currentTarget);
-    const firstName = String(formData.get("firstName") ?? "").trim();
-    const lastName = String(formData.get("lastName") ?? "").trim();
-    const phone = String(formData.get("phone") ?? "").trim();
+    const fullName = customer.fullName.trim().replace(/\s+/g, " ");
+    const phone = customer.phone.trim();
+    const [firstName, ...lastNameParts] = fullName.split(" ");
+    const lastName = lastNameParts.join(" ");
 
-    if (!firstName || !lastName || !phone) {
-      setFormError("Please enter your full name and phone number.");
+    if (!fullName || !phone) {
+      setFormError("Please enter your name and phone number.");
+      return;
+    }
+
+    if (phone.replace(/\D/g, "").length < 7) {
+      setFormError("Please enter a valid phone number.");
       return;
     }
 
@@ -300,9 +339,9 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       setIsSubmitting(true);
       const appointmentId = await createAppointment({
         serviceId: service.id,
-        customerFullName: `${firstName} ${lastName}`,
+        customerFullName: fullName,
         customerFirstName: firstName,
-        customerLastName: lastName,
+        customerLastName: lastName || undefined,
         customerPhone: phone,
         appointmentStart: selectedSlot.startIso,
         selectedServices: [
@@ -336,9 +375,9 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         time: selectedSlot.label,
         phone,
       });
+      saveCustomer({ fullName, phone });
       setReminderStatus("idle");
       setReminderMessage("");
-      setShowCustomerForm(false);
       setShowSuccess(true);
     } catch (error) {
       setFormError(getBookingErrorMessage(error));
@@ -369,130 +408,133 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     setReminderMessage(result.message);
   };
 
+  const backHref = groupId === "pedicure" ? "/book?type=pedicure" : "/book";
+
   if (serviceLoading || serviceError || !service) {
     return (
-      <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-4 text-[#231814] sm:px-5 lg:px-6">
-        <div className="mx-auto max-w-[76rem]">
-          <div className="border border-[#ead5cd] bg-[#fffaf6]/92 p-6 text-sm leading-6 text-[#6d5648]">
-            <Link
-              to={`/book/${groupId}`}
-              className="mb-4 inline-flex min-h-10 items-center border border-[#e7c9c2] bg-[#fffaf6]/92 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[#6d3f1f]"
-            >
-              Back
-            </Link>
-            <p>{serviceLoading ? "Loading service..." : serviceError}</p>
-          </div>
+      <main className="min-h-screen bg-[#f7efe6] px-4 py-6 text-[#231814]">
+        <div className="mx-auto max-w-2xl border border-[#ead5cd] bg-[#fffaf6] p-6 text-sm leading-6 text-[#6d5648]">
+          <Link to={backHref} className="mb-4 inline-flex min-h-11 items-center font-semibold text-[#a25b54]">
+            ‹ All services
+          </Link>
+          <p>{serviceLoading ? "Loading service..." : serviceError}</p>
         </div>
       </main>
     );
   }
 
   const arabicCopy = getServiceArabicCopy(service.slug);
+  const canBook = Boolean(selectedSlot) && !availabilityLoading && !isSubmitting;
+  const sectionClass = "border border-[#ead5cd] bg-[#fffaf6] p-4 sm:p-5";
+  const headingClass = "flex items-baseline justify-between gap-3 font-display text-[1.35rem] font-semibold leading-tight text-[#231814]";
+  const inputClass =
+    "mt-1.5 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-base text-[#231814] outline-none focus:border-[#bd736b]";
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-4 text-[#231814] sm:px-5 lg:px-6">
-      <div className="mx-auto max-w-[76rem]">
-        <section className="service-detail-hero grid overflow-hidden bg-[#fffaf6] shadow-[0_18px_44px_rgba(97,58,24,0.12)] lg:grid-cols-[1.15fr_0.95fr]">
-          <div className="relative min-h-[18rem] overflow-hidden sm:min-h-[20rem] lg:min-h-[24rem]">
-            <img src={decodeURIComponent(service.imageSrc)} alt={service.name} className="h-full w-full object-cover" />
-            <Link
-              to={`/book/${groupId}`}
-              className="service-detail-back absolute left-5 top-5 inline-flex items-center gap-3 bg-white/88 px-4 py-3 text-sm font-medium text-[#4d4039] shadow-[0_12px_24px_rgba(97,58,24,0.12)] backdrop-blur-md sm:text-base"
-            >
-              <span className="grid h-9 w-9 place-items-center bg-white text-2xl leading-none text-[#231814] shadow-[0_6px_18px_rgba(97,58,24,0.12)]">
-                ‹
-              </span>
-              Back
-            </Link>
-          </div>
-
-          <div className="px-6 py-7 sm:px-8 lg:px-10 lg:py-10">
-            <h1 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 font-display text-[1.55rem] font-semibold leading-none text-[#231814] sm:text-[2.7rem]">
-              <span>{service.name}</span>
-              <span lang="ar" dir="rtl" className="text-[0.82em] leading-tight text-[#5a2f1b]">
-                {arabicCopy.title}
-              </span>
-            </h1>
-            <p className="mt-4 text-[2rem] font-medium leading-none text-[#b46f65]">
-              {formatServicePrice(totalPrice)}
+    <main className="min-h-screen bg-[#f7efe6] pb-24 text-[#231814]">
+      <header className="sticky top-0 z-30 border-b border-[#e7c9c2]/70 bg-[#f7efe6]/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-2.5">
+          <Link
+            to={backHref}
+            aria-label="Back to all services"
+            className="grid h-11 w-11 flex-none place-items-center border border-[#e7c9c2] bg-[#fffaf6] text-2xl leading-none text-[#6d3f1f]"
+          >
+            ‹
+          </Link>
+          <div className="min-w-0 flex-1">
+            <p className="truncate font-display text-lg font-semibold leading-tight">{service.name}</p>
+            <p className="truncate text-xs text-[#6d5648]">
+              {selectedAddOns.length > 0 ? `+ ${selectedAddOns.map((addOn) => addOn.name).join(" + ")}` : arabicCopy.title}
             </p>
-            <p className="mt-5 max-w-md text-base leading-7 text-[#4d4039]">
-              {service.description}
-            </p>
-
-            <div className="mt-6 grid gap-4">
-              <DetailRow icon="◷" label="Duration" arabicLabel="المدة" value={formatServiceDuration(totalDurationMin)} />
-            </div>
           </div>
-        </section>
-
-        <div
-          className="sticky top-0 z-40 mt-5 flex min-h-16 items-center justify-between gap-4 border border-[#ead5cd] bg-[#fffaf6]/95 px-5 py-3 shadow-[0_10px_28px_rgba(97,58,24,0.14)] backdrop-blur-md sm:px-6"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span className="text-xs font-semibold uppercase tracking-[0.16em] text-[#6d5648]">Total</span>
-          <span className="flex items-baseline gap-2 text-right">
-            <strong className="font-display text-[1.65rem] font-semibold leading-none text-[#b46f65]">
+          <p className="flex-none text-right" aria-live="polite">
+            <strong className="block font-display text-[1.4rem] font-semibold leading-none text-[#b46f65]">
               {formatServicePrice(totalPrice)}
             </strong>
-            <span className="text-xs font-medium text-[#6d5648] sm:text-sm">
-              {formatServiceDuration(totalDurationMin)}
-            </span>
-          </span>
+            <span className="text-xs text-[#6d5648]">{formatServiceDuration(totalDurationMin)}</span>
+          </p>
         </div>
+      </header>
 
-        {availableAddOns.length > 0 ? (
-          <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8" aria-labelledby="add-ons-title">
-            <h2 id="add-ons-title" className="font-display text-[1.65rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
-              Add to your service
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-[#6d5648]">Choose any compatible extras. French and Ombré replace one another.</p>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {availableAddOns.map((addOn) => {
-                const selected = selectedAddOnSlugs.includes(addOn.slug);
-                return (
-                  <button
-                    key={addOn.slug}
-                    type="button"
-                    aria-pressed={selected}
-                    onClick={() => toggleAddOn(addOn)}
-                    className={`flex min-h-28 items-center gap-4 border p-3 text-left transition ${
-                      selected
-                        ? "border-[#bd736b] bg-[#f9e9e5] shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
-                        : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b]"
-                    }`}
-                  >
-                    <img src={decodeURIComponent(addOn.imageSrc)} alt="" aria-hidden="true" className="h-20 w-20 flex-none object-cover" />
-                    <span className="min-w-0">
-                      <strong className="block font-display text-lg leading-tight text-[#231814]">{addOn.name}</strong>
-                      <span className="mt-1 block text-sm font-medium text-[#b46f65]">+{addOn.price} · {addOn.duration}</span>
-                      <span className="mt-1 block text-xs leading-5 text-[#6d5648]">{addOn.description}</span>
-                    </span>
-                  </button>
-                );
-              })}
+      <form
+        onSubmit={submitCustomerForm}
+        noValidate
+        className="mx-auto grid max-w-5xl grid-cols-[minmax(0,1fr)] gap-3 px-4 pt-3 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start lg:gap-5"
+      >
+        <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3">
+          <section className={`${sectionClass} flex items-center gap-4`}>
+            <img
+              src={serviceImageUrl(service.imageSrc)}
+              alt={service.name}
+              width={96}
+              height={96}
+              className="h-24 w-24 flex-none object-cover"
+            />
+            <div className="min-w-0">
+              <h1 className="font-display text-[1.6rem] font-semibold leading-tight">{service.name}</h1>
+              <p lang="ar" dir="rtl" className="text-right text-base font-semibold text-[#5a2f1b]">
+                {arabicCopy.title}
+              </p>
+              <p className="mt-1 text-sm leading-5 text-[#6d5648]">{service.description}</p>
             </div>
           </section>
-        ) : null}
 
-        <section className="service-detail-panel mt-5 bg-[#fffaf6] p-5 shadow-[0_18px_44px_rgba(97,58,24,0.1)] sm:p-6 lg:p-8">
-          <h2 className="whitespace-nowrap font-display text-[1.2rem] font-semibold leading-none text-[#231814] sm:text-[2.25rem]">
-            Select Your Appointment
-          </h2>
+          {availableAddOns.length > 0 ? (
+            <section className={sectionClass} aria-labelledby="add-ons-title">
+              <h2 id="add-ons-title" className={headingClass}>
+                <span>Add extras <span className="text-sm font-normal text-[#6d5648]">(optional)</span></span>
+                <span lang="ar" dir="rtl" className="text-base font-normal text-[#6d5648]">إضافات</span>
+              </h2>
+              <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                {availableAddOns.map((addOn) => {
+                  const selected = selectedAddOnSlugs.includes(addOn.slug);
+                  return (
+                    <button
+                      key={addOn.slug}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => toggleAddOn(addOn)}
+                      className={`flex min-h-16 items-center gap-3 border p-2 text-left transition ${
+                        selected ? "border-[#bd736b] bg-[#f9e9e5]" : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b]"
+                      }`}
+                    >
+                      <img src={serviceImageUrl(addOn.imageSrc)} alt="" aria-hidden="true" loading="lazy" className="h-12 w-12 flex-none object-cover" />
+                      <span className="min-w-0 flex-1">
+                        <strong className="block text-[0.95rem] font-semibold leading-tight text-[#231814]">{addOn.name}</strong>
+                        <span className="block text-sm text-[#b46f65]">+{addOn.price} · {addOn.duration}</span>
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className={`grid h-7 w-7 flex-none place-items-center border text-sm font-bold ${
+                          selected ? "border-[#bd736b] bg-[#bd736b] text-white" : "border-[#d9c2b9] bg-white text-transparent"
+                        }`}
+                      >
+                        ✓
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ) : null}
 
-          <AppointmentStep icon="□" number="1" title="Choose Day">
-            <div className="mb-4 flex items-center justify-between gap-3 border border-[#ead5cd] bg-white/60">
+          <section className={sectionClass} aria-labelledby="time-title">
+            <h2 id="time-title" className={headingClass}>
+              <span>Pick a day &amp; time</span>
+              <span lang="ar" dir="rtl" className="text-base font-normal text-[#6d5648]">اختاري الموعد</span>
+            </h2>
+
+            <div className="mt-3 flex items-center justify-between border border-[#ead5cd] bg-white/60">
               <button
                 type="button"
                 onClick={() => chooseMonth(monthOptions[selectedMonthPosition - 1])}
                 disabled={selectedMonthPosition <= 0}
                 aria-label="Previous month"
-                className="grid h-12 w-12 place-items-center text-2xl text-[#a25b54] disabled:text-[#cbbdb6]"
+                className="grid h-11 w-12 place-items-center text-2xl text-[#a25b54] disabled:text-[#cbbdb6]"
               >
                 ‹
               </button>
-              <span className="font-display text-xl font-semibold text-[#231814]" aria-live="polite">
+              <span className="font-display text-lg font-semibold" aria-live="polite">
                 {selectedMonth.month} {selectedMonth.year}
               </span>
               <button
@@ -500,164 +542,137 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                 onClick={() => chooseMonth(monthOptions[selectedMonthPosition + 1])}
                 disabled={selectedMonthPosition >= monthOptions.length - 1}
                 aria-label="Next month"
-                className="grid h-12 w-12 place-items-center text-2xl text-[#a25b54] disabled:text-[#cbbdb6]"
+                className="grid h-11 w-12 place-items-center text-2xl text-[#a25b54] disabled:text-[#cbbdb6]"
               >
                 ›
               </button>
             </div>
-            {availabilityLoading ? <p className="text-sm text-[#6d5648]">Loading available days...</p> : null}
-            {!availabilityLoading && availabilityError ? <p className="text-sm text-[#8a4545]">{availabilityError}</p> : null}
-            {!availabilityLoading && !availabilityError && openDays.length === 0 ? (
-              <p className="text-sm leading-6 text-[#6d5648]">
-                No free times left in {selectedMonth.month}.{" "}
-                {selectedMonthPosition < monthOptions.length - 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => chooseMonth(monthOptions[selectedMonthPosition + 1])}
-                    className="font-semibold text-[#a25b54] underline underline-offset-4"
-                  >
-                    See next month
-                  </button>
-                ) : null}
-              </p>
-            ) : null}
-            {!availabilityLoading && !availabilityError && openDays.length > 0 ? (
-              <div className="flex w-full max-w-full gap-3 overflow-x-auto px-0.5 pb-2">
-                {openDays.map((day) => (
-                  <button
-                    key={day.dateIso}
-                    type="button"
-                    aria-pressed={selectedDateIso === day.dateIso}
-                    onClick={() => setSelectedDateIso(day.dateIso)}
-                    className={`min-h-[5.5rem] flex-[0_0_4.75rem] border px-2 py-3 text-center transition ${
-                      selectedDateIso === day.dateIso
-                        ? "border-[#bd736b] bg-[#bd736b] text-white shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
-                        : "border-[#ead5cd] bg-white/50 text-[#231814] hover:border-[#bd736b]"
-                    }`}
-                  >
-                    <span className={`block text-sm ${selectedDateIso === day.dateIso ? "text-white" : "text-[#756964]"}`}>
-                      {day.weekday}
-                    </span>
-                    <span className="mt-1.5 block text-[1.75rem] leading-none">{day.day}</span>
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </AppointmentStep>
 
-          <AppointmentStep icon="◷" number="2" title="Choose Time">
-            {availabilityLoading ? <p className="text-sm text-[#6d5648]">Loading available times...</p> : null}
-            {!availabilityLoading && selectedDateIso && selectedDaySlots.length === 0 ? (
-              <p className="text-sm text-[#6d5648]">No available times for this day.</p>
-            ) : null}
-            {!availabilityLoading && selectedDaySlots.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-                {selectedDaySlots.map((slot) => (
-                  <button
-                    key={slot.startIso}
-                    type="button"
-                    onClick={() => setSelectedSlotStart(slot.startIso)}
-                    className={`min-h-[3.25rem] border px-3 text-base transition ${
-                      selectedSlotStart === slot.startIso
-                        ? "border-[#bd736b] bg-[#bd736b] text-white"
-                        : "border-[#ead5cd] bg-white/50 text-[#4d4039] hover:border-[#bd736b]"
-                    }`}
-                  >
-                    {slot.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-          </AppointmentStep>
+            <div className="mt-3 min-h-[5rem]">
+              {availabilityLoading ? <p className="py-6 text-center text-sm text-[#6d5648]">Loading free times…</p> : null}
+              {!availabilityLoading && availabilityError ? (
+                <p className="py-4 text-sm leading-6 text-[#8a4545]">
+                  {availabilityError} Call us on{" "}
+                  <a href="tel:+96171430542" className="font-semibold underline underline-offset-4">+961 71 430 542</a> to book.
+                </p>
+              ) : null}
+              {!availabilityLoading && !availabilityError && openDays.length === 0 ? (
+                <p className="py-4 text-sm leading-6 text-[#6d5648]">
+                  No free times left in {selectedMonth.month}.{" "}
+                  {selectedMonthPosition < monthOptions.length - 1 ? (
+                    <button
+                      type="button"
+                      onClick={() => chooseMonth(monthOptions[selectedMonthPosition + 1])}
+                      className="min-h-11 font-semibold text-[#a25b54] underline underline-offset-4"
+                    >
+                      See next month
+                    </button>
+                  ) : null}
+                </p>
+              ) : null}
+              {!availabilityLoading && !availabilityError && openDays.length > 0 ? (
+                <>
+                  <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2" role="radiogroup" aria-label="Day">
+                    {openDays.map((day) => {
+                      const active = selectedDateIso === day.dateIso;
+                      return (
+                        <button
+                          key={day.dateIso}
+                          type="button"
+                          role="radio"
+                          aria-checked={active}
+                          onClick={() => setSelectedDateIso(day.dateIso)}
+                          className={`min-h-[4.5rem] flex-[0_0_4rem] border py-2 text-center transition ${
+                            active ? "border-[#bd736b] bg-[#bd736b] text-white" : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b]"
+                          }`}
+                        >
+                          <span className={`block text-xs ${active ? "text-white" : "text-[#756964]"}`}>{day.weekday}</span>
+                          <span className="mt-1 block text-2xl leading-none">{day.day}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4" role="radiogroup" aria-label="Time">
+                    {selectedDaySlots.map((slot) => {
+                      const active = selectedSlotStart === slot.startIso;
+                      return (
+                        <button
+                          key={slot.startIso}
+                          type="button"
+                          role="radio"
+                          aria-checked={active}
+                          onClick={() => setSelectedSlotStart(slot.startIso)}
+                          className={`min-h-11 border px-1 text-[0.95rem] transition ${
+                            active ? "border-[#bd736b] bg-[#bd736b] text-white" : "border-[#ead5cd] bg-white/60 text-[#4d4039] hover:border-[#bd736b]"
+                          }`}
+                        >
+                          {slot.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              ) : null}
+            </div>
+          </section>
+        </div>
+
+        <section className={`${sectionClass} lg:sticky lg:top-[5.5rem]`} aria-labelledby="details-title">
+          <h2 id="details-title" className={headingClass}>
+            <span>Your details</span>
+            <span lang="ar" dir="rtl" className="text-base font-normal text-[#6d5648]">معلوماتك</span>
+          </h2>
+          <label className="mt-3 block text-sm font-semibold text-[#4d4039]">
+            Full name <span lang="ar" dir="rtl" className="font-normal">/ الاسم الكامل</span>
+            <input
+              className={inputClass}
+              name="fullName"
+              autoComplete="name"
+              required
+              value={customer.fullName}
+              onChange={(event) => setCustomer((current) => ({ ...current, fullName: event.target.value }))}
+            />
+          </label>
+          <label className="mt-3 block text-sm font-semibold text-[#4d4039]">
+            Phone number <span lang="ar" dir="rtl" className="font-normal">/ رقم الهاتف</span>
+            <input
+              className={inputClass}
+              name="phone"
+              type="tel"
+              inputMode="tel"
+              autoComplete="tel"
+              required
+              value={customer.phone}
+              onChange={(event) => setCustomer((current) => ({ ...current, phone: event.target.value }))}
+            />
+          </label>
+
+          {formError ? (
+            <p className="mt-3 bg-[#8a4545]/10 px-3 py-2 text-sm leading-5 text-[#8a4545]" role="alert">
+              {formError}
+            </p>
+          ) : null}
 
           <button
-            type="button"
-            disabled={availabilityLoading || !selectedSlot}
-            onClick={() => setShowCustomerForm(true)}
-            className="mt-6 flex min-h-[4.25rem] w-full items-center justify-center gap-5 bg-[#bd736b] px-5 text-center font-display text-[1.35rem] text-white shadow-[0_14px_28px_rgba(189,115,107,0.28)] transition hover:bg-[#a9615b] disabled:cursor-not-allowed disabled:bg-[#7d726d]/45 disabled:shadow-none sm:text-[1.65rem]"
+            type="submit"
+            disabled={!canBook}
+            className="mt-4 flex min-h-[3.75rem] w-full flex-col items-center justify-center bg-[#bd736b] px-4 py-2 text-center text-white shadow-[0_12px_24px_rgba(189,115,107,0.26)] transition hover:bg-[#a9615b] disabled:cursor-not-allowed disabled:bg-[#7d726d]/45 disabled:shadow-none"
           >
-            <span className="grid gap-1 leading-none">
-              <span>Continue to Booking</span>
-              <span lang="ar" dir="rtl" className="text-[0.78em]">
-                تابع الحجز
-              </span>
+            <span className="text-lg font-semibold">
+              {isSubmitting ? "Booking…" : `Book · ${formatServicePrice(totalPrice)}`}
+              {!isSubmitting ? <span lang="ar" dir="rtl" className="ms-2 font-normal">احجزي</span> : null}
             </span>
-            <span aria-hidden="true">→</span>
+            <span className="text-sm text-white/90">
+              {selectedSlot && selectedDateIso
+                ? `${formatShortDate(selectedDateIso)}, ${selectedSlot.label}`
+                : availabilityLoading
+                  ? "Loading free times…"
+                  : "Pick a time above"}
+            </span>
           </button>
+          <p className="mt-2 text-center text-xs text-[#6d5648]">No account needed.</p>
         </section>
-      </div>
-
-      {showCustomerForm ? (
-        <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-[#231814]/28 px-4 py-6 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="customer-form-title">
-          <div className="grid min-h-full place-items-center">
-            <form className="booking-form-popup w-full max-w-[24rem] bg-[#fffaf6] p-6 shadow-[0_24px_70px_rgba(97,58,24,0.26)]" onSubmit={submitCustomerForm}>
-              <h2 id="customer-form-title" className="font-display text-[2rem] font-semibold leading-none text-[#231814]">
-                Confirm your details
-              </h2>
-              <p className="mt-3 border border-[#ead5cd] bg-white/70 px-3 py-2 text-sm leading-6 text-[#4d4039]">
-                <strong className="font-semibold">
-                  {service.name}
-                  {selectedAddOns.length > 0 ? ` + ${selectedAddOns.map((addOn) => addOn.name).join(" + ")}` : ""}
-                </strong>
-                <br />
-                {selectedDateIso ? formatLongDate(selectedDateIso) : ""} · {selectedSlot?.label} · {formatServicePrice(totalPrice)}
-              </p>
-
-              <label className="mt-5 block text-sm font-semibold text-[#4d4039]">
-                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                  <span>First name</span>
-                  <span aria-hidden="true">/</span>
-                  <span lang="ar" dir="rtl">
-                    الاسم الأول
-                  </span>
-                </span>
-                <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="firstName" autoComplete="given-name" required />
-              </label>
-              <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
-                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                  <span>Last name</span>
-                  <span aria-hidden="true">/</span>
-                  <span lang="ar" dir="rtl">
-                    اسم العائلة
-                  </span>
-                </span>
-                <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="lastName" autoComplete="family-name" required />
-              </label>
-              <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
-                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                  <span>Phone number</span>
-                  <span aria-hidden="true">/</span>
-                  <span lang="ar" dir="rtl">
-                    رقم الهاتف
-                  </span>
-                </span>
-                <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="phone" type="tel" inputMode="tel" autoComplete="tel" required />
-              </label>
-
-              {formError ? <p className="mt-4 text-sm leading-5 text-[#8a4545]">{formError}</p> : null}
-
-              <div className="mt-6 grid grid-cols-2 gap-3">
-                <button type="button" disabled={isSubmitting} onClick={() => setShowCustomerForm(false)} className="grid min-h-14 place-items-center border border-[#ead5cd] bg-white px-4 py-2 text-sm font-semibold text-[#6d3f1f] disabled:cursor-not-allowed">
-                  <span className="grid gap-1 leading-none">
-                    <span className="uppercase tracking-[0.14em]">Back</span>
-                    <span lang="ar" dir="rtl">
-                      رجوع
-                    </span>
-                  </span>
-                </button>
-                <button type="submit" disabled={isSubmitting} className="grid min-h-14 place-items-center bg-[#bd736b] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed">
-                  <span className="grid gap-1 leading-none">
-                    <span className="uppercase tracking-[0.14em]">{isSubmitting ? "Submitting..." : "Submit"}</span>
-                    <span lang="ar" dir="rtl">
-                      {isSubmitting ? "جاري الإرسال" : "إرسال"}
-                    </span>
-                  </span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
+      </form>
 
       {showSuccess ? (
         <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#231814]/28 px-4 py-10 backdrop-blur-sm" role="status" aria-live="polite">
@@ -665,25 +680,18 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             <span className="success-popup-icon absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center border-4 border-white bg-[#d68599] text-3xl font-semibold leading-none text-white shadow-[0_12px_28px_rgba(97,58,24,0.2)]">
               ✓
             </span>
-            <h2 className="font-display text-[1.8rem] font-semibold leading-tight text-white">
-              Appointment booked successfully.
-            </h2>
+            <h2 className="font-display text-[1.8rem] font-semibold leading-tight text-white">You're booked!</h2>
+            <p lang="ar" dir="rtl" className="mt-1 text-base text-white/90">تم تأكيد حجزك</p>
             {successDetails ? (
               <p className="mt-3 text-sm leading-6 text-white/90">
                 {successDetails.serviceName}
                 {successDetails.addOnNames.length > 0 ? ` + ${successDetails.addOnNames.join(" + ")}` : ""}
                 <br />
-                {successDetails.totalPrice} · {successDetails.totalDuration}
-                <br />
                 {successDetails.date} at {successDetails.time}
                 <br />
-                Phone: {successDetails.phone}
+                {successDetails.totalPrice} · {successDetails.totalDuration}
               </p>
-            ) : (
-              <p className="mt-3 text-sm leading-6 text-white/90">
-                Thank you. Your appointment request has been received.
-              </p>
-            )}
+            ) : null}
             {successDetails ? (
               <div className="mt-5 grid gap-2">
                 <button
@@ -692,19 +700,17 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                   disabled={reminderStatus === "loading" || reminderStatus === "success"}
                   className="min-h-11 bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-[#b46f65] disabled:cursor-not-allowed disabled:opacity-75"
                 >
-                  {reminderStatus === "loading" ? "Enabling..." : "Enable appointment reminders"}
+                  {reminderStatus === "loading" ? "Enabling..." : "Remind me before"}
                 </button>
                 {reminderMessage ? (
-                  <p className={`text-xs leading-5 ${reminderStatus === "error" ? "text-white" : "text-white/90"}`}>
-                    {reminderMessage}
-                  </p>
+                  <p className={`text-xs leading-5 ${reminderStatus === "error" ? "text-white" : "text-white/90"}`}>{reminderMessage}</p>
                 ) : null}
               </div>
             ) : null}
             <button
               type="button"
               onClick={() => navigate("/")}
-              className="mt-5 min-h-11 bg-white px-6 text-sm font-semibold uppercase tracking-[0.16em] text-[#b46f65]"
+              className="mt-3 min-h-11 w-full border border-white/70 px-6 text-sm font-semibold uppercase tracking-[0.16em] text-white"
             >
               Done
             </button>
@@ -712,51 +718,5 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         </div>
       ) : null}
     </main>
-  );
-}
-
-function DetailRow({ icon, label, arabicLabel, value }: { icon: string; label: string; arabicLabel: string; value: string }) {
-  return (
-    <div className="flex items-center gap-4">
-      <span className="service-detail-icon grid h-11 w-11 place-items-center bg-[#f2e7e2] text-lg text-[#a25b54]">
-        {icon}
-      </span>
-      <div>
-        <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm text-[#6d5648]">
-          <span>{label}</span>
-          <span aria-hidden="true">/</span>
-          <span lang="ar" dir="rtl">
-            {arabicLabel}
-          </span>
-        </p>
-        <p className="mt-1 font-display text-lg leading-none text-[#231814]">{value}</p>
-      </div>
-    </div>
-  );
-}
-
-function AppointmentStep({
-  icon,
-  number,
-  title,
-  children,
-}: {
-  icon: string;
-  number: string;
-  title: string;
-  children: ReactNode;
-}) {
-  return (
-    <div className="mt-7 grid gap-3 lg:grid-cols-[2.75rem_1fr] lg:gap-5">
-      <span className="service-detail-icon hidden h-11 w-11 place-items-center bg-[#f2e7e2] text-[#a25b54] lg:grid">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <h3 className="font-display text-lg leading-none text-[#231814] sm:text-xl">
-          {number}. {title}
-        </h3>
-        <div className="mt-4 min-w-0 max-w-full">{children}</div>
-      </div>
-    </div>
   );
 }

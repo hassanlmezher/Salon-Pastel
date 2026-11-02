@@ -536,7 +536,8 @@ button:disabled {
 .pwaInstallShell {
   position: fixed;
   right: clamp(14px, 3vw, 28px);
-  bottom: clamp(14px, 3vw, 28px);
+  /* Clears the 64px "Powered by Netlify" badge pinned to the bottom-right corner. */
+  bottom: calc(76px + var(--safe-bottom));
   z-index: 80;
   width: min(25rem, calc(100vw - 28px));
   pointer-events: none;

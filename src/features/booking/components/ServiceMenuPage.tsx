@@ -1,82 +1,90 @@
-import { Link } from "react-router-dom";
-import { getServiceArabicCopy, serviceGroups, type ServiceGroupId } from "../data/serviceMenu";
+import { Link, useSearchParams } from "react-router-dom";
+import {
+  getOptimizedServiceImage,
+  getServiceArabicCopy,
+  serviceGroups,
+  type ServiceGroupId,
+} from "../data/serviceMenu";
 
-type ServiceMenuPageProps = {
-  groupId: ServiceGroupId;
-  title: string;
-};
+const tabs: { id: ServiceGroupId; label: string; labelAr: string }[] = [
+  { id: "manicure", label: "Manicure", labelAr: "مانيكير" },
+  { id: "pedicure", label: "Pedicure", labelAr: "بديكير" },
+];
 
-export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
+export function serviceImageUrl(imageSrc: string) {
+  return decodeURIComponent(getOptimizedServiceImage(imageSrc));
+}
+
+/** One page for both service types: tabs on top, a compact tappable list below. */
+export function ServiceMenuPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const groupId: ServiceGroupId = searchParams.get("type") === "pedicure" ? "pedicure" : "manicure";
   const services = serviceGroups[groupId];
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#fff8f4_0%,#f7efe6_54%,#ead9c9_100%)] px-3 py-8 text-[#231814] sm:px-5 lg:px-8">
-      <div className="mx-auto w-full">
-        <div className="flex items-start justify-between gap-4">
-          <a
-            href="/"
-            className="ml-1 font-display text-[42px] font-semibold leading-none text-[#8a4f24] sm:text-[56px]"
-          >
+    <main className="min-h-screen bg-[#f7efe6] pb-10 text-[#231814]">
+      <header className="sticky top-0 z-30 border-b border-[#e7c9c2]/70 bg-[#f7efe6]/95 backdrop-blur-md">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 pt-3">
+          <Link to="/" className="font-display text-[2rem] font-semibold leading-none text-[#8a4f24]">
             Pastel
-          </a>
-          <a
-            href="/book"
-            className="mt-2 inline-flex min-h-10 items-center border border-[#e7c9c2] bg-[#fffaf6]/92 px-4 text-xs font-semibold uppercase tracking-[0.16em] text-[#6d3f1f] shadow-[0_10px_22px_rgba(97,58,24,0.08)] transition hover:bg-white sm:mt-3"
-          >
-            Back
-          </a>
-        </div>
-
-        <section className="mt-10 sm:mt-14" aria-labelledby="service-menu-title">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8a4545]">
-            Book an appointment
+          </Link>
+          <p className="text-right text-sm text-[#6d5648]">
+            Choose a service <span lang="ar" dir="rtl" className="block">اختاري الخدمة</span>
           </p>
-          <h1
-            id="service-menu-title"
-            className="mt-3 font-display text-[2.25rem] font-semibold leading-none text-[#4d2a16] sm:text-[4.5rem]"
-          >
-            {title}
-          </h1>
-        </section>
-
-        <section className="mt-8 grid w-full grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4 lg:gap-7" aria-label={title}>
-          {services.length === 0 ? (
-            <p className="col-span-full border border-[#ead5cd] bg-[#fffaf6]/92 p-5 text-sm text-[#6d5648]">
-              No services are available right now.
-            </p>
-          ) : null}
-          {services.map((service) => {
-            const arabicCopy = getServiceArabicCopy(service.slug);
-
+        </div>
+        <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 px-4 py-3" role="tablist" aria-label="Service type">
+          {tabs.map((tab) => {
+            const active = tab.id === groupId;
             return (
-              <Link
-                key={service.name}
-                to={`/book/${groupId}/${service.slug}`}
-                className="service-menu-card flex min-h-[16rem] flex-col items-center bg-[#fffaf6] px-3 py-5 text-center shadow-[0_16px_34px_rgba(97,58,24,0.12)] sm:min-h-[22rem] sm:px-5 sm:py-7 lg:min-h-[27rem] lg:px-7 lg:py-8"
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setSearchParams(tab.id === "manicure" ? {} : { type: tab.id }, { replace: true })}
+                className={`flex min-h-12 items-center justify-center gap-2 border text-base font-semibold transition ${
+                  active ? "border-[#bd736b] bg-[#bd736b] text-white" : "border-[#e7c9c2] bg-[#fffaf6] text-[#6d3f1f]"
+                }`}
               >
-                <img
-                  src={decodeURIComponent(service.imageSrc)}
-                  alt={service.name}
-                  className="service-menu-image aspect-square w-[76%] max-w-[13rem] object-cover shadow-[0_10px_24px_rgba(97,58,24,0.1)]"
-                />
-                <span className="service-menu-icon -mt-5 grid h-10 w-10 place-items-center border-2 border-white bg-[#8a4545] text-sm font-semibold text-white shadow-[0_8px_18px_rgba(97,58,24,0.16)] sm:h-12 sm:w-12">
-                  +
+                <span>{tab.label}</span>
+                <span lang="ar" dir="rtl" className="font-normal">
+                  {tab.labelAr}
                 </span>
-                <h2 className="mt-4 max-w-full text-balance font-display text-[1.2rem] font-semibold leading-[1.05] text-[#231814] sm:text-[1.65rem] lg:text-[2rem]">
-                  {service.name}
-                </h2>
-                <span className="mt-1 text-[0.95rem] font-semibold leading-6 text-[#4d4039]" lang="ar" dir="rtl">
-                  {arabicCopy.title}
-                </span>
-                <span className="mt-auto pt-3 text-sm text-[#6d5648]">
-                  <strong className="font-display text-[1.35rem] font-semibold text-[#b46f65]">{service.price}</strong>
-                  <span className="block text-xs">{service.duration}</span>
-                </span>
-              </Link>
+              </button>
             );
           })}
-        </section>
-      </div>
+        </div>
+      </header>
+
+      <ul className="mx-auto mt-3 grid max-w-3xl gap-2 px-4 sm:grid-cols-2" aria-label={`${groupId} services`}>
+        {services.map((service) => (
+          <li key={service.slug}>
+            <Link
+              to={`/book/${groupId}/${service.slug}`}
+              className="flex min-h-[5.5rem] items-center gap-3 border border-[#ead5cd] bg-[#fffaf6] p-2.5 pr-3 shadow-[0_6px_16px_rgba(97,58,24,0.06)] transition hover:border-[#bd736b] active:bg-[#f9e9e5]"
+            >
+              <img
+                src={serviceImageUrl(service.imageSrc)}
+                alt=""
+                loading="lazy"
+                width={72}
+                height={72}
+                className="h-[4.5rem] w-[4.5rem] flex-none object-cover"
+              />
+              <span className="min-w-0 flex-1">
+                <span className="block font-display text-[1.2rem] font-semibold leading-tight">{service.name}</span>
+                <span lang="ar" dir="rtl" className="mt-0.5 block text-right text-sm leading-5 text-[#6d5648]">
+                  {getServiceArabicCopy(service.slug).title}
+                </span>
+              </span>
+              <span className="flex-none text-right">
+                <strong className="block font-display text-[1.3rem] font-semibold leading-none text-[#b46f65]">{service.price}</strong>
+                <span className="mt-1 block text-xs text-[#6d5648]">{service.duration}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }

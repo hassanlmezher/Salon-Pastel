@@ -280,6 +280,12 @@ function isDurationAwareAvailabilityMissing(error: unknown) {
   );
 }
 
+// Older databases lack the duration-aware and monthly availability functions.
+// Once a call shows they are missing, skip them for the rest of the visit
+// instead of paying for a failed request on every day of every month.
+let durationAwareAvailabilityMissing = false;
+let monthlyAvailabilityMissing = false;
+
 export async function fetchAvailableSlots(
   serviceId: string,
   dateIso: string,
@@ -288,17 +294,23 @@ export async function fetchAvailableSlots(
   if (dateIso < getTodayDateIso()) return [];
 
   const supabase = getSupabaseClient();
-  const durationAwareResult = await withSupabaseTimeout((signal) =>
-    supabase
-      .rpc("get_available_slots", {
-        p_service_id: serviceId,
-        p_date: dateIso,
-        p_duration_minutes: durationMinutes ?? null,
-      })
-      .abortSignal(signal),
-  );
+  const durationAwareResult = durationAwareAvailabilityMissing
+    ? null
+    : await withSupabaseTimeout((signal) =>
+        supabase
+          .rpc("get_available_slots", {
+            p_service_id: serviceId,
+            p_date: dateIso,
+            p_duration_minutes: durationMinutes ?? null,
+          })
+          .abortSignal(signal),
+      );
 
-  const { data, error } = durationAwareResult.error && isDurationAwareAvailabilityMissing(durationAwareResult.error)
+  if (durationAwareResult?.error && isDurationAwareAvailabilityMissing(durationAwareResult.error)) {
+    durationAwareAvailabilityMissing = true;
+  }
+
+  const { data, error } = !durationAwareResult || durationAwareAvailabilityMissing
     ? await withSupabaseTimeout((signal) =>
         supabase
           .rpc("get_available_slots", {
@@ -329,6 +341,10 @@ export async function fetchAvailableSlotsForMonth(
   monthStartIso: string,
   durationMinutes?: number,
 ): Promise<AvailableSlot[]> {
+  if (monthlyAvailabilityMissing) {
+    return fetchAvailableSlotsDayByDay(serviceId, monthStartIso, durationMinutes);
+  }
+
   const supabase = getSupabaseClient();
   const durationAwareResult = await withSupabaseTimeout((signal) =>
     supabase
@@ -355,6 +371,11 @@ export async function fetchAvailableSlotsForMonth(
     return mapAvailableSlots((data ?? []) as RawSlot[]);
   }
 
+  if (isDurationAwareAvailabilityMissing(error)) monthlyAvailabilityMissing = true;
+  return fetchAvailableSlotsDayByDay(serviceId, monthStartIso, durationMinutes);
+}
+
+async function fetchAvailableSlotsDayByDay(serviceId: string, monthStartIso: string, durationMinutes?: number) {
   const dailySlots = await Promise.all(
     getMonthDates(monthStartIso).map((dateIso) => fetchAvailableSlots(serviceId, dateIso, durationMinutes)),
   );

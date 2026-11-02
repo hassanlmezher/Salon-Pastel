@@ -1,7 +1,14 @@
-import { Outlet } from "react-router-dom";
-import { InstallPrompt } from "../features/booking/pwa/InstallPrompt";
+import { useEffect } from "react";
+import { Outlet, useLocation } from "react-router-dom";
 
 export function AppShell() {
+  const { pathname } = useLocation();
+
+  // Each new page starts at the top instead of keeping the previous page's scroll.
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
     <div className="min-h-screen bg-canvas text-text">
       <a
@@ -10,10 +17,9 @@ export function AppShell() {
       >
         Skip to content
       </a>
-      <main id="main-content">
+      <div id="main-content">
         <Outlet />
-      </main>
-      <InstallPrompt />
+      </div>
     </div>
   );
 }
