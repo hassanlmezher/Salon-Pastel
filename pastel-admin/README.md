@@ -1,6 +1,6 @@
 # Pastel Admin
 
-Separate owner dashboard for the Pastel salon booking system. This app deploys as its own Vercel project and uses the same Supabase project as the customer booking website.
+Separate owner dashboard for the Pastel salon booking system. This app deploys as its own Netlify project (`pastel-admin`) and uses the same Supabase project as the customer booking website.
 
 ## Local Development
 
@@ -36,8 +36,6 @@ insert into public.owner_users (user_id)
 values ('AUTH_USER_UUID_HERE');
 ```
 
-## Vercel Deployment
+## Netlify Deployment
 
-Create a second Vercel project from the same repository and set the project root directory to `pastel-admin`.
-
-Add the environment variables above in the new Vercel project settings, deploy, then use the Vercel URL for owner access.
+Live at https://pastel-salon-admin.netlify.app (Netlify project `pastel-salon-admin`, free plan). The environment variables above are set in the Netlify project settings. See the root README for the deploy command.
