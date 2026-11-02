@@ -5,3 +5,8 @@
 
 [build.environment]
   NODE_VERSION = "22"
+
+# Required: without it, Git-triggered builds skip the Next.js server function
+# and every dynamic page (login, appointments) returns 404.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
