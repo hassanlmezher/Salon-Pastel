@@ -85,4 +85,4 @@ Both sites are separate Vercel projects connected to this GitHub repo. Every pus
 | Customer booking | `salon-pastel` | `.` (Vite, see `vercel.json`) | https://salon-pastel.vercel.app |
 | Owner admin | `salon-pastel-rfxz` | `pastel-admin` (Next.js) | https://salon-pastel-rfxz.vercel.app |
 
-Both need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the Vercel project settings. Data lives in Supabase (free plan), so the sites keep working when your computer is off.
+Both need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the Vercel project settings. Data lives in Supabase (free plan), so the sites keep working when your computer is off. Free Supabase projects pause after a week without traffic, so the admin project runs a daily Vercel Cron (`/api/keep-alive`, see `pastel-admin/vercel.json`) that makes one tiny read.
