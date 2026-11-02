@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -198,9 +198,14 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     return serviceDuration + selectedAddOns.reduce((total, addOn) => total + addOn.durationMin, 0);
   }, [selectedAddOns, service]);
 
+  // Only the newest request may update the screen; a slower answer for a month
+  // the customer already left must not overwrite the month they are looking at.
+  const latestAvailabilityRequest = useRef(0);
+
   const loadMonthAvailability = useCallback(async () => {
     if (!service?.id) return;
 
+    const requestId = ++latestAvailabilityRequest.current;
     setAvailabilityLoading(true);
     setAvailabilityError("");
 
@@ -209,6 +214,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       const monthStartIso = formatDateIso(selectedMonth.year, selectedMonth.monthIndex, 1);
       const todayDateIso = getTodayDateIso();
       const monthSlots = await fetchAvailableSlotsForMonth(service.id as string, monthStartIso, totalDurationMin);
+      if (requestId !== latestAvailabilityRequest.current) return;
       const slotsByDate = monthSlots.reduce<Map<string, AvailableSlot[]>>((groups, slot) => {
         const dateIso = getSlotDateIso(slot);
         const currentSlots = groups.get(dateIso) ?? [];
@@ -239,12 +245,13 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         return monthDays.find((day) => day.available > 0)?.dateIso ?? "";
       });
     } catch {
+      if (requestId !== latestAvailabilityRequest.current) return;
       setDays([]);
       setSelectedDateIso("");
       setSelectedSlotStart("");
       setAvailabilityError("Unable to load available times. Please try again.");
     } finally {
-      setAvailabilityLoading(false);
+      if (requestId === latestAvailabilityRequest.current) setAvailabilityLoading(false);
     }
   }, [selectedMonth.monthIndex, selectedMonth.year, service?.id, totalDurationMin]);
 
