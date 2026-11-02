@@ -3,12 +3,16 @@ import { useNavigate } from "react-router-dom";
 const choices = [
   {
     id: "manicure",
-    title: "Manicure Stuff",
+    title: "Manicure",
+    titleAr: "مانيكير",
+    description: "Nails, polish, extensions and hand spa.",
     descriptionAr: "اختاري هذا الخيار للعناية بالأظافر، الطلاء، سبا اليدين وخدمات المناكير.",
   },
   {
     id: "pedicure",
-    title: "Pedicure Stuff",
+    title: "Pedicure",
+    titleAr: "بديكير",
+    description: "Foot care, polish and foot spa.",
     descriptionAr: "اختاري هذا الخيار للعناية بالقدمين، سبا القدم، التشذيب والطلاء.",
   },
 ] as const;
@@ -36,37 +40,36 @@ export function BookingChoiceScreen() {
           </button>
         </div>
 
-        <div className="mt-14 max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8a4545]">
-            Book an appointment
-          </p>
-          <h1 className="mt-4 font-display text-[3.5rem] font-semibold leading-none text-[#4d2a16] sm:text-[5rem]">
-            Choose your service type.
+        <div className="mt-10 max-w-2xl sm:mt-14">
+          <h1 className="font-display text-[2.6rem] font-semibold leading-none text-[#4d2a16] sm:text-[4.5rem]">
+            What would you like?
           </h1>
+          <p className="mt-3 text-lg text-[#6d5648]" lang="ar" dir="rtl">
+            ماذا تودين أن تحجزي؟
+          </p>
         </div>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {choices.map((choice) => (
             <button
               key={choice.id}
               type="button"
               onClick={() => navigate(`/book/${choice.id}`)}
-              className="border border-[#e7c9c2]/80 bg-[#fff9f4] p-6 text-left shadow-[0_18px_42px_rgba(97,58,24,0.1)] transition hover:-translate-y-1 hover:border-[#f6c9b8] hover:bg-white sm:p-8"
+              className="flex min-h-[8.5rem] items-center justify-between gap-4 border border-[#e7c9c2]/80 bg-[#fff9f4] p-6 text-left shadow-[0_18px_42px_rgba(97,58,24,0.1)] transition hover:border-[#bd736b] hover:bg-white active:bg-[#f9e9e5] sm:p-8"
             >
-              <h2 className="text-base font-semibold uppercase tracking-[0.16em] text-[#6d3f1f]">
-                {choice.title}
-              </h2>
-              <p className="mt-4 text-right text-sm leading-7 text-[#6d5648]" lang="ar" dir="rtl">
-                {choice.descriptionAr}
-              </p>
-              <div className="mt-8">
-                <span className="inline-flex min-h-[72px] w-full max-w-[15.5rem] flex-col items-center justify-center gap-1.5 border border-[#f7d6df] bg-[#f6c9b8] px-6 py-2.5 text-sm font-semibold uppercase tracking-[0.18em] text-[#4d2a16] shadow-[0_18px_38px_rgba(214,133,153,0.24)]">
-                  <span>Choose</span>
-                  <span className="text-[0.82rem] normal-case tracking-normal" lang="ar" dir="rtl">
-                    اختر
-                  </span>
+              <span className="min-w-0">
+                <span className="flex flex-wrap items-baseline gap-x-3 font-display text-[2rem] font-semibold leading-none text-[#4d2a16]">
+                  <span>{choice.title}</span>
+                  <span className="text-[1.5rem]" lang="ar" dir="rtl">{choice.titleAr}</span>
                 </span>
-              </div>
+                <span className="mt-3 block text-sm leading-6 text-[#6d5648]">{choice.description}</span>
+                <span className="mt-1 block text-right text-sm leading-6 text-[#6d5648]" lang="ar" dir="rtl">
+                  {choice.descriptionAr}
+                </span>
+              </span>
+              <span aria-hidden="true" className="grid h-12 w-12 flex-none place-items-center bg-[#bd736b] text-2xl text-white">
+                →
+              </span>
             </button>
           ))}
         </div>

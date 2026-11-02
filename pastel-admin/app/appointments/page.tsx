@@ -1,37 +1,17 @@
-import {
-  AdminBottomNav,
-  AdminTopBar,
-  AppointmentCardList,
-  AppointmentsPageHeader,
-  AppointmentStatusTabs,
-} from "../components/AdminMobileShell";
-import { AdminFilterPanel } from "../components/AdminFilterPanel";
-import { getAdminAppointments, parseAdminFilters } from "../../src/features/admin/data/adminAppointments";
+import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-type AppointmentsPageProps = {
+/** Old link kept working: everything now lives on the home screen. */
+export default async function AppointmentsAliasPage({
+  searchParams,
+}: {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-export default async function AppointmentsPage({ searchParams }: AppointmentsPageProps) {
-  const params = (await searchParams) ?? {};
-  const filters = parseAdminFilters(params);
-  const tabBaseAppointments = await getAdminAppointments({
-    date: filters.date,
-    search: filters.search,
-    sort: filters.sort,
-  });
-  const appointments = await getAdminAppointments(filters);
-
-  return (
-    <main className="mobileAdminShell">
-      <AdminTopBar />
-      <AppointmentsPageHeader />
-      <AdminFilterPanel filters={filters} action="/appointments" includeSort />
-      <AppointmentStatusTabs appointments={tabBaseAppointments} filters={filters} />
-      <AppointmentCardList appointments={appointments} showDetailsButton />
-      <AdminBottomNav active="appointments" />
-    </main>
-  );
+}) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries((await searchParams) ?? {})) {
+    if (typeof value === "string") params.set(key, value);
+  }
+  const query = params.toString();
+  redirect(query ? `/?${query}` : "/");
 }

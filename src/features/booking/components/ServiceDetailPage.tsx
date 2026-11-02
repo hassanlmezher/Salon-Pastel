@@ -220,6 +220,11 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     loadMonthAvailability();
   }, [loadMonthAvailability]);
 
+  const openDays = useMemo(() => days.filter((day) => day.available > 0), [days]);
+  const selectedMonthPosition = monthOptions.findIndex(
+    (option) => option.monthIndex === selectedMonth.monthIndex && option.year === selectedMonth.year,
+  );
+
   const selectedDaySlots = useMemo(
     () => days.find((day) => day.dateIso === selectedDateIso)?.slots ?? [],
     [days, selectedDateIso],
@@ -417,7 +422,6 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
 
             <div className="mt-6 grid gap-4">
               <DetailRow icon="◷" label="Duration" arabicLabel="المدة" value={formatServiceDuration(totalDurationMin)} />
-              <DetailRow icon="▣" label="Service type" arabicLabel="نوع الخدمة" value={service.serviceType} />
             </div>
           </div>
         </section>
@@ -477,64 +481,71 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             Select Your Appointment
           </h2>
 
-          <AppointmentStep icon="□" number="1" title="Choose Month">
-            <div className="flex w-full max-w-full gap-3 overflow-x-auto px-0.5 pb-2">
-              {monthOptions.map((item) => (
-                <button
-                  key={`${item.month}-${item.year}`}
-                  type="button"
-                  onClick={() => chooseMonth(item)}
-                  className={`min-h-16 flex-[0_0_7.2rem] border px-3 text-center text-base leading-6 transition sm:flex-[0_0_8.25rem] ${
-                    selectedMonth.monthIndex === item.monthIndex && selectedMonth.year === item.year
-                      ? "border-[#bd736b] bg-[#bd736b] text-white"
-                      : "border-[#ead5cd] bg-white/50 text-[#231814] hover:border-[#bd736b]"
-                  }`}
-                >
-                  <span className="block">{item.month}</span>
-                  <span className="block">{item.year}</span>
-                </button>
-              ))}
+          <AppointmentStep icon="□" number="1" title="Choose Day">
+            <div className="mb-4 flex items-center justify-between gap-3 border border-[#ead5cd] bg-white/60">
+              <button
+                type="button"
+                onClick={() => chooseMonth(monthOptions[selectedMonthPosition - 1])}
+                disabled={selectedMonthPosition <= 0}
+                aria-label="Previous month"
+                className="grid h-12 w-12 place-items-center text-2xl text-[#a25b54] disabled:text-[#cbbdb6]"
+              >
+                ‹
+              </button>
+              <span className="font-display text-xl font-semibold text-[#231814]" aria-live="polite">
+                {selectedMonth.month} {selectedMonth.year}
+              </span>
+              <button
+                type="button"
+                onClick={() => chooseMonth(monthOptions[selectedMonthPosition + 1])}
+                disabled={selectedMonthPosition >= monthOptions.length - 1}
+                aria-label="Next month"
+                className="grid h-12 w-12 place-items-center text-2xl text-[#a25b54] disabled:text-[#cbbdb6]"
+              >
+                ›
+              </button>
             </div>
-          </AppointmentStep>
-
-          <AppointmentStep icon="□" number="2" title="Choose Day">
             {availabilityLoading ? <p className="text-sm text-[#6d5648]">Loading available days...</p> : null}
             {!availabilityLoading && availabilityError ? <p className="text-sm text-[#8a4545]">{availabilityError}</p> : null}
-            {!availabilityLoading && !availabilityError ? (
+            {!availabilityLoading && !availabilityError && openDays.length === 0 ? (
+              <p className="text-sm leading-6 text-[#6d5648]">
+                No free times left in {selectedMonth.month}.{" "}
+                {selectedMonthPosition < monthOptions.length - 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => chooseMonth(monthOptions[selectedMonthPosition + 1])}
+                    className="font-semibold text-[#a25b54] underline underline-offset-4"
+                  >
+                    See next month
+                  </button>
+                ) : null}
+              </p>
+            ) : null}
+            {!availabilityLoading && !availabilityError && openDays.length > 0 ? (
               <div className="flex w-full max-w-full gap-3 overflow-x-auto px-0.5 pb-2">
-                {days.map((day) => {
-                  const disabled = day.available === 0;
-                  return (
-                    <button
-                      key={day.dateIso}
-                      type="button"
-                      disabled={disabled}
-                      onClick={() => setSelectedDateIso(day.dateIso)}
-                      className={`min-h-24 flex-[0_0_5.85rem] border px-2 py-3 text-center transition sm:flex-[0_0_6.5rem] ${
-                        disabled
-                          ? "cursor-not-allowed border-dashed border-[#8c7c75] bg-[#7d726d]/20 text-[#5f514b]"
-                          : selectedDateIso === day.dateIso
-                            ? "border-[#bd736b] bg-[#bd736b] text-white shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
-                            : "border-[#ead5cd] bg-white/50 text-[#231814] hover:border-[#bd736b]"
-                      }`}
-                    >
-                      <span className={`block text-sm ${selectedDateIso === day.dateIso && !disabled ? "text-white" : "text-[#756964]"}`}>
-                        {day.weekday}
-                      </span>
-                      <span className="mt-1.5 block text-[1.75rem] leading-none">{day.day}</span>
-                      <span className={`mt-2.5 block text-xs ${
-                        selectedDateIso === day.dateIso && !disabled ? "text-white" : disabled ? "text-[#5f514b]" : "text-[#a25b54]"
-                      }`}>
-                        {disabled ? "No availability" : `${day.available} available`}
-                      </span>
-                    </button>
-                  );
-                })}
+                {openDays.map((day) => (
+                  <button
+                    key={day.dateIso}
+                    type="button"
+                    aria-pressed={selectedDateIso === day.dateIso}
+                    onClick={() => setSelectedDateIso(day.dateIso)}
+                    className={`min-h-[5.5rem] flex-[0_0_4.75rem] border px-2 py-3 text-center transition ${
+                      selectedDateIso === day.dateIso
+                        ? "border-[#bd736b] bg-[#bd736b] text-white shadow-[0_8px_18px_rgba(97,58,24,0.08)]"
+                        : "border-[#ead5cd] bg-white/50 text-[#231814] hover:border-[#bd736b]"
+                    }`}
+                  >
+                    <span className={`block text-sm ${selectedDateIso === day.dateIso ? "text-white" : "text-[#756964]"}`}>
+                      {day.weekday}
+                    </span>
+                    <span className="mt-1.5 block text-[1.75rem] leading-none">{day.day}</span>
+                  </button>
+                ))}
               </div>
             ) : null}
           </AppointmentStep>
 
-          <AppointmentStep icon="◷" number="3" title="Choose Time">
+          <AppointmentStep icon="◷" number="2" title="Choose Time">
             {availabilityLoading ? <p className="text-sm text-[#6d5648]">Loading available times...</p> : null}
             {!availabilityLoading && selectedDateIso && selectedDaySlots.length === 0 ? (
               <p className="text-sm text-[#6d5648]">No available times for this day.</p>
@@ -577,72 +588,79 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       </div>
 
       {showCustomerForm ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-[#231814]/28 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="customer-form-title">
-          <form className="booking-form-popup w-full max-w-[24rem] bg-[#fffaf6] p-6 shadow-[0_24px_70px_rgba(97,58,24,0.26)]" onSubmit={submitCustomerForm}>
-            <h2 id="customer-form-title" className="font-display text-[2rem] font-semibold leading-none text-[#231814]">
-              Confirm your details
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-[#6d5648]">
-              Enter your contact information so we can confirm your appointment.
-            </p>
+        <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain bg-[#231814]/28 px-4 py-6 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="customer-form-title">
+          <div className="grid min-h-full place-items-center">
+            <form className="booking-form-popup w-full max-w-[24rem] bg-[#fffaf6] p-6 shadow-[0_24px_70px_rgba(97,58,24,0.26)]" onSubmit={submitCustomerForm}>
+              <h2 id="customer-form-title" className="font-display text-[2rem] font-semibold leading-none text-[#231814]">
+                Confirm your details
+              </h2>
+              <p className="mt-3 border border-[#ead5cd] bg-white/70 px-3 py-2 text-sm leading-6 text-[#4d4039]">
+                <strong className="font-semibold">
+                  {service.name}
+                  {selectedAddOns.length > 0 ? ` + ${selectedAddOns.map((addOn) => addOn.name).join(" + ")}` : ""}
+                </strong>
+                <br />
+                {selectedDateIso ? formatLongDate(selectedDateIso) : ""} · {selectedSlot?.label} · {formatServicePrice(totalPrice)}
+              </p>
 
-            <label className="mt-5 block text-sm font-semibold text-[#4d4039]">
-              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span>First name</span>
-                <span aria-hidden="true">/</span>
-                <span lang="ar" dir="rtl">
-                  الاسم الأول
-                </span>
-              </span>
-              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="firstName" autoComplete="given-name" required />
-            </label>
-            <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
-              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span>Last name</span>
-                <span aria-hidden="true">/</span>
-                <span lang="ar" dir="rtl">
-                  اسم العائلة
-                </span>
-              </span>
-              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="lastName" autoComplete="family-name" required />
-            </label>
-            <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
-              <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
-                <span>Phone number</span>
-                <span aria-hidden="true">/</span>
-                <span lang="ar" dir="rtl">
-                  رقم الهاتف
-                </span>
-              </span>
-              <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="phone" type="tel" autoComplete="tel" required />
-            </label>
-
-            {formError ? <p className="mt-4 text-sm leading-5 text-[#8a4545]">{formError}</p> : null}
-
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button type="button" disabled={isSubmitting} onClick={() => setShowCustomerForm(false)} className="grid min-h-14 place-items-center border border-[#ead5cd] bg-white px-4 py-2 text-sm font-semibold text-[#6d3f1f] disabled:cursor-not-allowed">
-                <span className="grid gap-1 leading-none">
-                  <span className="uppercase tracking-[0.14em]">Back</span>
+              <label className="mt-5 block text-sm font-semibold text-[#4d4039]">
+                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                  <span>First name</span>
+                  <span aria-hidden="true">/</span>
                   <span lang="ar" dir="rtl">
-                    رجوع
+                    الاسم الأول
                   </span>
                 </span>
-              </button>
-              <button type="submit" disabled={isSubmitting} className="grid min-h-14 place-items-center bg-[#bd736b] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed">
-                <span className="grid gap-1 leading-none">
-                  <span className="uppercase tracking-[0.14em]">{isSubmitting ? "Submitting..." : "Submit"}</span>
+                <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="firstName" autoComplete="given-name" required />
+              </label>
+              <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
+                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                  <span>Last name</span>
+                  <span aria-hidden="true">/</span>
                   <span lang="ar" dir="rtl">
-                    {isSubmitting ? "جاري الإرسال" : "إرسال"}
+                    اسم العائلة
                   </span>
                 </span>
-              </button>
-            </div>
-          </form>
+                <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="lastName" autoComplete="family-name" required />
+              </label>
+              <label className="mt-4 block text-sm font-semibold text-[#4d4039]">
+                <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                  <span>Phone number</span>
+                  <span aria-hidden="true">/</span>
+                  <span lang="ar" dir="rtl">
+                    رقم الهاتف
+                  </span>
+                </span>
+                <input className="mt-2 block min-h-12 w-full border border-[#ead5cd] bg-white px-4 text-[#231814] outline-none focus:border-[#bd736b]" name="phone" type="tel" inputMode="tel" autoComplete="tel" required />
+              </label>
+
+              {formError ? <p className="mt-4 text-sm leading-5 text-[#8a4545]">{formError}</p> : null}
+
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <button type="button" disabled={isSubmitting} onClick={() => setShowCustomerForm(false)} className="grid min-h-14 place-items-center border border-[#ead5cd] bg-white px-4 py-2 text-sm font-semibold text-[#6d3f1f] disabled:cursor-not-allowed">
+                  <span className="grid gap-1 leading-none">
+                    <span className="uppercase tracking-[0.14em]">Back</span>
+                    <span lang="ar" dir="rtl">
+                      رجوع
+                    </span>
+                  </span>
+                </button>
+                <button type="submit" disabled={isSubmitting} className="grid min-h-14 place-items-center bg-[#bd736b] px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed">
+                  <span className="grid gap-1 leading-none">
+                    <span className="uppercase tracking-[0.14em]">{isSubmitting ? "Submitting..." : "Submit"}</span>
+                    <span lang="ar" dir="rtl">
+                      {isSubmitting ? "جاري الإرسال" : "إرسال"}
+                    </span>
+                  </span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       ) : null}
 
       {showSuccess ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-[#231814]/28 px-4 backdrop-blur-sm" role="status" aria-live="polite">
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#231814]/28 px-4 py-10 backdrop-blur-sm" role="status" aria-live="polite">
           <div className="success-popup relative w-full max-w-[22rem] bg-[#d68599] px-6 pb-6 pt-10 text-center text-white shadow-[0_24px_70px_rgba(97,58,24,0.28)]">
             <span className="success-popup-icon absolute left-1/2 top-0 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center border-4 border-white bg-[#d68599] text-3xl font-semibold leading-none text-white shadow-[0_12px_28px_rgba(97,58,24,0.2)]">
               ✓

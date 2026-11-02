@@ -33,7 +33,7 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
           </p>
           <h1
             id="service-menu-title"
-            className="mt-3 whitespace-nowrap font-display text-[2.25rem] font-semibold leading-none text-[#4d2a16] sm:text-[4.5rem]"
+            className="mt-3 font-display text-[2.25rem] font-semibold leading-none text-[#4d2a16] sm:text-[4.5rem]"
           >
             {title}
           </h1>
@@ -52,7 +52,7 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
               <Link
                 key={service.name}
                 to={`/book/${groupId}/${service.slug}`}
-                className="service-menu-card flex min-h-[18rem] flex-col items-center bg-[#fffaf6] px-3 py-5 text-center shadow-[0_16px_34px_rgba(97,58,24,0.12)] sm:min-h-[22rem] sm:px-5 sm:py-7 lg:min-h-[27rem] lg:px-7 lg:py-8"
+                className="service-menu-card flex min-h-[16rem] flex-col items-center bg-[#fffaf6] px-3 py-5 text-center shadow-[0_16px_34px_rgba(97,58,24,0.12)] sm:min-h-[22rem] sm:px-5 sm:py-7 lg:min-h-[27rem] lg:px-7 lg:py-8"
               >
                 <img
                   src={decodeURIComponent(service.imageSrc)}
@@ -65,11 +65,13 @@ export function ServiceMenuPage({ groupId, title }: ServiceMenuPageProps) {
                 <h2 className="mt-4 max-w-full text-balance font-display text-[1.2rem] font-semibold leading-[1.05] text-[#231814] sm:text-[1.65rem] lg:text-[2rem]">
                   {service.name}
                 </h2>
-                <span className="mt-4 h-px w-10 bg-[#d7aa9d]" />
-                <p className="mt-4 text-right text-[0.78rem] leading-5 text-[#6d5648] sm:text-sm sm:leading-6" lang="ar" dir="rtl">
-                  <strong className="mb-1 block font-semibold text-[#4d4039]">{arabicCopy.title}</strong>
-                  <span>{arabicCopy.description}</span>
-                </p>
+                <span className="mt-1 text-[0.95rem] font-semibold leading-6 text-[#4d4039]" lang="ar" dir="rtl">
+                  {arabicCopy.title}
+                </span>
+                <span className="mt-auto pt-3 text-sm text-[#6d5648]">
+                  <strong className="font-display text-[1.35rem] font-semibold text-[#b46f65]">{service.price}</strong>
+                  <span className="block text-xs">{service.duration}</span>
+                </span>
               </Link>
             );
           })}

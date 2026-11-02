@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { AdminNavigationLoader } from "./components/AdminNavigationLoader";
 import { PwaInstallPrompt } from "./components/PwaInstallPrompt";
 import "./globals.css";
-import "./booking.css";
 
 export const metadata: Metadata = {
   applicationName: "Pastel Admin",
@@ -29,6 +27,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: "#f6efe9",
   colorScheme: "light",
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -40,7 +41,6 @@ export default function RootLayout({
     <html lang="en">
       <body>
         {children}
-        <AdminNavigationLoader />
         <PwaInstallPrompt />
       </body>
     </html>

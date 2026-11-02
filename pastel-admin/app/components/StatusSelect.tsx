@@ -27,11 +27,11 @@ export function StatusSelect({
   };
 
   if (status === "completed") {
-    return <span className="mobileCompletedStatus">Completed</span>;
+    return <span className="adminStatusDone">Done</span>;
   }
 
   return (
-    <div className="statusControl mobileStatusControl" data-status={selectedStatus}>
+    <div className="adminStatus" data-status={selectedStatus}>
       <select
         value={selectedStatus}
         disabled={isPending}
@@ -59,8 +59,8 @@ export function StatusSelect({
           </option>
         ))}
       </select>
-      <span className="statusAnnouncement" aria-live="polite">
-        {isPending ? "Saving appointment status" : message}
+      <span className={message && message !== "Status updated" ? "adminStatusError" : "srOnly"} aria-live="polite">
+        {isPending ? "Saving…" : message}
       </span>
     </div>
   );

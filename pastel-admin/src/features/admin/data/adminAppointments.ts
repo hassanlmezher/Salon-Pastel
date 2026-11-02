@@ -2,10 +2,12 @@ import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "../../../lib/supabase/server";
 import {
   appointmentStatuses,
+  appointmentViews,
   type AdminAppointment,
   type AdminAppointmentFilters,
   type AdminSelectedService,
   type AppointmentStatus,
+  type AppointmentView,
 } from "../types";
 
 type RawService = {
@@ -48,13 +50,17 @@ function isAppointmentStatus(value: string | undefined): value is AppointmentSta
   return appointmentStatuses.includes(value as AppointmentStatus);
 }
 
+function isAppointmentView(value: unknown): value is AppointmentView {
+  return appointmentViews.includes(value as AppointmentView);
+}
+
 export function parseAdminFilters(searchParams: Record<string, string | string[] | undefined>): AdminAppointmentFilters {
-  const date = typeof searchParams.date === "string" ? searchParams.date : "";
+  const date = typeof searchParams.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(searchParams.date) ? searchParams.date : "";
+  const view = isAppointmentView(searchParams.view) ? searchParams.view : "upcoming";
   const status = typeof searchParams.status === "string" && isAppointmentStatus(searchParams.status) ? searchParams.status : "";
   const search = typeof searchParams.search === "string" ? searchParams.search.trim() : "";
-  const sort = searchParams.sort === "oldest" ? "oldest" : "newest";
 
-  return { date, status, search, sort };
+  return { view, date, status, search };
 }
 
 function getService(raw: RawAppointment) {
@@ -109,6 +115,18 @@ function getSalonWallClockTimestamp(date = new Date()) {
   );
 }
 
+export function getSalonTodayIso() {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: SALON_TIME_ZONE,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 function splitFullName(fullName: string) {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
   return {
@@ -155,27 +173,13 @@ function normalizeSelectedServices(raw: RawAppointment, fallbackService: RawServ
   return [];
 }
 
-function formatDateTime(appointmentStart: string | null | undefined) {
-  if (!appointmentStart) {
-    return { date: "", time: "" };
-  }
+function formatWallClockTime(appointmentStart: string) {
+  const match = appointmentStart.match(/T(\d{2}):(\d{2})/);
+  if (!match) return "";
 
-  const date = new Date(appointmentStart);
-  if (Number.isNaN(date.getTime())) {
-    return { date: appointmentStart.slice(0, 10), time: "" };
-  }
-
-  return {
-    date: date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    }),
-    time: date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-    }),
-  };
+  const hour = Number(match[1]);
+  const suffix = hour >= 12 ? "PM" : "AM";
+  return `${hour % 12 || 12}:${match[2]} ${suffix}`;
 }
 
 function getNextDateIso(dateIso: string) {
@@ -195,7 +199,6 @@ function normalizeAppointment(raw: RawAppointment): AdminAppointment {
   const selectedServices = normalizeSelectedServices(raw, fallbackService);
   const totalPrice = parseNumeric(raw.total_price) || parseNumeric(fallbackService?.price);
   const totalDurationMinutes = raw.total_duration_minutes ?? fallbackService?.duration_minutes ?? 0;
-  const dateTime = formatDateTime(raw.appointment_start);
   const rawStatus = raw.status ?? undefined;
   const storedStatus: AppointmentStatus = isAppointmentStatus(rawStatus) ? rawStatus : "booked";
   const appointmentStart = raw.appointment_start ?? "";
@@ -212,14 +215,11 @@ function normalizeAppointment(raw: RawAppointment): AdminAppointment {
 
   return {
     id: raw.id,
-    customerFirstName,
-    customerLastName,
     customerFullName: `${customerFirstName} ${customerLastName}`.trim() || raw.customer_full_name || "Unknown customer",
     customerPhone: raw.customer_phone ?? "",
     selectedServices,
-    appointmentDate: dateTime.date,
-    appointmentTime: dateTime.time,
-    appointmentStart,
+    dateKey: appointmentStart.slice(0, 10),
+    appointmentTime: formatWallClockTime(appointmentStart),
     totalPrice,
     totalDurationMinutes,
     status,
@@ -248,9 +248,14 @@ export async function requireOwnerUser() {
   return { supabase, user };
 }
 
+/**
+ * Loads the appointments for the selected day range and search. Status is
+ * filtered by the caller so the status tabs can show counts from one query.
+ */
 export async function getAdminAppointments(filters: AdminAppointmentFilters) {
   const { supabase } = await requireOwnerUser();
-  const sortAscending = filters.sort === "oldest";
+  const today = getSalonTodayIso();
+  const day = filters.date || (filters.view === "today" ? today : "");
   let query = supabase
     .from("appointments")
     .select(
@@ -269,23 +274,19 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
         "services(id,name,price,duration_minutes)",
       ].join(","),
     )
-    .order("appointment_start", { ascending: sortAscending })
-    .limit(1000);
+    // "All" reads newest first; a day or the upcoming list reads in schedule order.
+    .order("appointment_start", { ascending: Boolean(day) || filters.view === "upcoming" })
+    .limit(500);
 
-  if (filters.date) {
-    const start = `${filters.date}T00:00:00`;
-    const end = `${getNextDateIso(filters.date)}T00:00:00`;
-    query = query.gte("appointment_start", start).lt("appointment_start", end);
+  if (day) {
+    query = query.gte("appointment_start", `${day}T00:00:00`).lt("appointment_start", `${getNextDateIso(day)}T00:00:00`);
+  } else if (filters.view === "upcoming") {
+    query = query.gte("appointment_start", `${today}T00:00:00`);
   }
 
-  if (filters.status === "cancelled") {
-    query = query.in("status", ["cancelled", "no_show"]);
-  } else if (filters.status && filters.status !== "completed") {
-    query = query.eq("status", filters.status);
-  }
-
-  if (filters.search) {
-    const term = filters.search.replace(/[%_]/g, "\\$&");
+  // Characters that would break the PostgREST `or` filter syntax are dropped.
+  const term = filters.search.replace(/[,()*\\]/g, " ").trim().replace(/[%_]/g, "\\$&");
+  if (term) {
     query = query.or(
       [
         `customer_first_name.ilike.%${term}%`,
@@ -299,9 +300,5 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
   const { data, error } = await withAdminQueryTimeout((signal) => query.abortSignal(signal));
   if (error) throw error;
 
-  const appointments = ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
-
-  return filters.status
-    ? appointments.filter((appointment) => appointment.status === filters.status)
-    : appointments;
+  return ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
 }

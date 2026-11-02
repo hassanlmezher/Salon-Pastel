@@ -65,8 +65,7 @@ export async function middleware(request: NextRequest) {
   if (
     pathname === "/" ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/appointments") ||
-    pathname.startsWith("/book")
+    pathname.startsWith("/appointments")
   ) {
     if (!user) {
       return NextResponse.redirect(new URL("/login", request.url));
@@ -92,5 +91,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/dashboard/:path*", "/appointments/:path*", "/book/:path*", "/login"],
+  matcher: ["/", "/dashboard/:path*", "/appointments/:path*", "/login"],
 };

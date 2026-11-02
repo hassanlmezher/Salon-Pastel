@@ -6,6 +6,10 @@ export const editableAppointmentStatuses = ["booked", "confirmed", "cancelled"] 
 
 export type EditableAppointmentStatus = (typeof editableAppointmentStatuses)[number];
 
+export const appointmentViews = ["upcoming", "today", "all"] as const;
+
+export type AppointmentView = (typeof appointmentViews)[number];
+
 export type AdminSelectedService = {
   id?: string | null;
   slug?: string | null;
@@ -17,22 +21,21 @@ export type AdminSelectedService = {
 
 export type AdminAppointment = {
   id: string;
-  customerFirstName: string;
-  customerLastName: string;
   customerFullName: string;
   customerPhone: string;
   selectedServices: AdminSelectedService[];
-  appointmentDate: string;
+  /** Salon wall-clock date, YYYY-MM-DD. */
+  dateKey: string;
   appointmentTime: string;
-  appointmentStart: string;
   totalPrice: number;
   totalDurationMinutes: number;
   status: AppointmentStatus;
 };
 
 export type AdminAppointmentFilters = {
-  date?: string;
-  status?: AppointmentStatus | "";
-  search?: string;
-  sort?: "newest" | "oldest";
+  view: AppointmentView;
+  /** A specific YYYY-MM-DD day. Overrides `view` when set. */
+  date: string;
+  status: AppointmentStatus | "";
+  search: string;
 };

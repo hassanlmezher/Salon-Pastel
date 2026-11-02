@@ -76,12 +76,13 @@ Salon Pastel is a mobile-first luxury salon booking website built with Vite, Rea
 6. Add your remote with `git remote add origin <repo-url>`
 7. Push with `git push -u origin main`
 
-### Vercel
+### Vercel (free Hobby plan)
 
-1. Import the GitHub repository into Vercel
-2. Framework preset: `Vite`
-3. Build command: `npm run build`
-4. Output directory: `dist`
-5. No required environment variables for the current mock app
+Both sites are separate Vercel projects connected to this GitHub repo. Every push to `master` redeploys them automatically; other branches get preview URLs.
 
-Preview deployments will be created automatically for pull requests and branch pushes once the repo is connected.
+| Site | Vercel project | Root directory | URL |
+| --- | --- | --- | --- |
+| Customer booking | `salon-pastel` | `.` (Vite, see `vercel.json`) | https://salon-pastel.vercel.app |
+| Owner admin | `salon-pastel-rfxz` | `pastel-admin` (Next.js) | https://salon-pastel-rfxz.vercel.app |
+
+Both need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the Vercel project settings. Data lives in Supabase (free plan), so the sites keep working when your computer is off.
