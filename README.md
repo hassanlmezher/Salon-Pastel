@@ -76,25 +76,29 @@ Salon Pastel is a mobile-first luxury salon booking website built with Vite, Rea
 6. Add your remote with `git remote add origin <repo-url>`
 7. Push with `git push -u origin main`
 
-### Cloudflare Workers (free plan, commercial use allowed)
+### Cloudflare (free plan, commercial use allowed)
 
-Both sites run on Cloudflare's free Workers plan. Updates don't cost anything, there are no monthly credits that can pause the sites, and static files (the whole customer site) are free and unlimited. The admin runs its server code on Workers' free 100,000 requests a day, far more than one salon needs.
+Both sites run on Cloudflare's free plan. Updates don't cost anything, there are no monthly credits that can pause the sites, and static files (the whole customer site) are free and unlimited. The admin's server code runs on Workers' free 100,000 requests a day, far more than one salon needs.
 
-| Site | Worker | Folder | URL |
+| Site | Address | Cloudflare project | Folder |
 | --- | --- | --- | --- |
-| Customer booking | `pastel-booking` | `.` (Vite, see `wrangler.jsonc`) | https://pastel-booking.hassanmezher084.workers.dev |
-| Owner admin | `pastel-admin` | `pastel-admin` (Next.js via OpenNext, see `pastel-admin/wrangler.jsonc`) | https://pastel-admin.hassanmezher084.workers.dev |
+| Customer booking | https://pastel-salon.pages.dev | Pages `pastel-salon` | `.` (Vite, output `dist`) |
+| Owner admin | https://pastel-salon-admin.pages.dev | Worker `pastel-admin` behind Pages `pastel-salon-admin` | `pastel-admin` (Next.js via OpenNext) |
+| Daily Supabase keep-alive | none | Worker `pastel-keepalive` | `keep-alive` |
 
-The public Supabase URL and anon key are in `.env.production` and `pastel-admin/.env.production` (the anon key is public by design; database rules control access), so builds need no dashboard settings. Data lives in Supabase (free plan), so the sites keep working when your computer is off. Free Supabase projects pause after a week without traffic, so the customer Worker runs a daily cron (`worker/index.ts`) that makes one tiny read.
+- The customer site is a static Pages site; Pages serves `index.html` for every route.
+- The admin is a Next.js Worker with no public address of its own. The Pages project in `pastel-admin/pages-proxy` gives it the clean `pages.dev` address and passes every request straight to the Worker.
+- Free Supabase projects pause after a week without traffic, so `pastel-keepalive` makes one tiny read every day.
+- The public Supabase URL and anon key are in `.env.production` and `pastel-admin/.env.production` (the anon key is public by design; database rules control access), so builds need no dashboard settings.
 
-Deploy by hand:
+Every push to `master` deploys both sites automatically (free):
+
+- `pastel-salon` (Pages, connected to this GitHub repo): build command `npm run build`, output `dist`.
+- `pastel-admin` (Workers Builds, build token "pastel build token"): root directory `pastel-admin`, build command `npx opennextjs-cloudflare build`, deploy command `npx opennextjs-cloudflare deploy`.
+
+The keep-alive and the admin front door rarely change and are deployed by hand:
 
 ```bash
-npm run build && npx wrangler deploy          # customer site
-cd pastel-admin && npm run deploy             # admin
+npx wrangler deploy --config keep-alive/wrangler.jsonc
+npx wrangler pages deploy --cwd pastel-admin/pages-proxy
 ```
-
-Every push to `master` deploys both sites automatically through Cloudflare Workers Builds (free, 3,000 build minutes a month), using the build token "pastel build token". Each Worker's **Settings → Builds** is connected to this GitHub repo (preview builds for other branches are off):
-
-- `pastel-booking`: root directory `/`, build command `npm run build`, deploy command `npx wrangler deploy`
-- `pastel-admin`: root directory `pastel-admin`, build command `npx opennextjs-cloudflare build`, deploy command `npx opennextjs-cloudflare deploy`

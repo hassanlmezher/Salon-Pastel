@@ -1,9 +1,12 @@
 // Owner admin site (Next.js) on Cloudflare Workers via OpenNext, free plan.
+// Its public address is the Pages project in pages-proxy/ (pastel-salon-admin.pages.dev).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "pastel-admin",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "directory": ".open-next/assets",

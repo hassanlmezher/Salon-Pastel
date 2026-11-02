@@ -1,0 +1,9 @@
+// Cloudflare Pages project "pastel-salon-admin": the admin's public address.
+// Deploy with: npx wrangler pages deploy --cwd pastel-admin/pages-proxy
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "pastel-salon-admin",
+  "pages_build_output_dir": "./public",
+  "compatibility_date": "2026-10-01",
+  "services": [{ "binding": "ADMIN", "service": "pastel-admin" }]
+}
