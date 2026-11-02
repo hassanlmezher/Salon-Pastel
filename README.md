@@ -87,16 +87,4 @@ Both sites are separate Netlify projects on the free plan.
 
 Both need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the Netlify project settings; the admin also uses `NEXT_PUBLIC_BOOKING_URL`. Data lives in Supabase (free plan), so the sites keep working when your computer is off. Free Supabase projects pause after a week without traffic, so the admin project runs a daily Netlify scheduled function (`pastel-admin/netlify/functions/keep-alive.mts`) that makes one tiny read.
 
-Deploy after changes:
-
-```bash
-netlify deploy --build --prod --site pastel-salon-booking
-```
-
-The admin must be deployed from a copy outside the git repo (the CLI otherwise mis-detects the monorepo and skips the Next.js server function):
-
-```bash
-rsync -a --delete --exclude node_modules --exclude .next --exclude .netlify pastel-admin/ /tmp/pastel-admin-deploy/ && cd /tmp/pastel-admin-deploy && npm ci && netlify deploy --build --prod --site pastel-salon-admin
-```
-
-Or connect the GitHub repo in each Netlify project (Project configuration → Build & deploy → Link repository; base directory `pastel-admin` for the admin) so every push to `master` deploys automatically.
+Both projects are linked to this GitHub repo: every push to `master` rebuilds and publishes both sites automatically (the admin uses base directory `pastel-admin`). Build progress and errors show under **Deploys** in each Netlify project.
