@@ -21,11 +21,11 @@ Use the same Supabase project values as the customer booking site:
 NEXT_PUBLIC_SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 # Optional: where "New appointment" sends you
-NEXT_PUBLIC_BOOKING_URL=https://salon-pastel.vercel.app/book
+NEXT_PUBLIC_BOOKING_URL=https://pastel-salon-booking.netlify.app/book
 ```
 
 Do not add a service role key to this app. The admin dashboard uses Supabase Auth, RLS, and the `admin_update_appointment_status` RPC.
-The **New appointment** button opens the customer booking site (`NEXT_PUBLIC_BOOKING_URL`, default `https://salon-pastel.vercel.app/book`), so there is only one booking flow to maintain.
+The **New appointment** button opens the customer booking site (`NEXT_PUBLIC_BOOKING_URL`, default `https://pastel-salon-booking.netlify.app/book`), so there is only one booking flow to maintain.
 
 ## Supabase Setup
 

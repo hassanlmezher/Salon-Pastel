@@ -8,7 +8,7 @@ import type { AdminAppointment, AdminAppointmentFilters } from "../src/features/
 
 export const dynamic = "force-dynamic";
 
-const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL?.trim() || "https://salon-pastel.vercel.app/book";
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL?.trim() || "https://pastel-salon-booking.netlify.app/book";
 
 const viewTabs = [
   { label: "Upcoming", value: "upcoming" },

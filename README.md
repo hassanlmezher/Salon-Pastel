@@ -76,13 +76,27 @@ Salon Pastel is a mobile-first luxury salon booking website built with Vite, Rea
 6. Add your remote with `git remote add origin <repo-url>`
 7. Push with `git push -u origin main`
 
-### Vercel (free Hobby plan)
+### Netlify (free plan, commercial use allowed)
 
-Both sites are separate Vercel projects connected to this GitHub repo. Every push to `master` redeploys them automatically; other branches get preview URLs.
+Both sites are separate Netlify projects on the free plan.
 
-| Site | Vercel project | Root directory | URL |
+| Site | Netlify project | Folder | URL |
 | --- | --- | --- | --- |
-| Customer booking | `salon-pastel` | `.` (Vite, see `vercel.json`) | https://salon-pastel.vercel.app |
-| Owner admin | `salon-pastel-rfxz` | `pastel-admin` (Next.js) | https://salon-pastel-rfxz.vercel.app |
+| Customer booking | `pastel-salon-booking` | `.` (Vite, see `netlify.toml`) | https://pastel-salon-booking.netlify.app |
+| Owner admin | `pastel-salon-admin` | `pastel-admin` (Next.js, see `pastel-admin/netlify.toml`) | https://pastel-salon-admin.netlify.app |
 
-Both need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the Vercel project settings. Data lives in Supabase (free plan), so the sites keep working when your computer is off. Free Supabase projects pause after a week without traffic, so the admin project runs a daily Vercel Cron (`/api/keep-alive`, see `pastel-admin/vercel.json`) that makes one tiny read.
+Both need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the Netlify project settings; the admin also uses `NEXT_PUBLIC_BOOKING_URL`. Data lives in Supabase (free plan), so the sites keep working when your computer is off. Free Supabase projects pause after a week without traffic, so the admin project runs a daily Netlify scheduled function (`pastel-admin/netlify/functions/keep-alive.mts`) that makes one tiny read.
+
+Deploy after changes:
+
+```bash
+netlify deploy --build --prod --site pastel-salon-booking
+```
+
+The admin must be deployed from a copy outside the git repo (the CLI otherwise mis-detects the monorepo and skips the Next.js server function):
+
+```bash
+rsync -a --delete --exclude node_modules --exclude .next --exclude .netlify pastel-admin/ /tmp/pastel-admin-deploy/ && cd /tmp/pastel-admin-deploy && npm ci && netlify deploy --build --prod --site pastel-salon-admin
+```
+
+Or connect the GitHub repo in each Netlify project (Project configuration → Build & deploy → Link repository; base directory `pastel-admin` for the admin) so every push to `master` deploys automatically.
