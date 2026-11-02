@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
 
 const heroVideo = "/hero-banner.mp4";
+const heroPoster = "/hero-poster.webp";
 
 const bookButtonClass =
   "inline-flex min-h-16 flex-col items-center justify-center gap-1 border border-[#e4a994] bg-[#f6c9b8] px-6 py-3 text-center text-[#3d2113] shadow-[0_18px_38px_rgba(123,67,46,0.28)] hover:bg-[#f3b8c8] focus-visible:ring-[#8a4545] sm:px-8";
@@ -69,11 +70,12 @@ export function LandingPage() {
       >
         <motion.video
           className="absolute left-0 top-[-8%] h-[116%] w-full object-cover will-change-transform"
-          autoPlay
+          autoPlay={!reduceMotion}
           loop
           muted
           playsInline
-          preload="auto"
+          poster={heroPoster}
+          preload={reduceMotion ? "none" : "auto"}
           aria-hidden="true"
           style={reduceMotion ? undefined : { y: videoY, scale: videoScale }}
         >

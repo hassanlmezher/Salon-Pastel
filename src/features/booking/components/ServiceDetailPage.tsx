@@ -21,7 +21,7 @@ import {
   type ServiceMenuItem,
 } from "../data/serviceMenu";
 import { serviceImageUrl } from "./ServiceMenuPage";
-import { requestAppointmentReminderSubscription, type ReminderSubscriptionResult } from "../pwa/reminders";
+import { buildCalendarFileUrl } from "../logic/calendarFile";
 
 type ServiceDetailPageProps = {
   groupId: ServiceGroupId;
@@ -45,9 +45,9 @@ type SuccessDetails = {
   date: string;
   time: string;
   phone: string;
+  startIso: string;
+  durationMinutes: number;
 };
-
-type ReminderStatus = "idle" | "loading" | "success" | "info" | "error";
 
 function formatDateIso(year: number, monthIndex: number, day: number) {
   const month = String(monthIndex + 1).padStart(2, "0");
@@ -132,8 +132,6 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successDetails, setSuccessDetails] = useState<SuccessDetails | null>(null);
-  const [reminderStatus, setReminderStatus] = useState<ReminderStatus>("idle");
-  const [reminderMessage, setReminderMessage] = useState("");
 
   useEffect(() => {
     let isCurrent = true;
@@ -374,10 +372,10 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         date: formatLongDate(selectedDateIso),
         time: selectedSlot.label,
         phone,
+        startIso: selectedSlot.startIso,
+        durationMinutes: totalDurationMin,
       });
       saveCustomer({ fullName, phone });
-      setReminderStatus("idle");
-      setReminderMessage("");
       setShowSuccess(true);
     } catch (error) {
       setFormError(getBookingErrorMessage(error));
@@ -385,27 +383,6 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const enableReminders = async () => {
-    if (!successDetails?.appointmentId) return;
-
-    setReminderStatus("loading");
-    setReminderMessage("");
-
-    const result: ReminderSubscriptionResult = await requestAppointmentReminderSubscription({
-      appointmentId: successDetails.appointmentId,
-      customerPhone: successDetails.phone,
-    });
-
-    if (result.status === "subscribed") {
-      setReminderStatus("success");
-      setReminderMessage("Appointment reminders are enabled for this booking.");
-      return;
-    }
-
-    setReminderStatus(result.status === "denied" || result.status === "error" ? "error" : "info");
-    setReminderMessage(result.message);
   };
 
   const backHref = groupId === "pedicure" ? "/book?type=pedicure" : "/book";
@@ -693,19 +670,20 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
               </p>
             ) : null}
             {successDetails ? (
-              <div className="mt-5 grid gap-2">
-                <button
-                  type="button"
-                  onClick={enableReminders}
-                  disabled={reminderStatus === "loading" || reminderStatus === "success"}
-                  className="min-h-11 bg-white px-5 text-xs font-semibold uppercase tracking-[0.12em] text-[#b46f65] disabled:cursor-not-allowed disabled:opacity-75"
-                >
-                  {reminderStatus === "loading" ? "Enabling..." : "Remind me before"}
-                </button>
-                {reminderMessage ? (
-                  <p className={`text-xs leading-5 ${reminderStatus === "error" ? "text-white" : "text-white/90"}`}>{reminderMessage}</p>
-                ) : null}
-              </div>
+              <a
+                href={buildCalendarFileUrl({
+                  id: successDetails.appointmentId,
+                  title: `Pastel: ${successDetails.serviceName}`,
+                  startIso: successDetails.startIso,
+                  durationMinutes: successDetails.durationMinutes,
+                  details: [successDetails.serviceName, ...successDetails.addOnNames].join(" + ") + ` · ${successDetails.totalPrice}`,
+                })}
+                download="pastel-appointment.ics"
+                className="mt-5 flex min-h-12 items-center justify-center gap-2 bg-white px-5 text-sm font-semibold text-[#b46f65]"
+              >
+                Add to my calendar
+                <span lang="ar" dir="rtl" className="font-normal">أضيفي إلى التقويم</span>
+              </a>
             ) : null}
             <button
               type="button"
