@@ -38,4 +38,4 @@ values ('AUTH_USER_UUID_HERE');
 
 ## Netlify Deployment
 
-Live at https://pastel-salon-admin.netlify.app (Netlify project `pastel-salon-admin`, free plan). The environment variables above are set in the Netlify project settings. See the root README for the deploy command.
+Live at https://pastel-salon-admin.netlify.app (Netlify project `pastel-salon-admin`, free plan). The environment variables above are set in the Netlify project settings. It is linked to GitHub with base directory `pastel-admin`, so every push to `master` deploys it automatically. `netlify.toml` must keep the `@netlify/plugin-nextjs` plugin or dynamic pages return 404.
