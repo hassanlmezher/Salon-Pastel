@@ -76,15 +76,25 @@ Salon Pastel is a mobile-first luxury salon booking website built with Vite, Rea
 6. Add your remote with `git remote add origin <repo-url>`
 7. Push with `git push -u origin main`
 
-### Netlify (free plan, commercial use allowed)
+### Cloudflare Workers (free plan, commercial use allowed)
 
-Both sites are separate Netlify projects on the free plan.
+Both sites run on Cloudflare's free Workers plan. Updates don't cost anything, there are no monthly credits that can pause the sites, and static files (the whole customer site) are free and unlimited. The admin runs its server code on Workers' free 100,000 requests a day, far more than one salon needs.
 
-| Site | Netlify project | Folder | URL |
+| Site | Worker | Folder | URL |
 | --- | --- | --- | --- |
-| Customer booking | `pastel-salon-booking` | `.` (Vite, see `netlify.toml`) | https://pastel-salon-booking.netlify.app |
-| Owner admin | `pastel-salon-admin` | `pastel-admin` (Next.js, see `pastel-admin/netlify.toml`) | https://pastel-salon-admin.netlify.app |
+| Customer booking | `pastel-booking` | `.` (Vite, see `wrangler.jsonc`) | https://pastel-booking.hassanmezher084.workers.dev |
+| Owner admin | `pastel-admin` | `pastel-admin` (Next.js via OpenNext, see `pastel-admin/wrangler.jsonc`) | https://pastel-admin.hassanmezher084.workers.dev |
 
-Both need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` in the Netlify project settings; the admin also uses `NEXT_PUBLIC_BOOKING_URL`. Data lives in Supabase (free plan), so the sites keep working when your computer is off. Free Supabase projects pause after a week without traffic, so the admin project runs a daily Netlify scheduled function (`pastel-admin/netlify/functions/keep-alive.mts`) that makes one tiny read.
+The public Supabase URL and anon key are in `.env.production` and `pastel-admin/.env.production` (the anon key is public by design; database rules control access), so builds need no dashboard settings. Data lives in Supabase (free plan), so the sites keep working when your computer is off. Free Supabase projects pause after a week without traffic, so the customer Worker runs a daily cron (`worker/index.ts`) that makes one tiny read.
 
-Both projects are linked to this GitHub repo: every push to `master` rebuilds and publishes both sites automatically (the admin uses base directory `pastel-admin`). Build progress and errors show under **Deploys** in each Netlify project.
+Deploy by hand:
+
+```bash
+npm run build && npx wrangler deploy          # customer site
+cd pastel-admin && npm run deploy             # admin
+```
+
+Automatic deploys on every push to `master` use Cloudflare Workers Builds (free, 3,000 build minutes a month). In the Cloudflare dashboard, each Worker's **Settings → Build** is connected to this GitHub repo:
+
+- `pastel-booking`: root directory `/`, build command `npm run build`, deploy command `npx wrangler deploy`
+- `pastel-admin`: root directory `pastel-admin`, build command `npx opennextjs-cloudflare build`, deploy command `npx opennextjs-cloudflare deploy`

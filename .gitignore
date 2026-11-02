@@ -6,4 +6,5 @@ dist
 .env.local
 .env*.local
 .antigravity
-.netlify
+.open-next
+.wrangler
