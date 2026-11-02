@@ -21,8 +21,9 @@ export function ServiceMenuPage() {
   const groupId: ServiceGroupId = searchParams.get("type") === "pedicure" ? "pedicure" : "manicure";
   const services = serviceGroups[groupId];
 
+  // pb-24 keeps the last service above the 64px "Powered by Netlify" badge.
   return (
-    <main className="min-h-screen bg-[#f7efe6] pb-10 text-[#231814]">
+    <main className="min-h-screen bg-[#f7efe6] pb-24 text-[#231814]">
       <header className="sticky top-0 z-30 border-b border-[#e7c9c2]/70 bg-[#f7efe6]/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 pt-3">
           <Link to="/" className="inline-flex min-h-11 items-center font-display text-[2rem] font-semibold leading-none text-[#8a4f24]">
