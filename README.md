@@ -94,7 +94,7 @@ npm run build && npx wrangler deploy          # customer site
 cd pastel-admin && npm run deploy             # admin
 ```
 
-Automatic deploys on every push to `master` use Cloudflare Workers Builds (free, 3,000 build minutes a month). In the Cloudflare dashboard, each Worker's **Settings → Build** is connected to this GitHub repo:
+Every push to `master` deploys both sites automatically through Cloudflare Workers Builds (free, 3,000 build minutes a month), using the build token "pastel build token". Each Worker's **Settings → Builds** is connected to this GitHub repo (preview builds for other branches are off):
 
 - `pastel-booking`: root directory `/`, build command `npm run build`, deploy command `npx wrangler deploy`
 - `pastel-admin`: root directory `pastel-admin`, build command `npx opennextjs-cloudflare build`, deploy command `npx opennextjs-cloudflare deploy`
