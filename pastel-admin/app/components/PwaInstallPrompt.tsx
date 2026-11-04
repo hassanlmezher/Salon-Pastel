@@ -107,7 +107,7 @@ export function PwaInstallPrompt() {
   return (
     <div className="pwaInstallShell" role="dialog" aria-modal="false" aria-labelledby="pwa-install-title">
       <div className="pwaInstallCard">
-        <img className="pwaInstallIcon" src="/admin-logo.png" alt="" aria-hidden="true" />
+        <img className="pwaInstallIcon" src="/admin-logo.webp" alt="" aria-hidden="true" />
         <div className="pwaInstallContent">
           <p className="pwaInstallEyebrow">Pastel admin app</p>
           <h2 id="pwa-install-title">Install Pastel Admin</h2>

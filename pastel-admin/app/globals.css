@@ -92,7 +92,7 @@ button:disabled {
 
 .adminBrand small {
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -505,7 +505,7 @@ button:disabled {
   min-height: 52px;
   margin-top: 6px;
   border: 0;
-  background: var(--accent);
+  background: #a3635c;
   color: #fff;
   font-size: 1rem;
   font-weight: 700;
@@ -625,7 +625,7 @@ button:disabled {
 }
 
 .pwaInstallPrimary {
-  background: #bd736b;
+  background: #a3635c;
   color: #fff;
   box-shadow: 0 12px 24px rgba(189, 115, 107, 0.24);
 }

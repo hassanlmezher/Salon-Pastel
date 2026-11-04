@@ -9,6 +9,16 @@ export const metadata: Metadata = {
     template: "%s | Pastel Admin",
   },
   description: "Owner dashboard for Pastel salon appointments.",
+  alternates: {
+    canonical: "https://pastel-salon-admin.pages.dev/",
+  },
+  openGraph: {
+    title: "Pastel Admin",
+    description: "Owner dashboard for Pastel salon appointments.",
+    images: "https://pastel-salon-admin.pages.dev/og-image.png",
+    url: "https://pastel-salon-admin.pages.dev/",
+    type: "website",
+  },
   manifest: "/manifest.webmanifest",
   robots: {
     index: false,
