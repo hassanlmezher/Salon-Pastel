@@ -1,5 +1,4 @@
-import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "../../../lib/supabase/server";
+import { getSupabaseClient } from "../../../lib/supabase/client";
 import {
   appointmentStatuses,
   appointmentViews,
@@ -226,26 +225,11 @@ function normalizeAppointment(raw: RawAppointment): AdminAppointment {
   };
 }
 
-export async function requireOwnerUser() {
-  const supabase = await createSupabaseServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/login");
-
-  const { data: ownerUser } = await withAdminQueryTimeout((signal) =>
-    supabase
-      .from("owner_users")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .abortSignal(signal)
-      .maybeSingle(),
-  );
-
-  if (!ownerUser) redirect("/login?error=not_owner");
-
-  return { supabase, user };
+/** Thrown when there is no session or the account is not an owner. */
+export class AdminAuthError extends Error {
+  constructor(readonly reason: "signed_out" | "not_owner") {
+    super(reason);
+  }
 }
 
 /**
@@ -253,7 +237,12 @@ export async function requireOwnerUser() {
  * filtered by the caller so the status tabs can show counts from one query.
  */
 export async function getAdminAppointments(filters: AdminAppointmentFilters) {
-  const { supabase } = await requireOwnerUser();
+  const supabase = getSupabaseClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+  if (!session) throw new AdminAuthError("signed_out");
+
   const today = getSalonTodayIso();
   const day = filters.date || (filters.view === "today" ? today : "");
   let query = supabase
@@ -297,8 +286,15 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
     );
   }
 
-  const { data, error } = await withAdminQueryTimeout((signal) => query.abortSignal(signal));
-  if (error) throw error;
+  // The owner check runs alongside the list, so a page load is one round trip.
+  const [{ data, error }, { data: ownerUser, error: ownerError }] = await Promise.all([
+    withAdminQueryTimeout((signal) => query.abortSignal(signal)),
+    withAdminQueryTimeout((signal) =>
+      supabase.from("owner_users").select("user_id").eq("user_id", session.user.id).abortSignal(signal).maybeSingle(),
+    ),
+  ]);
+  if (error || ownerError) throw error ?? ownerError;
+  if (!ownerUser) throw new AdminAuthError("not_owner");
 
   return ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
 }

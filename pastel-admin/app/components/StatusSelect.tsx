@@ -11,9 +11,11 @@ import {
 export function StatusSelect({
   appointmentId,
   status,
+  onSaved,
 }: {
   appointmentId: string;
   status: AppointmentStatus;
+  onSaved: (appointmentId: string, status: AppointmentStatus) => void;
 }) {
   const [selectedStatus, setSelectedStatus] = useState<EditableAppointmentStatus>(
     status === "confirmed" || status === "cancelled" ? status : "booked",
@@ -50,6 +52,7 @@ export function StatusSelect({
             }
 
             setMessage("Status updated");
+            onSaved(appointmentId, nextStatus);
           });
         }}
       >

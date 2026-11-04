@@ -1,17 +1,15 @@
-// Owner admin site (Next.js) on Cloudflare Workers via OpenNext, free plan.
+// Owner admin site: static files (next build -> out/) served by a Workers static-assets
+// Worker, free plan. No server code runs per request; the browser talks to Supabase directly.
 // Its public address is the Pages project in pages-proxy/ (pastel-salon-admin.pages.dev).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "pastel-admin",
-  "main": ".open-next/worker.js",
   "compatibility_date": "2026-10-01",
   "workers_dev": false,
   "preview_urls": false,
-  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
-    "directory": ".open-next/assets",
-    "binding": "ASSETS"
+    "directory": "./out",
+    "not_found_handling": "404-page"
   },
-  "services": [{ "binding": "WORKER_SELF_REFERENCE", "service": "pastel-admin" }],
   "observability": { "enabled": true }
 }

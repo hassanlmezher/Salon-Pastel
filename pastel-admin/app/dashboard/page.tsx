@@ -1,7 +1,12 @@
-import { redirect } from "next/navigation";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect } from "react";
 
+/** Old link kept working: everything now lives on the home screen. */
 export default function DashboardAliasPage() {
-  redirect("/");
+  useEffect(() => {
+    window.location.replace("/");
+  }, []);
+
+  return null;
 }

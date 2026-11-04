@@ -1,30 +1,41 @@
-import { loginOwner, logoutOwner } from "../actions";
+"use client";
+
+import { useEffect, useState } from "react";
+import { loginOwner, logoutOwner, type LoginErrorKey } from "../actions";
 import { LoginPasswordField } from "../components/LoginPasswordField";
 import { LoginSubmitButton } from "../components/LoginSubmitButton";
-import { createSupabaseServerClient } from "../../src/lib/supabase/server";
+import { getSupabaseClient } from "../../src/lib/supabase/client";
 import { isSupabaseConfigured } from "../../src/lib/supabase/config";
 
-export const dynamic = "force-dynamic";
-
-type LoginPageProps = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
-
-const errorMessages: Record<string, string> = {
+const errorMessages: Record<LoginErrorKey, string> = {
   invalid: "The email or password is incorrect.",
   missing: "Enter the owner email and password.",
   not_owner: "This account is not listed as an owner.",
-  not_configured: "Admin login is not configured yet. Add the Supabase environment variables and restart the app.",
+  not_configured: "Admin login is not configured yet. Add the Supabase environment variables and rebuild the app.",
+  network: "Could not reach the server. Check the connection and try again.",
 };
 
-export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const params = (await searchParams) ?? {};
+export default function LoginPage() {
   const configured = isSupabaseConfigured();
-  const errorKey = typeof params.error === "string" ? params.error : "";
-  const error = configured ? errorMessages[errorKey] : errorMessages.not_configured;
-  const user = configured
-    ? (await (await createSupabaseServerClient()).auth.getUser()).data.user
-    : null;
+  const [errorKey, setErrorKey] = useState<LoginErrorKey | null>(configured ? null : "not_configured");
+  const [signedInEmail, setSignedInEmail] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  useEffect(() => {
+    if (!configured) return;
+
+    const fromUrl = new URLSearchParams(window.location.search).get("error");
+    if (fromUrl && fromUrl in errorMessages) setErrorKey(fromUrl as LoginErrorKey);
+
+    // A signed-in non-owner stays here with a way to log out; an owner goes straight in.
+    getSupabaseClient()
+      .auth.getSession()
+      .then(({ data: { session } }) => {
+        if (!session) return;
+        if (fromUrl === "not_owner") setSignedInEmail(session.user.email ?? "");
+        else window.location.replace("/");
+      });
+  }, [configured]);
 
   return (
     <main className="loginPage">
@@ -35,25 +46,39 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
         <h1 id="login-title">Sign in</h1>
 
-        {error ? <p className="formError">{error}</p> : null}
+        {errorKey ? <p className="formError" role="alert">{errorMessages[errorKey]}</p> : null}
 
         {!configured ? (
           <p className="signedInNotice">
             Copy <code>.env.example</code> to <code>.env.local</code>, add the Supabase URL and anon key, then restart the admin app.
           </p>
-        ) : user ? (
+        ) : signedInEmail !== null ? (
           <form action={logoutOwner} className="loginForm">
-            <p className="signedInNotice">Signed in as {user.email}. This account needs owner access.</p>
+            <p className="signedInNotice">Signed in as {signedInEmail}. This account needs owner access.</p>
             <button type="submit" className="loginSubmit">Log out</button>
           </form>
         ) : (
-          <form action={loginOwner} className="loginForm">
+          <form
+            className="loginForm"
+            onSubmit={async (event) => {
+              // Handled here instead of a form action so a wrong password keeps the typed email.
+              event.preventDefault();
+              setPending(true);
+              const result = await loginOwner(new FormData(event.currentTarget));
+              if (result) {
+                setErrorKey(result);
+                setPending(false);
+              } else {
+                window.location.replace("/");
+              }
+            }}
+          >
             <label className="loginField">
               <span>Email</span>
               <input name="email" type="email" autoComplete="email" inputMode="email" autoCapitalize="none" required />
             </label>
             <LoginPasswordField />
-            <LoginSubmitButton />
+            <LoginSubmitButton pending={pending} />
           </form>
         )}
       </section>

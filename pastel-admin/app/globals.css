@@ -135,7 +135,7 @@ button:disabled {
   gap: 8px;
   min-height: 52px;
   margin-bottom: 12px;
-  background: var(--accent);
+  background: #a3635c;
   color: #fff;
   font-size: 1rem;
   font-weight: 700;
@@ -220,8 +220,8 @@ button:disabled {
 
 .adminTabs > a.active,
 .adminDayPicker.active {
-  border-color: var(--accent);
-  background: var(--accent);
+  border-color: #a3635c;
+  background: #a3635c;
   color: #fff;
 }
 
@@ -639,4 +639,9 @@ button:disabled {
   .adminSpinner {
     animation-duration: 2.4s;
   }
+}
+
+.adminRetry {
+  margin-top: 16px;
+  padding: 0 24px;
 }

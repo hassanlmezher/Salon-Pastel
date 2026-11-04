@@ -1,12 +1,8 @@
-"use server";
-
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import {
   editableAppointmentStatuses,
   type EditableAppointmentStatus,
 } from "../src/features/admin/types";
-import { createSupabaseServerClient } from "../src/lib/supabase/server";
+import { getSupabaseClient } from "../src/lib/supabase/client";
 import { isSupabaseConfigured } from "../src/lib/supabase/config";
 
 const ADMIN_ACTION_TIMEOUT_MS = 8000;
@@ -26,20 +22,24 @@ function isEditableAppointmentStatus(value: string): value is EditableAppointmen
   return editableAppointmentStatuses.includes(value as EditableAppointmentStatus);
 }
 
-export async function loginOwner(formData: FormData) {
-  if (!isSupabaseConfigured()) redirect("/login?error=not_configured");
+export type LoginErrorKey = "invalid" | "missing" | "not_owner" | "not_configured" | "network";
+
+/** Signs in and checks the owner list. Returns an error key, or null when signed in as an owner. */
+export async function loginOwner(formData: FormData): Promise<LoginErrorKey | null> {
+  if (!isSupabaseConfigured()) return "not_configured";
 
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
 
-  if (!email || !password) redirect("/login?error=missing");
+  if (!email || !password) return "missing";
 
-  const supabase = await createSupabaseServerClient();
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-  if (error || !data.user) redirect("/login?error=invalid");
+  if (error) return error.status === 400 ? "invalid" : "network";
+  if (!data.user) return "invalid";
 
-  const { data: ownerUser } = await withAdminActionTimeout((signal) =>
+  const { data: ownerUser, error: ownerError } = await withAdminActionTimeout((signal) =>
     supabase
       .from("owner_users")
       .select("user_id")
@@ -48,18 +48,18 @@ export async function loginOwner(formData: FormData) {
       .maybeSingle(),
   );
 
+  if (ownerError) return "network";
   if (!ownerUser) {
     await supabase.auth.signOut();
-    redirect("/login?error=not_owner");
+    return "not_owner";
   }
 
-  redirect("/");
+  return null;
 }
 
 export async function logoutOwner() {
-  const supabase = await createSupabaseServerClient();
-  await supabase.auth.signOut();
-  redirect("/login");
+  await getSupabaseClient().auth.signOut();
+  window.location.replace("/login");
 }
 
 export async function updateAppointmentStatus(appointmentId: string, status: string) {
@@ -67,9 +67,8 @@ export async function updateAppointmentStatus(appointmentId: string, status: str
     return { ok: false, message: "Invalid appointment status." };
   }
 
-  const supabase = await createSupabaseServerClient();
   const { error } = await withAdminActionTimeout((signal) =>
-    supabase
+    getSupabaseClient()
       .rpc("admin_update_appointment_status", {
         p_appointment_id: appointmentId,
         p_status: status,
@@ -82,7 +81,5 @@ export async function updateAppointmentStatus(appointmentId: string, status: str
     return { ok: false, message: "Status could not be updated. Please try again." };
   }
 
-  revalidatePath("/");
-  revalidatePath("/appointments");
   return { ok: true, message: "Status updated." };
 }

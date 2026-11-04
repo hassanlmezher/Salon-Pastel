@@ -1,4 +1,4 @@
-const CACHE_VERSION = "pastel-admin-pwa-v2";
+const CACHE_VERSION = "pastel-admin-pwa-v3";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
@@ -6,6 +6,7 @@ const APP_SHELL_URLS = [
   "/login",
   "/manifest.webmanifest",
   "/admin-logo.png",
+  "/admin-logo.webp",
   "/admin-icon-192.png",
   "/admin-icon-512.png",
   "/admin-maskable-512.png"

@@ -1,6 +1,6 @@
 import { Phone } from "lucide-react";
 import { StatusSelect } from "./StatusSelect";
-import type { AdminAppointment } from "../../src/features/admin/types";
+import type { AdminAppointment, AppointmentStatus } from "../../src/features/admin/types";
 
 function formatMoney(value: number) {
   return `$${Number.isInteger(value) ? value : value.toFixed(2)}`;
@@ -47,7 +47,15 @@ function groupByDay(appointments: AdminAppointment[]) {
   return groups;
 }
 
-export function AppointmentList({ appointments, today }: { appointments: AdminAppointment[]; today: string }) {
+export function AppointmentList({
+  appointments,
+  today,
+  onStatusSaved,
+}: {
+  appointments: AdminAppointment[];
+  today: string;
+  onStatusSaved: (appointmentId: string, status: AppointmentStatus) => void;
+}) {
   if (appointments.length === 0) {
     return (
       <section className="adminEmpty">
@@ -70,7 +78,7 @@ export function AppointmentList({ appointments, today }: { appointments: AdminAp
               <article className="adminCard" key={appointment.id} data-status={appointment.status}>
                 <div className="adminCardTop">
                   <strong className="adminCardTime">{appointment.appointmentTime || "—"}</strong>
-                  <StatusSelect appointmentId={appointment.id} status={appointment.status} />
+                  <StatusSelect appointmentId={appointment.id} status={appointment.status} onSaved={onStatusSaved} />
                 </div>
                 <h3>{appointment.customerFullName}</h3>
                 {appointment.customerPhone ? (

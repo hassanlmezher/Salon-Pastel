@@ -1,17 +1,12 @@
-import { redirect } from "next/navigation";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect } from "react";
 
 /** Old link kept working: everything now lives on the home screen. */
-export default async function AppointmentsAliasPage({
-  searchParams,
-}: {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-}) {
-  const params = new URLSearchParams();
-  for (const [key, value] of Object.entries((await searchParams) ?? {})) {
-    if (typeof value === "string") params.set(key, value);
-  }
-  const query = params.toString();
-  redirect(query ? `/?${query}` : "/");
+export default function AppointmentsAliasPage() {
+  useEffect(() => {
+    window.location.replace(`/${window.location.search}`);
+  }, []);
+
+  return null;
 }
