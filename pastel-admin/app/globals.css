@@ -7,7 +7,7 @@
   --ink: #231814;
   --muted: #715e52;
   --line: #ead5cd;
-  --accent: #bd736b;
+  --accent: #a3635c;
   --accent-dark: #a25b54;
   --pending: #b7791f;
   --confirmed: #4f7a5f;
@@ -554,6 +554,19 @@ button:disabled {
   box-shadow: 0 22px 60px rgba(97, 58, 24, 0.22);
   backdrop-filter: blur(18px);
   pointer-events: auto;
+}
+
+/* On a phone the fixed card would sit over the login form, so it follows the form instead. */
+@media (max-width: 640px) {
+  body:has(.pwaInstallShell) .loginPage {
+    min-height: auto;
+  }
+
+  body:has(.loginPage) .pwaInstallShell {
+    position: static;
+    width: auto;
+    margin: 0 16px calc(16px + var(--safe-bottom));
+  }
 }
 
 .pwaInstallIcon {
