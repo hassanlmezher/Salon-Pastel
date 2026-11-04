@@ -56,7 +56,7 @@ export function LandingPage() {
             <p className="font-display text-[42px] font-semibold leading-none sm:text-[56px]" style={wordmarkStyle}>
               Pastel
             </p>
-            <p className="mt-0.5 pl-1 text-[11px] font-medium uppercase tracking-[0.22em] text-[#745d4d] sm:text-xs sm:tracking-[0.26em]">
+            <p className="mt-0.5 pl-1 text-xs font-medium uppercase tracking-[0.22em] text-[#745d4d] sm:text-xs sm:tracking-[0.26em]">
               Nail and beauty lounge
             </p>
           </button>
@@ -97,12 +97,12 @@ export function LandingPage() {
             className="max-w-[32rem] px-4 py-4 text-[#fffaf6] sm:max-w-[38rem] sm:px-6 sm:py-5 lg:max-w-[42rem]"
             style={reduceMotion ? undefined : { y: bubbleY }}
           >
-            <p
+            <h1
               className="text-left font-body text-[1.9rem] font-extrabold leading-[1.02] tracking-[-0.04em] text-[#fffaf6] sm:text-[2.7rem] sm:tracking-[-0.03em] lg:text-[3.6rem]"
               style={heroTextStyle}
             >
               Welcome to Pastel Nail Salon.
-            </p>
+            </h1>
           </motion.div>
           <motion.div
             className="ml-auto max-w-[30rem] px-4 py-4 text-right text-[#fffaf6] sm:px-6 sm:py-5 lg:max-w-[36rem]"
@@ -155,7 +155,7 @@ export function LandingPage() {
             <span lang="ar" dir="rtl">المالكة</span>
           </p>
         </div>
-        <p className="mx-auto mt-6 max-w-[88rem] text-xs uppercase tracking-[0.16em] text-[#8b6b58]">© 2026 Pastel Salon</p>
+        <p className="mx-auto mt-6 max-w-[88rem] text-xs uppercase tracking-[0.16em] text-[#836553]">© 2026 Pastel Salon</p>
       </footer>
     </>
   );

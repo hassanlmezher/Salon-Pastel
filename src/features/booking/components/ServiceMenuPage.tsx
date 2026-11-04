@@ -29,9 +29,9 @@ export function ServiceMenuPage() {
           <Link to="/" className="inline-flex min-h-11 items-center font-display text-[2rem] font-semibold leading-none text-[#8a4f24]">
             Pastel
           </Link>
-          <p className="text-right text-sm text-[#6d5648]">
+          <h1 className="text-right text-sm text-[#6d5648]">
             Choose a service <span lang="ar" dir="rtl" className="block">اختاري الخدمة</span>
-          </p>
+          </h1>
         </div>
         <div className="mx-auto grid max-w-3xl grid-cols-2 gap-2 px-4 py-3" role="tablist" aria-label="Service type">
           {tabs.map((tab) => {
@@ -44,7 +44,7 @@ export function ServiceMenuPage() {
                 aria-selected={active}
                 onClick={() => setSearchParams(tab.id === "manicure" ? {} : { type: tab.id }, { replace: true })}
                 className={`flex min-h-12 items-center justify-center gap-2 border text-base font-semibold transition ${
-                  active ? "border-[#bd736b] bg-[#bd736b] text-white" : "border-[#e7c9c2] bg-[#fffaf6] text-[#6d3f1f]"
+                  active ? "border-[#a3635c] bg-[#a3635c] text-white" : "border-[#e7c9c2] bg-[#fffaf6] text-[#6d3f1f]"
                 }`}
               >
                 <span>{tab.label}</span>
@@ -79,7 +79,7 @@ export function ServiceMenuPage() {
                 </span>
               </span>
               <span className="flex-none text-right">
-                <strong className="block font-display text-[1.3rem] font-semibold leading-none text-[#b46f65]">{service.price}</strong>
+                <strong className="block font-display text-[1.3rem] font-semibold leading-none text-[#9e6259]">{service.price}</strong>
                 <span className="mt-1 block text-xs text-[#6d5648]">{service.duration}</span>
               </span>
             </Link>
