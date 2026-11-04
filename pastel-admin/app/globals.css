@@ -556,16 +556,10 @@ button:disabled {
   pointer-events: auto;
 }
 
-/* On a phone the fixed card would sit over the login form, so it follows the form instead. */
+/* On a phone the fixed card would cover the login form, and moving the form when it appears makes the page jump, so it waits until after sign-in. */
 @media (max-width: 640px) {
-  body:has(.pwaInstallShell) .loginPage {
-    min-height: auto;
-  }
-
   body:has(.loginPage) .pwaInstallShell {
-    position: static;
-    width: auto;
-    margin: 0 16px calc(16px + var(--safe-bottom));
+    display: none;
   }
 }
 

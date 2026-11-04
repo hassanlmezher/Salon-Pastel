@@ -73,7 +73,7 @@ export function AdminHome() {
       .catch((error: unknown) => {
         if (cancelled) return;
         if (error instanceof AdminAuthError) {
-          window.location.replace(error.reason === "not_owner" ? "/login?error=not_owner" : "/login");
+          router.replace(error.reason === "not_owner" ? "/login?error=not_owner" : "/login");
           return;
         }
         console.error("Unable to load appointments", error);
