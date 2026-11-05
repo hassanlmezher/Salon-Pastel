@@ -1,3 +1,4 @@
 User-agent: *
 Allow: /
+Disallow: /calendar
 Sitemap: https://pastel-salon.pages.dev/sitemap.xml

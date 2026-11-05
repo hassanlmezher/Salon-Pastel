@@ -87,6 +87,7 @@ Both sites run on Cloudflare's free plan. Updates don't cost anything, there are
 | Daily Supabase keep-alive | none | Worker `pastel-keepalive` | `keep-alive` |
 
 - The customer site is a static Pages site; Pages serves `index.html` for every route.
+- One small Pages Function, `functions/calendar.ts`, serves `/calendar?...` as an `.ics` file so "Add to iPhone Calendar" opens the phone's Calendar. It only formats text from the link; it never reads the database.
 - The admin is a static Next.js export served by a static-assets Worker with no public address of its own. No server code runs per visit: the browser signs in and reads appointments straight from Supabase, and database rules allow only the owner. (A Next.js server went over the free plan's 10 ms CPU limit per request and failed often.) The Pages project in `pastel-admin/pages-proxy` gives it the clean `pages.dev` address and passes every request straight to the Worker.
 - Free Supabase projects pause after a week without traffic, so `pastel-keepalive` makes one tiny read every day.
 - The public Supabase URL and anon key are in `.env.production` and `pastel-admin/.env.production` (the anon key is public by design; database rules control access), so builds need no dashboard settings.

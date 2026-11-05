@@ -4,14 +4,40 @@
     {
       "name": "customer-preview",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "preview", "--port", "4173", "--strictPort"],
+      "runtimeArgs": [
+        "vite",
+        "preview",
+        "--port",
+        "4173",
+        "--strictPort"
+      ],
       "port": 4173
     },
     {
       "name": "admin-preview",
       "runtimeExecutable": "pastel-admin/node_modules/.bin/wrangler",
-      "runtimeArgs": ["dev", "--cwd", "pastel-admin", "--port", "5174"],
+      "runtimeArgs": [
+        "dev",
+        "--cwd",
+        "pastel-admin",
+        "--port",
+        "5174"
+      ],
       "port": 5174
+    },
+    {
+      "name": "customer-pages",
+      "runtimeExecutable": "pastel-admin/node_modules/.bin/wrangler",
+      "runtimeArgs": [
+        "pages",
+        "dev",
+        "dist",
+        "--port",
+        "8788",
+        "--compatibility-date",
+        "2026-10-01"
+      ],
+      "port": 8788
     }
   ]
 }

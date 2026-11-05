@@ -21,7 +21,7 @@ import {
   type ServiceMenuItem,
 } from "../data/serviceMenu";
 import { serviceImageUrl } from "./ServiceMenuPage";
-import { buildCalendarFileUrl } from "../logic/calendarFile";
+import { ReminderOptions } from "./ReminderOptions";
 import { ADMIN_URL, readFromAdmin } from "../logic/fromAdmin";
 
 type ServiceDetailPageProps = {
@@ -679,20 +679,22 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
               </p>
             ) : null}
             {successDetails && !fromAdmin ? (
-              <a
-                href={buildCalendarFileUrl({
+              <ReminderOptions
+                event={{
                   id: successDetails.appointmentId,
                   title: `Pastel: ${successDetails.serviceName}`,
                   startIso: successDetails.startIso,
                   durationMinutes: successDetails.durationMinutes,
                   details: [successDetails.serviceName, ...successDetails.addOnNames].join(" + ") + ` · ${successDetails.totalPrice}`,
-                })}
-                download="pastel-appointment.ics"
-                className="mt-5 flex min-h-12 items-center justify-center gap-2 bg-white px-5 text-sm font-semibold text-[#b46f65]"
-              >
-                Add to my calendar
-                <span lang="ar" dir="rtl" className="font-normal">أضيفي إلى التقويم</span>
-              </a>
+                }}
+                summary={[
+                  "My Pastel Nail Salon appointment",
+                  [successDetails.serviceName, ...successDetails.addOnNames].join(" + "),
+                  `${successDetails.date} at ${successDetails.time}`,
+                  `${successDetails.totalPrice} · ${successDetails.totalDuration}`,
+                  "Questions? Call +961 71 430 542",
+                ].join("\n")}
+              />
             ) : null}
             <button
               type="button"

@@ -74,7 +74,8 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (request.method !== "GET" || isSupabaseRequest(url) || isViteDevelopmentRequest(url)) {
+  // Calendar files are made per appointment, so they go straight to the network and are never cached.
+  if (request.method !== "GET" || isSupabaseRequest(url) || isViteDevelopmentRequest(url) || url.pathname === "/calendar") {
     return;
   }
 
