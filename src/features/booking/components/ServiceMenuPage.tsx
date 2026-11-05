@@ -7,24 +7,12 @@ import {
   serviceGroups,
   type ServiceGroupId,
 } from "../data/serviceMenu";
+import { ADMIN_URL, readFromAdmin } from "../logic/fromAdmin";
 
 const tabs: { id: ServiceGroupId; label: string; labelAr: string }[] = [
   { id: "manicure", label: "Manicure", labelAr: "مانيكير" },
   { id: "pedicure", label: "Pedicure", labelAr: "بديكير" },
 ];
-
-const ADMIN_URL = "https://pastel-salon-admin.pages.dev/";
-const FROM_ADMIN_KEY = "pastel-from-admin";
-
-/** The admin's "New appointment" button adds ?from=admin; remember it for this tab so the way back stays after switching tabs or services. */
-function readFromAdmin(searchParams: URLSearchParams) {
-  try {
-    if (searchParams.get("from") === "admin") window.sessionStorage.setItem(FROM_ADMIN_KEY, "1");
-    return window.sessionStorage.getItem(FROM_ADMIN_KEY) === "1";
-  } catch {
-    return searchParams.get("from") === "admin";
-  }
-}
 
 export function serviceImageUrl(imageSrc: string) {
   return decodeURIComponent(getOptimizedServiceImage(imageSrc));

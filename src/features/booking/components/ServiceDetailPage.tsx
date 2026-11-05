@@ -22,6 +22,7 @@ import {
 } from "../data/serviceMenu";
 import { serviceImageUrl } from "./ServiceMenuPage";
 import { buildCalendarFileUrl } from "../logic/calendarFile";
+import { ADMIN_URL, readFromAdmin } from "../logic/fromAdmin";
 
 type ServiceDetailPageProps = {
   groupId: ServiceGroupId;
@@ -114,6 +115,7 @@ function formatShortDate(dateIso: string) {
 
 export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPageProps) {
   const navigate = useNavigate();
+  const [fromAdmin] = useState(() => readFromAdmin());
   const monthOptions = useMemo(() => createMonthOptions(), []);
   const [selectedMonth, setSelectedMonth] = useState(monthOptions[0]);
   const hardcodedService = useMemo(() => getServiceBySlug(groupId, serviceSlug), [groupId, serviceSlug]);
@@ -126,7 +128,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
   // Starts true so the page never claims "no free times" before the first lookup finishes.
   const [availabilityLoading, setAvailabilityLoading] = useState(true);
   const [availabilityError, setAvailabilityError] = useState("");
-  const [customer, setCustomer] = useState(loadSavedCustomer);
+  const [customer, setCustomer] = useState(() => (fromAdmin ? { fullName: "", phone: "" } : loadSavedCustomer()));
   const [showSuccess, setShowSuccess] = useState(false);
   const [selectedAddOnSlugs, setSelectedAddOnSlugs] = useState<string[]>([]);
   const [formError, setFormError] = useState("");
@@ -382,7 +384,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
         startIso: selectedSlot.startIso,
         durationMinutes: totalDurationMin,
       });
-      saveCustomer({ fullName, phone });
+      if (!fromAdmin) saveCustomer({ fullName, phone });
       setShowSuccess(true);
     } catch (error) {
       setFormError(getBookingErrorMessage(error));
@@ -676,7 +678,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                 {successDetails.totalPrice} · {successDetails.totalDuration}
               </p>
             ) : null}
-            {successDetails ? (
+            {successDetails && !fromAdmin ? (
               <a
                 href={buildCalendarFileUrl({
                   id: successDetails.appointmentId,
@@ -694,7 +696,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             ) : null}
             <button
               type="button"
-              onClick={() => navigate("/")}
+              onClick={() => (fromAdmin ? window.location.assign(ADMIN_URL) : navigate("/"))}
               className="mt-3 min-h-11 w-full border border-white/70 px-6 text-sm font-semibold uppercase tracking-[0.16em] text-white"
             >
               Done
