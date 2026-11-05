@@ -642,7 +642,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
           <button
             type="submit"
             disabled={!canBook}
-            className="mt-4 flex min-h-[3.75rem] w-full flex-col items-center justify-center bg-[#975c56] px-4 py-2 text-center text-white shadow-[0_12px_24px_rgba(189,115,107,0.26)] transition hover:bg-[#a9615b] disabled:cursor-not-allowed disabled:bg-[#7d726d]/45 disabled:shadow-none"
+            className="mt-4 flex min-h-[3.75rem] w-full flex-col items-center justify-center bg-[#975c56] px-4 py-2 text-center text-white shadow-[0_12px_24px_rgba(189,115,107,0.26)] transition hover:bg-[#844f4a] disabled:cursor-not-allowed disabled:bg-[#7d726d]/45 disabled:shadow-none"
           >
             <span className="text-lg font-semibold">
               {isSubmitting ? "Booking…" : `Book · ${formatServicePrice(totalPrice)}`}
