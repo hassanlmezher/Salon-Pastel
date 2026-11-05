@@ -1,3 +1,5 @@
+import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import {
   getOptimizedServiceImage,
@@ -11,6 +13,19 @@ const tabs: { id: ServiceGroupId; label: string; labelAr: string }[] = [
   { id: "pedicure", label: "Pedicure", labelAr: "بديكير" },
 ];
 
+const ADMIN_URL = "https://pastel-salon-admin.pages.dev/";
+const FROM_ADMIN_KEY = "pastel-from-admin";
+
+/** The admin's "New appointment" button adds ?from=admin; remember it for this tab so the way back stays after switching tabs or services. */
+function readFromAdmin(searchParams: URLSearchParams) {
+  try {
+    if (searchParams.get("from") === "admin") window.sessionStorage.setItem(FROM_ADMIN_KEY, "1");
+    return window.sessionStorage.getItem(FROM_ADMIN_KEY) === "1";
+  } catch {
+    return searchParams.get("from") === "admin";
+  }
+}
+
 export function serviceImageUrl(imageSrc: string) {
   return decodeURIComponent(getOptimizedServiceImage(imageSrc));
 }
@@ -20,11 +35,23 @@ export function ServiceMenuPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const groupId: ServiceGroupId = searchParams.get("type") === "pedicure" ? "pedicure" : "manicure";
   const services = serviceGroups[groupId];
+  const [fromAdmin] = useState(() => readFromAdmin(searchParams));
 
   // pb-24 keeps the last service above the 64px "Powered by Netlify" badge.
   return (
     <main className="min-h-screen bg-[#f7efe6] pb-24 text-[#231814]">
       <header className="sticky top-0 z-30 border-b border-[#e7c9c2]/70 bg-[#f7efe6]/95 backdrop-blur-md">
+        {fromAdmin ? (
+          <div className="mx-auto max-w-3xl px-4 pt-3">
+            <a
+              href={ADMIN_URL}
+              className="inline-flex min-h-11 items-center gap-2 border border-[#e7c9c2] bg-[#fffaf6] px-4 text-sm font-semibold text-[#6d3f1f] transition hover:border-[#a3635c] active:bg-[#f9e9e5]"
+            >
+              <ArrowLeft size={18} aria-hidden="true" />
+              Back to admin
+            </a>
+          </div>
+        ) : null}
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 pt-3">
           <Link to="/" className="inline-flex min-h-11 items-center font-display text-[2rem] font-semibold leading-none text-[#8a4f24]">
             Pastel

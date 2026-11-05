@@ -112,7 +112,7 @@ export function AdminHome() {
         </form>
       </header>
 
-      <a href={BOOKING_URL} target="_blank" rel="noopener" className="adminNewButton">
+      <a href={`${BOOKING_URL}?from=admin`} className="adminNewButton">
         <Plus size={20} strokeWidth={2.2} aria-hidden="true" />
         New appointment
       </a>
