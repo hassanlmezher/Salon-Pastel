@@ -314,6 +314,11 @@ button:disabled {
   font-weight: 600;
 }
 
+.adminCardPhone svg {
+  flex: none;
+  color: #128c4a;
+}
+
 .adminCardService {
   margin: 0;
   font-size: 0.95rem;
