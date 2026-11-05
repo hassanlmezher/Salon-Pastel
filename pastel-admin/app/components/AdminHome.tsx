@@ -200,7 +200,9 @@ export function AdminHome() {
         onSubmit={(event) => {
           event.preventDefault();
           const search = searchText.trim();
+          // Typing already searches, so Enter on the same words loads the results again.
           if (search !== filters.search) router.replace(buildHref(filters, { search }));
+          else setReloadCount((count) => count + 1);
           (document.activeElement as HTMLElement | null)?.blur();
         }}
       >
