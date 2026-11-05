@@ -10,15 +10,15 @@ function formatDay(value: string, today: string) {
 }
 
 /** A tab that opens the phone's native date picker and shows one day. */
-export function DayPicker({ value, today }: { value: string; today: string }) {
+export function DayPicker({ value, active, today }: { value: string; active: boolean; today: string }) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   return (
-    <label className={`adminDayPicker${value ? " active" : ""}`}>
+    <label className={`adminDayPicker${active ? " active" : ""}`}>
       <CalendarDays size={16} strokeWidth={2} aria-hidden="true" />
-      <span>{value ? formatDay(value, today) : "Pick day"}</span>
+      <span>{active ? formatDay(value, today) : "Pick day"}</span>
       <input
         type="date"
         aria-label="Pick a day"
@@ -26,6 +26,7 @@ export function DayPicker({ value, today }: { value: string; today: string }) {
         onChange={(event) => {
           const params = new URLSearchParams(searchParams.toString());
           params.delete("view");
+          params.delete("search");
           if (event.target.value) params.set("date", event.target.value);
           else params.delete("date");
           const query = params.toString();

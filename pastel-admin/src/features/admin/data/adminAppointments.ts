@@ -181,13 +181,24 @@ function formatWallClockTime(appointmentStart: string) {
   return `${hour % 12 || 12}:${match[2]} ${suffix}`;
 }
 
-function getNextDateIso(dateIso: string) {
-  const [year, month, day] = dateIso.split("-").map(Number);
-  const date = new Date(year, month - 1, day + 1);
-  const nextMonth = String(date.getMonth() + 1).padStart(2, "0");
-  const nextDay = String(date.getDate()).padStart(2, "0");
+export function addDaysIso(dateIso: string, days: number) {
+  const date = new Date(`${dateIso}T12:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
 
-  return `${date.getFullYear()}-${nextMonth}-${nextDay}`;
+/** The single day a filter shows, or "" when it shows a range. */
+export function getFilterDay(filters: AdminAppointmentFilters, today: string) {
+  if (filters.date) return filters.date;
+  if (filters.view === "today") return today;
+  if (filters.view === "tomorrow") return addDaysIso(today, 1);
+  return "";
+}
+
+/** Phone search ignores spaces and dashes, so "70123456" finds "70 123 456". */
+function phoneDigitsPattern(term: string) {
+  const digits = term.replace(/[\s+\-().]/g, "");
+  return /^\d{3,}$/.test(digits) ? digits.split("").join("\\D*") : "";
 }
 
 function normalizeAppointment(raw: RawAppointment): AdminAppointment {
@@ -244,7 +255,9 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
   if (!session) throw new AdminAuthError("signed_out");
 
   const today = getSalonTodayIso();
-  const day = filters.date || (filters.view === "today" ? today : "");
+  const searching = Boolean(filters.search);
+  const day = searching ? "" : getFilterDay(filters, today);
+  const newestFirst = searching || (!day && filters.view === "past");
   let query = supabase
     .from("appointments")
     .select(
@@ -263,25 +276,31 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
         "services(id,name,price,duration_minutes)",
       ].join(","),
     )
-    // "All" reads newest first; a day or the upcoming list reads in schedule order.
-    .order("appointment_start", { ascending: Boolean(day) || filters.view === "upcoming" })
+    .order("appointment_start", { ascending: !newestFirst })
     .limit(500);
 
+  // A search looks through every date so a past customer can still be found.
   if (day) {
-    query = query.gte("appointment_start", `${day}T00:00:00`).lt("appointment_start", `${getNextDateIso(day)}T00:00:00`);
-  } else if (filters.view === "upcoming") {
+    query = query.gte("appointment_start", `${day}T00:00:00`).lt("appointment_start", `${addDaysIso(day, 1)}T00:00:00`);
+  } else if (!searching && filters.view === "week") {
+    query = query.gte("appointment_start", `${today}T00:00:00`).lt("appointment_start", `${addDaysIso(today, 7)}T00:00:00`);
+  } else if (!searching && filters.view === "past") {
+    query = query.lt("appointment_start", `${today}T00:00:00`);
+  } else if (!searching) {
     query = query.gte("appointment_start", `${today}T00:00:00`);
   }
 
   // Characters that would break the PostgREST `or` filter syntax are dropped.
   const term = filters.search.replace(/[,()*\\]/g, " ").trim().replace(/[%_]/g, "\\$&");
   if (term) {
+    const phonePattern = phoneDigitsPattern(term);
     query = query.or(
       [
         `customer_first_name.ilike.%${term}%`,
         `customer_last_name.ilike.%${term}%`,
         `customer_full_name.ilike.%${term}%`,
         `customer_phone.ilike.%${term}%`,
+        ...(phonePattern ? [`customer_phone.imatch.${phonePattern}`] : []),
       ].join(","),
     );
   }
@@ -296,5 +315,11 @@ export async function getAdminAppointments(filters: AdminAppointmentFilters) {
   if (error || ownerError) throw error ?? ownerError;
   if (!ownerUser) throw new AdminAuthError("not_owner");
 
-  return ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
+  const appointments = ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
+  if (!searching) return appointments;
+
+  // Search results: coming visits first in schedule order, then past ones newest first.
+  const coming = appointments.filter((appointment) => appointment.dateKey >= today).reverse();
+  const past = appointments.filter((appointment) => appointment.dateKey < today);
+  return [...coming, ...past];
 }

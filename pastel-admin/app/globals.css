@@ -186,36 +186,36 @@ button:disabled {
   place-items: center;
   width: 46px;
   height: 46px;
+  border: 0;
+  background: transparent;
+  color: inherit;
 }
 
+/* Range and status filters sit in grids so every option shows without sideways scrolling. */
 .adminTabs {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
-  margin: 0 -16px 10px;
-  padding: 0 16px 2px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.adminTabs::-webkit-scrollbar {
-  display: none;
+  margin-bottom: 10px;
 }
 
 .adminTabs > a,
 .adminDayPicker {
   position: relative;
   display: inline-flex;
-  flex: none;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  min-height: 40px;
-  padding: 0 12px;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 8px;
   border: 1px solid var(--line);
   background: var(--surface);
   color: var(--ink);
   font-size: 0.9rem;
   font-weight: 600;
   white-space: nowrap;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
 }
 
 .adminTabs > a.active,
@@ -225,16 +225,9 @@ button:disabled {
   color: #fff;
 }
 
-.adminTabs > a span {
-  min-width: 22px;
-  padding: 1px 6px;
-  background: rgba(35, 24, 20, 0.08);
-  font-size: 0.78rem;
-  text-align: center;
-}
-
-.adminTabs > a.active span {
-  background: rgba(255, 255, 255, 0.24);
+.adminDayPicker span {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .adminDayPicker input {
@@ -246,8 +239,108 @@ button:disabled {
   cursor: pointer;
 }
 
+.adminDayNav {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.adminDayNav > a {
+  display: grid;
+  place-items: center;
+  height: 44px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.adminDayNav > strong {
+  overflow: hidden;
+  font-size: 0.95rem;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .adminStatusTabs {
-  margin-bottom: 4px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.adminStatusTabs > a {
+  flex-direction: column;
+  gap: 2px;
+  min-height: 52px;
+  padding: 4px 2px;
+  font-size: 0.76rem;
+}
+
+.adminStatusTabs > a span {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.adminSummary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 12px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.adminSummary p {
+  margin: 0;
+}
+
+.adminSummary strong {
+  color: var(--ink);
+}
+
+.adminClearFilters {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent-dark);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.adminDayNavShort {
+  display: none;
+}
+
+@media (max-width: 369px) {
+  .adminStatusTabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .adminDayPicker svg,
+  .adminDayNavLong {
+    display: none;
+  }
+
+  .adminDayNavShort {
+    display: inline;
+  }
+}
+
+@media (min-width: 600px) {
+  .adminRangeTabs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .adminStatusTabs > a {
+    flex-direction: row;
+    gap: 8px;
+    min-height: 44px;
+    font-size: 0.9rem;
+  }
 }
 
 /* ---------- Appointment list ---------- */

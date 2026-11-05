@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LogOut, Plus, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, LogOut, Plus, Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { logoutOwner } from "../actions";
@@ -10,7 +10,9 @@ import { AppointmentList } from "./AppointmentList";
 import { DayPicker } from "./DayPicker";
 import {
   AdminAuthError,
+  addDaysIso,
   getAdminAppointments,
+  getFilterDay,
   getSalonTodayIso,
   parseAdminFilters,
 } from "../../src/features/admin/data/adminAppointments";
@@ -21,8 +23,12 @@ const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL?.trim() || "https://past
 const viewTabs = [
   { label: "Upcoming", value: "upcoming" },
   { label: "Today", value: "today" },
-  { label: "All", value: "all" },
+  { label: "Tomorrow", value: "tomorrow" },
+  { label: "Next 7 days", value: "week" },
+  { label: "Past", value: "past" },
 ] as const;
+
+const SEARCH_DELAY_MS = 300;
 
 const statusTabs = [
   { label: "All", value: "" },
@@ -47,6 +53,30 @@ function countStatus(appointments: AdminAppointment[], status: string) {
   return status ? appointments.filter((appointment) => appointment.status === status).length : appointments.length;
 }
 
+function formatMoney(value: number) {
+  return `$${Number.isInteger(value) ? value : value.toFixed(2)}`;
+}
+
+function formatLongDay(dateIso: string, today: string, length: "long" | "short" = "long") {
+  const label = new Date(`${dateIso}T12:00:00Z`).toLocaleDateString("en-GB", {
+    weekday: length,
+    day: "numeric",
+    month: length,
+    ...(dateIso.slice(0, 4) !== today.slice(0, 4) ? { year: "numeric" } : {}),
+    timeZone: "UTC",
+  });
+  if (dateIso === today) return `Today · ${label}`;
+  if (dateIso === addDaysIso(today, 1)) return `Tomorrow · ${label}`;
+  if (dateIso === addDaysIso(today, -1)) return `Yesterday · ${label}`;
+  return label;
+}
+
+const viewSummaries: Record<string, string> = {
+  upcoming: "from today on",
+  week: "in the next 7 days",
+  past: "before today",
+};
+
 export function AdminHome() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -61,6 +91,21 @@ export function AdminHome() {
   const [loadError, setLoadError] = useState(false);
   const [reloadCount, setReloadCount] = useState(0);
   const today = getSalonTodayIso();
+  const day = filters.search ? "" : getFilterDay(filters, today);
+  const [searchText, setSearchText] = useState(filters.search);
+
+  // Follow the URL when the search changes from outside the box (clear, a range tab, back button).
+  useEffect(() => {
+    setSearchText((current) => (current.trim() === filters.search ? current : filters.search));
+  }, [filters.search]);
+
+  // Results update while typing, after a short pause.
+  useEffect(() => {
+    const search = searchText.trim();
+    if (search === filters.search) return;
+    const timer = window.setTimeout(() => router.replace(buildHref(filters, { search })), SEARCH_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, [searchText, filters, router]);
 
   useEffect(() => {
     let cancelled = false;
@@ -96,6 +141,16 @@ export function AdminHome() {
 
   const list = appointments ?? [];
   const visibleAppointments = filters.status ? list.filter((appointment) => appointment.status === filters.status) : list;
+  const visibleTotal = visibleAppointments
+    .filter((appointment) => appointment.status !== "cancelled")
+    .reduce((sum, appointment) => sum + appointment.totalPrice, 0);
+  const filtered = Boolean(filters.search || filters.status || filters.date || filters.view !== "upcoming");
+  const pickedDay = filters.date && filters.date !== today && filters.date !== addDaysIso(today, 1) ? filters.date : "";
+  const rangeLabel = filters.search
+    ? `for “${filters.search}” on all dates`
+    : day
+      ? ""
+      : viewSummaries[filters.view] ?? "";
 
   return (
     <main className="adminPage">
@@ -122,40 +177,74 @@ export function AdminHome() {
         role="search"
         onSubmit={(event) => {
           event.preventDefault();
-          const search = String(new FormData(event.currentTarget).get("search") ?? "").trim();
-          router.push(buildHref(filters, { search }));
+          const search = searchText.trim();
+          if (search !== filters.search) router.replace(buildHref(filters, { search }));
+          (document.activeElement as HTMLElement | null)?.blur();
         }}
       >
         <Search size={18} strokeWidth={2} aria-hidden="true" />
         <input
-          key={filters.search}
           name="search"
           type="search"
           enterKeyHint="search"
+          autoComplete="off"
           placeholder="Search name or phone"
-          aria-label="Search name or phone"
-          defaultValue={filters.search}
+          aria-label="Search name or phone on any date"
+          value={searchText}
+          onChange={(event) => setSearchText(event.target.value)}
         />
-        {filters.search ? (
-          <Link href={buildHref(filters, { search: "" })} className="adminSearchClear" aria-label="Clear search">
+        {searchText ? (
+          <button
+            type="button"
+            className="adminSearchClear"
+            aria-label="Clear search"
+            onClick={() => {
+              setSearchText("");
+              router.replace(buildHref(filters, { search: "" }));
+            }}
+          >
             <X size={18} strokeWidth={2} />
-          </Link>
+          </button>
         ) : null}
       </form>
 
-      <nav className="adminTabs" aria-label="Which days">
-        {viewTabs.map((tab) => (
-          <Link
-            key={tab.value}
-            href={buildHref(filters, { view: tab.value, date: "" })}
-            className={!filters.date && filters.view === tab.value ? "active" : ""}
-            aria-current={!filters.date && filters.view === tab.value ? "page" : undefined}
-          >
-            {tab.label}
-          </Link>
-        ))}
-        <DayPicker value={filters.date} today={today} />
+      <nav className="adminTabs adminRangeTabs" aria-label="Which days">
+        {viewTabs.map((tab) => {
+          const active = !filters.search && (
+            tab.value === "today"
+              ? day === today
+              : tab.value === "tomorrow"
+                ? day === addDaysIso(today, 1)
+                : !filters.date && filters.view === tab.value
+          );
+          return (
+            <Link
+              key={tab.value}
+              href={buildHref(filters, { view: tab.value, date: "", search: "" })}
+              className={active ? "active" : ""}
+              aria-current={active ? "page" : undefined}
+            >
+              {tab.label}
+            </Link>
+          );
+        })}
+        <DayPicker value={pickedDay} active={!filters.search && Boolean(pickedDay)} today={today} />
       </nav>
+
+      {day ? (
+        <div className="adminDayNav">
+          <Link href={buildHref(filters, { date: addDaysIso(day, -1) })} aria-label="Previous day">
+            <ChevronLeft size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+          <strong>
+            <span className="adminDayNavLong">{formatLongDay(day, today)}</span>
+            <span className="adminDayNavShort">{formatLongDay(day, today, "short")}</span>
+          </strong>
+          <Link href={buildHref(filters, { date: addDaysIso(day, 1) })} aria-label="Next day">
+            <ChevronRight size={20} strokeWidth={2} aria-hidden="true" />
+          </Link>
+        </div>
+      ) : null}
 
       <nav className="adminTabs adminStatusTabs" aria-label="Status">
         {statusTabs.map((tab) => (
@@ -171,6 +260,23 @@ export function AdminHome() {
           </Link>
         ))}
       </nav>
+
+      {!loadError ? (
+        <div className="adminSummary" aria-live="polite">
+          <p>
+            <strong>
+              {visibleAppointments.length} {visibleAppointments.length === 1 ? "appointment" : "appointments"}
+            </strong>
+            {visibleTotal ? ` · ${formatMoney(visibleTotal)}` : ""}
+            {rangeLabel ? ` ${rangeLabel}` : ""}
+          </p>
+          {filtered ? (
+            <Link href="/" className="adminClearFilters" onClick={() => setSearchText("")}>
+              Clear filters
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
 
       {loadError ? (
         <section className="adminEmpty" role="alert">

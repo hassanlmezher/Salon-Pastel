@@ -6,7 +6,7 @@ export const editableAppointmentStatuses = ["booked", "confirmed", "cancelled"] 
 
 export type EditableAppointmentStatus = (typeof editableAppointmentStatuses)[number];
 
-export const appointmentViews = ["upcoming", "today", "all"] as const;
+export const appointmentViews = ["upcoming", "today", "tomorrow", "week", "past"] as const;
 
 export type AppointmentView = (typeof appointmentViews)[number];
 
@@ -34,7 +34,7 @@ export type AdminAppointment = {
 
 export type AdminAppointmentFilters = {
   view: AppointmentView;
-  /** A specific YYYY-MM-DD day. Overrides `view` when set. */
+  /** A specific YYYY-MM-DD day. Overrides `view` when set. A search looks across all dates instead. */
   date: string;
   status: AppointmentStatus | "";
   search: string;
