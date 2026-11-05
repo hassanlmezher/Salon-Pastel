@@ -83,3 +83,36 @@ export async function updateAppointmentStatus(appointmentId: string, status: str
 
   return { ok: true, message: "Status updated." };
 }
+
+/** Free start times ("YYYY-MM-DDTHH:MM:SS", salon time) on one day for moving this appointment. */
+export async function getRescheduleSlots(appointmentId: string, date: string) {
+  const { data, error } = await withAdminActionTimeout((signal) =>
+    getSupabaseClient()
+      .rpc("admin_get_reschedule_slots", { p_appointment_id: appointmentId, p_date: date })
+      .abortSignal(signal),
+  );
+
+  if (error) {
+    console.error("Unable to load free times", error);
+    return { ok: false as const, slots: [] as string[], message: "Free times could not be loaded. Please try again." };
+  }
+
+  const slots = ((data ?? []) as { slot_start: string }[]).map((row) => row.slot_start);
+  return { ok: true as const, slots, message: "" };
+}
+
+export async function rescheduleAppointment(appointmentId: string, appointmentStart: string) {
+  const { error } = await withAdminActionTimeout((signal) =>
+    getSupabaseClient()
+      .rpc("admin_reschedule_appointment", { p_appointment_id: appointmentId, p_appointment_start: appointmentStart })
+      .abortSignal(signal),
+  );
+
+  if (error) {
+    console.error("Unable to move appointment", error);
+    const taken = /not free/i.test(error.message ?? "");
+    return { ok: false, message: taken ? "That time was just taken. Please pick another one." : "The appointment could not be moved. Please try again." };
+  }
+
+  return { ok: true, message: "" };
+}

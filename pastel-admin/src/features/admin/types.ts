@@ -26,6 +26,8 @@ export type AdminAppointment = {
   selectedServices: AdminSelectedService[];
   /** Salon wall-clock date, YYYY-MM-DD. */
   dateKey: string;
+  /** Salon wall-clock start, YYYY-MM-DDTHH:MM. */
+  appointmentStart: string;
   appointmentTime: string;
   totalPrice: number;
   totalDurationMinutes: number;

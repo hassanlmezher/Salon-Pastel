@@ -229,6 +229,7 @@ function normalizeAppointment(raw: RawAppointment): AdminAppointment {
     customerPhone: raw.customer_phone ?? "",
     selectedServices,
     dateKey: appointmentStart.slice(0, 10),
+    appointmentStart: appointmentStart.slice(0, 16),
     appointmentTime: formatWallClockTime(appointmentStart),
     totalPrice,
     totalDurationMinutes,

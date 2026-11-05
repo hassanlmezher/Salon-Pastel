@@ -1,3 +1,6 @@
+import { CalendarClock } from "lucide-react";
+import { useState } from "react";
+import { RescheduleForm } from "./RescheduleForm";
 import { StatusSelect } from "./StatusSelect";
 import type { AdminAppointment, AppointmentStatus } from "../../src/features/admin/types";
 
@@ -36,14 +39,14 @@ function formatDayHeading(dateKey: string, today: string) {
   });
 }
 
-function formatReminderDay(dateKey: string, locale: string) {
+export function formatReminderDay(dateKey: string, locale: string) {
   const date = new Date(`${dateKey}T12:00:00Z`);
   if (Number.isNaN(date.getTime())) return "";
   return date.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 }
 
 /** wa.me needs the full international number as digits; customers type it in many shapes, and local ones are Lebanese. */
-function toWhatsAppNumber(phone: string) {
+export function toWhatsAppNumber(phone: string) {
   const trimmed = phone.trim();
   const digits = trimmed.replace(/\D/g, "");
   if (trimmed.startsWith("+")) return digits;
@@ -89,11 +92,15 @@ export function AppointmentList({
   appointments,
   today,
   onStatusSaved,
+  onMoved,
 }: {
   appointments: AdminAppointment[];
   today: string;
   onStatusSaved: (appointmentId: string, status: AppointmentStatus) => void;
+  onMoved: (appointment: AdminAppointment, newStart: string) => void;
 }) {
+  const [movingId, setMovingId] = useState("");
+
   if (appointments.length === 0) {
     return (
       <section className="adminEmpty">
@@ -139,6 +146,25 @@ export function AppointmentList({
                   {formatMoney(appointment.totalPrice)}
                   {duration ? ` · ${duration}` : ""}
                 </p>
+                {appointment.status === "booked" || appointment.status === "confirmed" ? (
+                  movingId === appointment.id ? (
+                    <RescheduleForm
+                      appointmentId={appointment.id}
+                      currentStart={appointment.appointmentStart}
+                      today={today}
+                      onClose={() => setMovingId("")}
+                      onMoved={(newStart) => {
+                        setMovingId("");
+                        onMoved(appointment, newStart);
+                      }}
+                    />
+                  ) : (
+                    <button type="button" className="adminMoveButton" onClick={() => setMovingId(appointment.id)}>
+                      <CalendarClock size={18} strokeWidth={2} aria-hidden="true" />
+                      Change date &amp; time
+                    </button>
+                  )
+                ) : null}
               </article>
             );
           })}

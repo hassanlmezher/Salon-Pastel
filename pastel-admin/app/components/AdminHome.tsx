@@ -6,7 +6,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { logoutOwner } from "../actions";
 import Loading from "../loading";
-import { AppointmentList } from "./AppointmentList";
+import { AppointmentList, formatReminderDay, toWhatsAppNumber } from "./AppointmentList";
+import { formatSlotTime } from "./RescheduleForm";
 import { DayPicker } from "./DayPicker";
 import {
   AdminAuthError,
@@ -29,6 +30,20 @@ const viewTabs = [
 ] as const;
 
 const SEARCH_DELAY_MS = 300;
+
+type MovedNotice = { name: string; phone: string; newStart: string };
+
+/** WhatsApp message telling the customer about the new time, in English and Arabic like the reminder. */
+function movedMessageLink(notice: MovedNotice) {
+  const firstName = notice.name.trim().split(/\s+/)[0] || "there";
+  const dateKey = notice.newStart.slice(0, 10);
+  const time = formatSlotTime(notice.newStart);
+  const message = [
+    `Hi ${firstName}, your Pastel appointment has been moved to ${formatReminderDay(dateKey, "en-GB")} at ${time}. See you then!`,
+    `مرحباً ${firstName}، تم تغيير موعدكِ في Pastel إلى يوم ${formatReminderDay(dateKey, "ar-LB-u-nu-latn")} الساعة ${time}. نراكِ قريباً!`,
+  ].join("\n\n");
+  return `https://wa.me/${toWhatsAppNumber(notice.phone)}?text=${encodeURIComponent(message)}`;
+}
 
 const statusTabs = [
   { label: "All", value: "" },
@@ -90,6 +105,7 @@ export function AdminHome() {
   const [appointments, setAppointments] = useState<AdminAppointment[] | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [reloadCount, setReloadCount] = useState(0);
+  const [movedNotice, setMovedNotice] = useState<MovedNotice | null>(null);
   const today = getSalonTodayIso();
   const day = filters.search ? "" : getFilterDay(filters, today);
   const [searchText, setSearchText] = useState(filters.search);
@@ -131,7 +147,13 @@ export function AdminHome() {
     // fetchKey covers the filter fields the query uses.
   }, [fetchKey, reloadCount]);
 
-  function handleStatusSaved(appointmentId: string, status: AppointmentStatus) {
+  function handleMoved(appointment: AdminAppointment, newStart: string) {
+    setMovedNotice({ name: appointment.customerFullName, phone: appointment.customerPhone, newStart });
+    // Reload so the appointment shows under its new day, or leaves a view it no longer fits.
+    setReloadCount((count) => count + 1);
+  }
+
+    function handleStatusSaved(appointmentId: string, status: AppointmentStatus) {
     setAppointments((current) =>
       current?.map((appointment) => (appointment.id === appointmentId ? { ...appointment, status } : appointment)) ?? null,
     );
@@ -287,7 +309,32 @@ export function AdminHome() {
           </button>
         </section>
       ) : (
-        <AppointmentList appointments={visibleAppointments} today={today} onStatusSaved={handleStatusSaved} />
+        <>
+          {movedNotice ? (
+            <div className="adminNotice" role="status">
+              <p>
+                Moved <strong>{movedNotice.name}</strong> to {formatReminderDay(movedNotice.newStart.slice(0, 10), "en-GB")} at{" "}
+                {formatSlotTime(movedNotice.newStart)}.
+              </p>
+              <div className="adminNoticeActions">
+                {movedNotice.phone ? (
+                  <a href={movedMessageLink(movedNotice)} target="_blank" rel="noopener">
+                    Tell them on WhatsApp
+                  </a>
+                ) : null}
+                <button type="button" onClick={() => setMovedNotice(null)}>
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          ) : null}
+          <AppointmentList
+            appointments={visibleAppointments}
+            today={today}
+            onStatusSaved={handleStatusSaved}
+            onMoved={handleMoved}
+          />
+        </>
       )}
     </main>
   );

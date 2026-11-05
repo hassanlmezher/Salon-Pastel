@@ -429,6 +429,188 @@ button:disabled {
   font-size: 0.9rem;
 }
 
+.adminMoveButton,
+.adminRescheduleCancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.adminMoveButton {
+  justify-self: start;
+  margin-top: 8px;
+}
+
+.adminReschedule {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.adminRescheduleDay {
+  display: grid;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.adminRescheduleDay input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 16px; /* 16px stops iOS from zooming in on focus. */
+}
+
+.adminRescheduleTimes {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.adminRescheduleTimes legend {
+  margin-bottom: 6px;
+  padding: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.adminRescheduleGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.5rem, 1fr));
+  gap: 6px;
+}
+
+.adminRescheduleGrid button {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  padding: 2px 4px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 600;
+  transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.adminRescheduleGrid button.active {
+  border-color: #a3635c;
+  background: #a3635c;
+  color: #fff;
+}
+
+.adminRescheduleGrid button:disabled {
+  background: var(--canvas);
+  color: var(--muted);
+}
+
+.adminRescheduleGrid small {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.adminRescheduleNote,
+.adminRescheduleError {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.adminRescheduleError {
+  color: var(--cancelled);
+  font-weight: 600;
+}
+
+.adminRescheduleActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.adminRescheduleSave {
+  flex: 1 1 12rem;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  background: #a3635c;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.adminRescheduleSave:disabled {
+  background: #d9c3bd;
+  color: #5c4a40;
+}
+
+.adminRescheduleCancel {
+  flex: 0 1 auto;
+}
+
+/* Pinned to the bottom so it shows wherever the moved appointment was on the page. */
+.adminNotice {
+  position: fixed;
+  right: 16px;
+  bottom: calc(16px + var(--safe-bottom));
+  left: 16px;
+  z-index: 70;
+  display: grid;
+  gap: 4px;
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 12px 14px 4px;
+  border: 1px solid #b9d3c2;
+  border-left: 4px solid var(--confirmed);
+  background: #f1f7f2;
+  box-shadow: 0 18px 44px rgba(97, 58, 24, 0.2);
+  font-size: 0.95rem;
+}
+
+.adminNotice p {
+  margin: 0;
+}
+
+.adminNoticeActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.adminNoticeActions a,
+.adminNoticeActions button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--confirmed);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.adminNoticeActions button {
+  color: var(--muted);
+}
+
 .adminStatus {
   position: relative;
   display: grid;
