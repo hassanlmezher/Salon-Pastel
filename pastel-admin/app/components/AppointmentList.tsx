@@ -36,10 +36,10 @@ function formatDayHeading(dateKey: string, today: string) {
   });
 }
 
-function formatReminderDay(dateKey: string) {
+function formatReminderDay(dateKey: string, locale: string) {
   const date = new Date(`${dateKey}T12:00:00Z`);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
+  return date.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" });
 }
 
 /** wa.me needs the full international number as digits; customers type it in many shapes, and local ones are Lebanese. */
@@ -55,9 +55,15 @@ function toWhatsAppNumber(phone: string) {
 function reminderLink(appointment: AdminAppointment) {
   const firstName = appointment.customerFullName.trim().split(/\s+/)[0] || "there";
   const services = appointment.selectedServices.map((item) => item.name).join(" + ") || "appointment";
-  const day = formatReminderDay(appointment.dateKey);
-  const when = [day && `on ${day}`, appointment.appointmentTime && `at ${appointment.appointmentTime}`].filter(Boolean).join(" ");
-  const message = `Hi ${firstName}, this is a reminder from Pastel about your ${services} appointment${when ? ` ${when}` : ""}. See you soon!`;
+  const time = appointment.appointmentTime;
+  const day = formatReminderDay(appointment.dateKey, "en-GB");
+  const dayAr = formatReminderDay(appointment.dateKey, "ar-LB-u-nu-latn");
+  const when = [day && `on ${day}`, time && `at ${time}`].filter(Boolean).join(" ");
+  const whenAr = [dayAr && `يوم ${dayAr}`, time && `الساعة ${time}`].filter(Boolean).join(" ");
+  const message = [
+    `Hi ${firstName}, this is a reminder from Pastel about your ${services} appointment${when ? ` ${when}` : ""}. See you soon!`,
+    `مرحباً ${firstName}، نذكّركِ بموعدكِ في Pastel لـ ${services}${whenAr ? ` ${whenAr}` : ""}. نراكِ قريباً!`,
+  ].join("\n\n");
   return `https://wa.me/${toWhatsAppNumber(appointment.customerPhone)}?text=${encodeURIComponent(message)}`;
 }
 
