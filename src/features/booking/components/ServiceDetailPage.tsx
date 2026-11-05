@@ -434,7 +434,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             </p>
           </div>
           <p className="flex-none text-right" aria-live="polite">
-            <strong className="block font-display text-[1.4rem] font-semibold leading-none text-[#b46f65]">
+            <strong className="block font-display text-[1.4rem] font-semibold leading-none text-[#945b53]">
               {formatServicePrice(totalPrice)}
             </strong>
             <span className="text-xs text-[#6d5648]">{formatServiceDuration(totalDurationMin)}</span>
@@ -487,7 +487,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                       <img src={serviceImageUrl(addOn.imageSrc)} alt="" aria-hidden="true" loading="lazy" className="h-12 w-12 flex-none object-cover" />
                       <span className="min-w-0 flex-1">
                         <strong className="block text-[0.95rem] font-semibold leading-tight text-[#231814]">{addOn.name}</strong>
-                        <span className="block text-sm text-[#b46f65]">+{addOn.price} · {addOn.duration}</span>
+                        <span className="block text-sm text-[#9e6259]">+{addOn.price} · {addOn.duration}</span>
                       </span>
                       <span
                         aria-hidden="true"
@@ -569,7 +569,7 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
                           aria-checked={active}
                           onClick={() => setSelectedDateIso(day.dateIso)}
                           className={`min-h-[4.5rem] flex-[0_0_4rem] border py-2 text-center transition ${
-                            active ? "border-[#bd736b] bg-[#bd736b] text-white" : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b]"
+                            active ? "border-[#bd736b] bg-[#a3635c] text-white" : "border-[#ead5cd] bg-white/60 hover:border-[#bd736b]"
                           }`}
                         >
                           <span className={`block text-xs ${active ? "text-white" : "text-[#756964]"}`}>{day.weekday}</span>

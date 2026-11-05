@@ -365,7 +365,7 @@ const addOnOptions: Record<string, ServiceAddOnOption> = {
   "nail-design": {
     name: "Nail Design",
     slug: "nail-design",
-    imageSrc: "/Nail%20Design.png",
+    imageSrc: "/Nail%20Design-thumb.webp",
     price: "From $2",
     priceValue: 2,
     duration: "5 min",
@@ -421,7 +421,7 @@ const addOnOptions: Record<string, ServiceAddOnOption> = {
   "pose-design": {
     name: "Nail Design",
     slug: "pose-design",
-    imageSrc: "/Nail%20Design.png",
+    imageSrc: "/Nail%20Design-thumb.webp",
     price: "$2",
     priceValue: 2,
     duration: "10 min",
