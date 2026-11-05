@@ -8,3 +8,12 @@ dist
 .antigravity
 .open-next
 .wrangler
+
+# Local Netlify folder
+.netlify
+
+# graphify knowledge graph
+graphify-out/
+
+# macOS Finder files
+.DS_Store
