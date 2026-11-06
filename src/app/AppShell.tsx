@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { InstallAppPrompt } from "../features/booking/components/InstallAppPrompt";
 
 export function AppShell() {
   const { pathname } = useLocation();
@@ -20,6 +21,8 @@ export function AppShell() {
       <div id="main-content">
         <Outlet />
       </div>
+      {/* Only on the home page, so it never interrupts a booking. */}
+      {pathname === "/" ? <InstallAppPrompt /> : null}
     </div>
   );
 }
