@@ -1,15 +1,19 @@
-// Owner admin site: static files (next build -> out/) served by a Workers static-assets
-// Worker, free plan. No server code runs per request; the browser talks to Supabase directly.
-// Its public address is the Pages project in pages-proxy/ (pastel-salon-admin.pages.dev).
+// Owner admin site: static files (next build -> out/) plus a small script for /api/* only,
+// on the free plan. Pages and files are served without running the script, so they use no CPU
+// time; /api calls go to worker/index.ts, which talks to the Neon database (secret DATABASE_URL).
+// Its public addresses are the Pages project in pages-proxy/ (admin.pastelsalon.online).
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "pastel-admin",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
   "workers_dev": false,
   "preview_urls": false,
   "assets": {
     "directory": "./out",
-    "not_found_handling": "404-page"
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
   },
   "observability": { "enabled": true }
 }

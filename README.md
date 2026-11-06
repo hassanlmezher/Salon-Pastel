@@ -82,24 +82,24 @@ Both sites run on Cloudflare's free plan. Updates don't cost anything, there are
 
 | Site | Address | Cloudflare project | Folder |
 | --- | --- | --- | --- |
-| Customer booking | https://pastel-salon.pages.dev | Pages `pastel-salon` | `.` (Vite, output `dist`) |
-| Owner admin | https://pastel-salon-admin.pages.dev | Worker `pastel-admin` behind Pages `pastel-salon-admin` | `pastel-admin` (Next.js static export) |
-| Daily Supabase keep-alive | none | Worker `pastel-keepalive` | `keep-alive` |
+| Customer booking | https://pastelsalon.online (also https://pastel-salon.pages.dev) | Pages `pastel-salon` | `.` (Vite, output `dist`) |
+| Owner admin | https://admin.pastelsalon.online (also https://pastel-salon-admin.pages.dev) | Worker `pastel-admin` behind Pages `pastel-salon-admin` | `pastel-admin` (Next.js static export) |
 
+- The database is Neon Postgres, project `pastel` (Frankfurt, free plan). `database/schema.sql` holds every table and function. The sites never touch tables: each signs in with its own role (`pastel_booking`, `pastel_admin`) that may only run the functions it needs, and every admin function checks the session itself.
 - The customer site is a static Pages site; Pages serves `index.html` for every route.
+- Its server code is three Pages Functions in `functions/api/` (services, free times, booking), using the `pastel_booking` role. The connection is the Pages secret `DATABASE_URL`.
 - One small Pages Function, `functions/calendar.ts`, serves `/calendar?...` as an `.ics` file so "Add to iPhone Calendar" opens the phone's Calendar. It only formats text from the link; it never reads the database.
-- The admin is a static Next.js export served by a static-assets Worker with no public address of its own. No server code runs per visit: the browser signs in and reads appointments straight from Supabase, and database rules allow only the owner. (A Next.js server went over the free plan's 10 ms CPU limit per request and failed often.) The Pages project in `pastel-admin/pages-proxy` gives it the clean `pages.dev` address and passes every request straight to the Worker.
-- Free Supabase projects pause after a week without traffic, so `pastel-keepalive` makes one tiny read every day.
-- The public Supabase URL and anon key are in `.env.production` and `pastel-admin/.env.production` (the anon key is public by design; database rules control access), so builds need no dashboard settings.
+- The admin is a static Next.js export served by a Worker with no public address of its own. Pages and files are served without running code; only `/api/*` runs `pastel-admin/worker/index.ts`, which signs the owner in (password checked inside the database, session in an HttpOnly cookie) and calls the `admin_*` functions with the `pastel_admin` role. Its connection is the Worker secret `DATABASE_URL`. (A Next.js server went over the free plan's 10 ms CPU limit per request and failed often, so the pages stay static.) The Pages project in `pastel-admin/pages-proxy` gives it the clean `pages.dev` address and passes every request straight to the Worker.
+- Neon sleeps when idle and wakes on the next request (the first request after a quiet spell takes about a second longer), so no keep-alive is needed.
+- For local testing, copy `.dev.vars.example` (and `pastel-admin/.dev.vars.example`) to `.dev.vars` and point them at a Neon test branch, never the live one.
 
 Every push to `master` deploys both sites automatically (free):
 
 - `pastel-salon` (Pages, connected to this GitHub repo): build command `npm run build`, output `dist`.
 - `pastel-admin` (Workers Builds, build token "pastel build token"): root directory `pastel-admin`, build command `npm run build`, deploy command `npx wrangler deploy`.
 
-The keep-alive and the admin front door rarely change and are deployed by hand:
+The admin front door rarely changes and is deployed by hand:
 
 ```bash
-npx wrangler deploy --config keep-alive/wrangler.jsonc
 npx wrangler pages deploy --cwd pastel-admin/pages-proxy
 ```

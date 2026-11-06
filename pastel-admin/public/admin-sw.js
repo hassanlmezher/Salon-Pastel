@@ -1,4 +1,4 @@
-const CACHE_VERSION = "pastel-admin-pwa-v3";
+const CACHE_VERSION = "pastel-admin-pwa-v4";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
@@ -36,8 +36,9 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-function isSupabaseRequest(url) {
-  return url.hostname.endsWith(".supabase.co") || url.pathname.startsWith("/api/");
+// Admin data comes from the site's own /api routes and must never be cached.
+function isApiRequest(url) {
+  return url.pathname.startsWith("/api/");
 }
 
 function isStaticAsset(request, url) {
@@ -54,7 +55,7 @@ self.addEventListener("fetch", (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  if (request.method !== "GET" || isSupabaseRequest(url)) {
+  if (request.method !== "GET" || isApiRequest(url)) {
     return;
   }
 

@@ -1,0 +1,2 @@
+# Copy to .dev.vars for `npm run preview`. Use a Neon test branch, never the live one.
+DATABASE_URL=postgresql://pastel_admin:PASSWORD@HOST/neondb?sslmode=require

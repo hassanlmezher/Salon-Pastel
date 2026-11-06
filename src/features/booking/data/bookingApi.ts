@@ -1,4 +1,3 @@
-import { getSupabaseClient } from "../../../lib/supabaseClient";
 import {
   getServiceBySlug,
   getServiceImage,
@@ -28,7 +27,7 @@ type RawService = Record<string, unknown> & {
 type RawSlot = Record<string, unknown> | string;
 
 const activeServicesCache = new Map<ServiceGroupId, Promise<ServiceMenuItem[]>>();
-const SUPABASE_QUERY_TIMEOUT_MS = 8000;
+const API_TIMEOUT_MS = 10_000;
 const SALON_TIME_ZONE = "Asia/Beirut";
 
 function getSalonDateTimeParts(date = new Date()) {
@@ -78,15 +77,46 @@ function mapAvailableSlots(data: RawSlot[]): AvailableSlot[] {
     .filter(isFutureSlot);
 }
 
-async function withSupabaseTimeout<T>(query: (signal: AbortSignal) => T): Promise<Awaited<T>> {
+/** Calls the site's own /api routes; a slow first request can wake the database, hence the 10s limit. */
+async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), SUPABASE_QUERY_TIMEOUT_MS);
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
   try {
-    return await query(controller.signal);
+    const response = await fetch(path, {
+      ...init,
+      headers: init?.body ? { "Content-Type": "application/json" } : undefined,
+      signal: controller.signal,
+    });
+    const body = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(typeof body?.error === "string" ? body.error : `Request failed (${response.status})`);
+    }
+    return body as T;
   } finally {
     clearTimeout(timeoutId);
   }
+}
+
+type ApiService = {
+  id: string;
+  name: string;
+  price: string | number | null;
+  duration_minutes: number | null;
+  category: string;
+};
+
+let servicesRequest: Promise<RawService[]> | null = null;
+
+/** Both the service list and the booking step read the same list, so it is fetched once per visit. */
+function fetchServiceRows() {
+  servicesRequest ??= api<ApiService[]>("/api/services")
+    .then((rows) => rows.map((row) => ({ ...row, service_categories: { name: row.category } })))
+    .catch((error) => {
+      servicesRequest = null;
+      throw error;
+    });
+  return servicesRequest;
 }
 
 function formatPrice(value: unknown) {
@@ -146,19 +176,9 @@ async function loadActiveServices(groupId: ServiceGroupId) {
     return [...pedicureServices];
   }
 
-  const supabase = getSupabaseClient();
-  const { data, error } = await withSupabaseTimeout((signal) =>
-    supabase
-      .from("services")
-      .select("*, service_categories(*)")
-      .eq("is_active", true)
-      .order("name", { ascending: true })
-      .abortSignal(signal),
-  );
+  const data = await fetchServiceRows();
 
-  if (error) throw error;
-
-  const candidates = ((data ?? []) as RawService[])
+  const candidates = data
     .filter((service) => belongsToGroup(service, groupId))
     .map((rawService) => ({
       service: mapService(rawService),
@@ -229,18 +249,9 @@ async function fetchBookingServiceId(groupId: ServiceGroupId, serviceSlug: strin
 }
 
 async function loadBookingServiceId(groupId: ServiceGroupId, serviceSlug: string) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await withSupabaseTimeout((signal) =>
-    supabase
-      .from("services")
-      .select("id, name, duration_minutes, service_categories(name)")
-      .eq("is_active", true)
-      .abortSignal(signal),
-  );
+  const data = await fetchServiceRows();
 
-  if (error) throw error;
-
-  const candidates = ((data ?? []) as unknown as BookingServiceRecord[])
+  const candidates = (data as BookingServiceRecord[])
     .filter((service) => service.id && service.name)
     .filter((service) => isBookingServiceInGroup(service, groupId))
     .filter((service) => getServiceBySlug(groupId, getServiceSlug(service.name))?.slug === serviceSlug)
@@ -269,23 +280,6 @@ function formatSlotLabel(date: Date) {
   });
 }
 
-function isDurationAwareAvailabilityMissing(error: unknown) {
-  const details = typeof error === "object" && error !== null ? error as Record<string, unknown> : {};
-  const message = String(details.message ?? details.details ?? details.hint ?? error ?? "").toLowerCase();
-
-  return (
-    String(details.code ?? "") === "PGRST202" ||
-    message.includes("could not find the function") ||
-    message.includes("p_duration_minutes")
-  );
-}
-
-// Older databases lack the duration-aware and monthly availability functions.
-// Once a call shows they are missing, skip them for the rest of the visit
-// instead of paying for a failed request on every day of every month.
-let durationAwareAvailabilityMissing = false;
-let monthlyAvailabilityMissing = false;
-
 export async function fetchAvailableSlots(
   serviceId: string,
   dateIso: string,
@@ -293,47 +287,9 @@ export async function fetchAvailableSlots(
 ): Promise<AvailableSlot[]> {
   if (dateIso < getTodayDateIso()) return [];
 
-  const supabase = getSupabaseClient();
-  const durationAwareResult = durationAwareAvailabilityMissing
-    ? null
-    : await withSupabaseTimeout((signal) =>
-        supabase
-          .rpc("get_available_slots", {
-            p_service_id: serviceId,
-            p_date: dateIso,
-            p_duration_minutes: durationMinutes ?? null,
-          })
-          .abortSignal(signal),
-      );
-
-  if (durationAwareResult?.error && isDurationAwareAvailabilityMissing(durationAwareResult.error)) {
-    durationAwareAvailabilityMissing = true;
-  }
-
-  const { data, error } = !durationAwareResult || durationAwareAvailabilityMissing
-    ? await withSupabaseTimeout((signal) =>
-        supabase
-          .rpc("get_available_slots", {
-            p_service_id: serviceId,
-            p_date: dateIso,
-          })
-          .abortSignal(signal),
-      )
-    : durationAwareResult;
-
-  if (error) throw error;
-
-  return mapAvailableSlots((data ?? []) as RawSlot[]);
-}
-
-function getMonthDates(monthStartIso: string) {
-  const [year, month] = monthStartIso.split("-").map(Number);
-  const daysInMonth = new Date(year, month, 0).getDate();
-
-  return Array.from({ length: daysInMonth }, (_, index) => {
-    const day = String(index + 1).padStart(2, "0");
-    return `${year}-${String(month).padStart(2, "0")}-${day}`;
-  });
+  const params = new URLSearchParams({ service: serviceId, date: dateIso });
+  if (durationMinutes) params.set("duration", String(durationMinutes));
+  return mapAvailableSlots(await api<string[]>(`/api/slots?${params}`));
 }
 
 export async function fetchAvailableSlotsForMonth(
@@ -341,46 +297,9 @@ export async function fetchAvailableSlotsForMonth(
   monthStartIso: string,
   durationMinutes?: number,
 ): Promise<AvailableSlot[]> {
-  if (monthlyAvailabilityMissing) {
-    return fetchAvailableSlotsDayByDay(serviceId, monthStartIso, durationMinutes);
-  }
-
-  const supabase = getSupabaseClient();
-  const durationAwareResult = await withSupabaseTimeout((signal) =>
-    supabase
-      .rpc("get_available_slots_for_month", {
-        p_service_id: serviceId,
-        p_month_start: monthStartIso,
-        p_duration_minutes: durationMinutes ?? null,
-      })
-      .abortSignal(signal),
-  );
-
-  const { data, error } = durationAwareResult.error && isDurationAwareAvailabilityMissing(durationAwareResult.error)
-    ? await withSupabaseTimeout((signal) =>
-        supabase
-          .rpc("get_available_slots_for_month", {
-            p_service_id: serviceId,
-            p_month_start: monthStartIso,
-          })
-          .abortSignal(signal),
-      )
-    : durationAwareResult;
-
-  if (!error) {
-    return mapAvailableSlots((data ?? []) as RawSlot[]);
-  }
-
-  if (isDurationAwareAvailabilityMissing(error)) monthlyAvailabilityMissing = true;
-  return fetchAvailableSlotsDayByDay(serviceId, monthStartIso, durationMinutes);
-}
-
-async function fetchAvailableSlotsDayByDay(serviceId: string, monthStartIso: string, durationMinutes?: number) {
-  const dailySlots = await Promise.all(
-    getMonthDates(monthStartIso).map((dateIso) => fetchAvailableSlots(serviceId, dateIso, durationMinutes)),
-  );
-
-  return dailySlots.flat();
+  const params = new URLSearchParams({ service: serviceId, month: monthStartIso });
+  if (durationMinutes) params.set("duration", String(durationMinutes));
+  return mapAvailableSlots(await api<string[]>(`/api/slots?${params}`));
 }
 
 export async function createAppointment(input: {
@@ -401,40 +320,11 @@ export async function createAppointment(input: {
   totalPrice?: number;
   totalDurationMinutes?: number;
 }) {
-  const supabase = getSupabaseClient();
-  const { data, error } = await withSupabaseTimeout((signal) =>
-    supabase
-      .rpc("create_appointment", {
-        p_service_id: input.serviceId,
-        p_customer_full_name: input.customerFullName,
-        p_customer_phone: input.customerPhone,
-        p_appointment_start: input.appointmentStart,
-        p_customer_first_name: input.customerFirstName ?? null,
-        p_customer_last_name: input.customerLastName ?? null,
-        p_selected_services: input.selectedServices ?? null,
-        p_total_price: input.totalPrice ?? null,
-        p_total_duration_minutes: input.totalDurationMinutes ?? null,
-      })
-      .abortSignal(signal),
-  );
-
-  if (!error) return requireAppointmentId(data);
-
-  if (!isCreateAppointmentSignatureError(error)) throw error;
-
-  const { data: fallbackData, error: fallbackError } = await withSupabaseTimeout((signal) =>
-    supabase
-      .rpc("create_appointment", {
-        p_service_id: input.serviceId,
-        p_customer_full_name: input.customerFullName,
-        p_customer_phone: input.customerPhone,
-        p_appointment_start: input.appointmentStart,
-      })
-      .abortSignal(signal),
-  );
-
-  if (fallbackError) throw fallbackError;
-  return requireAppointmentId(fallbackData);
+  const { id } = await api<{ id?: string }>("/api/appointments", {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+  return requireAppointmentId(id);
 }
 
 function requireAppointmentId(value: unknown) {
@@ -443,19 +333,6 @@ function requireAppointmentId(value: unknown) {
     throw new Error("The appointment was not saved. Please try again.");
   }
   return appointmentId;
-}
-
-function isCreateAppointmentSignatureError(error: unknown) {
-  const details = typeof error === "object" && error !== null ? error as Record<string, unknown> : {};
-  const message = String(details.message ?? details.details ?? details.hint ?? error ?? "").toLowerCase();
-
-  return (
-    String(details.code ?? "") === "PGRST202" ||
-    message.includes("could not find the function") ||
-    message.includes("schema cache") ||
-    message.includes("p_customer_first_name") ||
-    message.includes("p_selected_services")
-  );
 }
 
 export function getBookingErrorMessage(error: unknown) {

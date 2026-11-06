@@ -1,4 +1,4 @@
-export const ADMIN_URL = "https://pastel-salon-admin.pages.dev/";
+export const ADMIN_URL = "https://admin.pastelsalon.online/";
 const FROM_ADMIN_KEY = "pastel-from-admin";
 
 /** The admin's "New appointment" button adds ?from=admin; remember it for this tab so the way back stays after switching tabs or services. */

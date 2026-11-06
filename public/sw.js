@@ -1,4 +1,4 @@
-const CACHE_VERSION = "pastel-pwa-v5";
+const CACHE_VERSION = "pastel-pwa-v6";
 const APP_SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 
@@ -38,8 +38,9 @@ self.addEventListener("activate", (event) => {
   );
 });
 
-function isSupabaseRequest(url) {
-  return url.hostname.endsWith(".supabase.co") || url.pathname.startsWith("/api/");
+// Booking data comes from the site's own /api routes and must always be fresh.
+function isApiRequest(url) {
+  return url.pathname.startsWith("/api/");
 }
 
 function isViteDevelopmentRequest(url) {
@@ -75,7 +76,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   // Calendar files are made per appointment, so they go straight to the network and are never cached.
-  if (request.method !== "GET" || isSupabaseRequest(url) || isViteDevelopmentRequest(url) || url.pathname === "/calendar") {
+  if (request.method !== "GET" || isApiRequest(url) || isViteDevelopmentRequest(url) || url.pathname === "/calendar") {
     return;
   }
 

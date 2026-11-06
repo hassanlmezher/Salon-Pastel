@@ -10,13 +10,13 @@ export const metadata: Metadata = {
   },
   description: "Owner dashboard for Pastel salon appointments.",
   alternates: {
-    canonical: "https://pastel-salon-admin.pages.dev/",
+    canonical: "https://admin.pastelsalon.online/",
   },
   openGraph: {
     title: "Pastel Admin",
     description: "Owner dashboard for Pastel salon appointments.",
-    images: "https://pastel-salon-admin.pages.dev/og-image.png",
-    url: "https://pastel-salon-admin.pages.dev/",
+    images: "https://admin.pastelsalon.online/og-image.png",
+    url: "https://admin.pastelsalon.online/",
     type: "website",
   },
   manifest: "/manifest.webmanifest",

@@ -8,7 +8,7 @@ import {
   getBookingErrorMessage,
   getTodayDateIso,
   type AvailableSlot,
-} from "../data/supabaseBooking";
+} from "../data/bookingApi";
 import {
   formatServiceDuration,
   getServiceAddOns,

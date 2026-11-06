@@ -1,0 +1,2 @@
+# Copy to .dev.vars for `npx wrangler pages dev dist`. Use a Neon test branch, never the live one.
+DATABASE_URL=postgresql://pastel_booking:PASSWORD@HOST/neondb?sslmode=require

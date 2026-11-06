@@ -19,7 +19,7 @@ import {
 } from "../../src/features/admin/data/adminAppointments";
 import type { AdminAppointment, AdminAppointmentFilters, AppointmentStatus } from "../../src/features/admin/types";
 
-const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL?.trim() || "https://pastel-salon.pages.dev/book";
+const BOOKING_URL = process.env.NEXT_PUBLIC_BOOKING_URL?.trim() || "https://pastelsalon.online/book";
 
 const viewTabs = [
   { label: "Upcoming", value: "upcoming" },
@@ -134,7 +134,7 @@ export function AdminHome() {
       .catch((error: unknown) => {
         if (cancelled) return;
         if (error instanceof AdminAuthError) {
-          router.replace(error.reason === "not_owner" ? "/login?error=not_owner" : "/login");
+          router.replace("/login");
           return;
         }
         console.error("Unable to load appointments", error);

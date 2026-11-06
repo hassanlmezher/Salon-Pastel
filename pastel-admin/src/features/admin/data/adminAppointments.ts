@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "../../../lib/supabase/client";
+import { ApiError, adminApi, hasSignedInMarker } from "../../../lib/api";
 import {
   appointmentStatuses,
   appointmentViews,
@@ -31,19 +31,7 @@ type RawAppointment = {
   services?: RawService | RawService[] | null;
 };
 
-const ADMIN_QUERY_TIMEOUT_MS = 8000;
 const SALON_TIME_ZONE = "Asia/Beirut";
-
-async function withAdminQueryTimeout<T>(query: (signal: AbortSignal) => T): Promise<Awaited<T>> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), ADMIN_QUERY_TIMEOUT_MS);
-
-  try {
-    return await query(controller.signal);
-  } finally {
-    clearTimeout(timeoutId);
-  }
-}
 
 function isAppointmentStatus(value: string | undefined): value is AppointmentStatus {
   return appointmentStatuses.includes(value as AppointmentStatus);
@@ -195,12 +183,6 @@ export function getFilterDay(filters: AdminAppointmentFilters, today: string) {
   return "";
 }
 
-/** Phone search ignores spaces and dashes, so "70123456" finds "70 123 456". */
-function phoneDigitsPattern(term: string) {
-  const digits = term.replace(/[\s+\-().]/g, "");
-  return /^\d{3,}$/.test(digits) ? digits.split("").join("\\D*") : "";
-}
-
 function normalizeAppointment(raw: RawAppointment): AdminAppointment {
   const fallbackService = getService(raw);
   const fallbackName = splitFullName(raw.customer_full_name ?? "");
@@ -237,10 +219,10 @@ function normalizeAppointment(raw: RawAppointment): AdminAppointment {
   };
 }
 
-/** Thrown when there is no session or the account is not an owner. */
+/** Thrown when the browser has no live admin session. */
 export class AdminAuthError extends Error {
-  constructor(readonly reason: "signed_out" | "not_owner") {
-    super(reason);
+  constructor() {
+    super("signed_out");
   }
 }
 
@@ -249,74 +231,39 @@ export class AdminAuthError extends Error {
  * filtered by the caller so the status tabs can show counts from one query.
  */
 export async function getAdminAppointments(filters: AdminAppointmentFilters) {
-  const supabase = getSupabaseClient();
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-  if (!session) throw new AdminAuthError("signed_out");
+  // No marker means nobody signed in on this browser, so skip the server and go to sign-in.
+  if (!hasSignedInMarker()) throw new AdminAuthError();
 
   const today = getSalonTodayIso();
   const searching = Boolean(filters.search);
   const day = searching ? "" : getFilterDay(filters, today);
-  const newestFirst = searching || (!day && filters.view === "past");
-  let query = supabase
-    .from("appointments")
-    .select(
-      [
-        "id",
-        "customer_first_name",
-        "customer_last_name",
-        "customer_full_name",
-        "customer_phone",
-        "selected_services",
-        "total_price",
-        "total_duration_minutes",
-        "appointment_start",
-        "appointment_end",
-        "status",
-        "services(id,name,price,duration_minutes)",
-      ].join(","),
-    )
-    .order("appointment_start", { ascending: !newestFirst })
-    .limit(500);
+  const params = new URLSearchParams();
 
   // A search looks through every date so a past customer can still be found.
   if (day) {
-    query = query.gte("appointment_start", `${day}T00:00:00`).lt("appointment_start", `${addDaysIso(day, 1)}T00:00:00`);
+    params.set("from", day);
+    params.set("to", addDaysIso(day, 1));
   } else if (!searching && filters.view === "week") {
-    query = query.gte("appointment_start", `${today}T00:00:00`).lt("appointment_start", `${addDaysIso(today, 7)}T00:00:00`);
+    params.set("from", today);
+    params.set("to", addDaysIso(today, 7));
   } else if (!searching && filters.view === "past") {
-    query = query.lt("appointment_start", `${today}T00:00:00`);
+    params.set("to", today);
   } else if (!searching) {
-    query = query.gte("appointment_start", `${today}T00:00:00`);
+    params.set("from", today);
+  }
+  if (searching) params.set("search", filters.search);
+  // "Past" and search results read newest first; a day or the upcoming list reads in schedule order.
+  if (searching || (!day && filters.view === "past")) params.set("newest", "1");
+
+  let rows: RawAppointment[];
+  try {
+    rows = await adminApi<RawAppointment[]>(`/api/appointments?${params}`);
+  } catch (error) {
+    if (error instanceof ApiError && error.status === 401) throw new AdminAuthError();
+    throw error;
   }
 
-  // Characters that would break the PostgREST `or` filter syntax are dropped.
-  const term = filters.search.replace(/[,()*\\]/g, " ").trim().replace(/[%_]/g, "\\$&");
-  if (term) {
-    const phonePattern = phoneDigitsPattern(term);
-    query = query.or(
-      [
-        `customer_first_name.ilike.%${term}%`,
-        `customer_last_name.ilike.%${term}%`,
-        `customer_full_name.ilike.%${term}%`,
-        `customer_phone.ilike.%${term}%`,
-        ...(phonePattern ? [`customer_phone.imatch.${phonePattern}`] : []),
-      ].join(","),
-    );
-  }
-
-  // The owner check runs alongside the list, so a page load is one round trip.
-  const [{ data, error }, { data: ownerUser, error: ownerError }] = await Promise.all([
-    withAdminQueryTimeout((signal) => query.abortSignal(signal)),
-    withAdminQueryTimeout((signal) =>
-      supabase.from("owner_users").select("user_id").eq("user_id", session.user.id).abortSignal(signal).maybeSingle(),
-    ),
-  ]);
-  if (error || ownerError) throw error ?? ownerError;
-  if (!ownerUser) throw new AdminAuthError("not_owner");
-
-  const appointments = ((data ?? []) as unknown as RawAppointment[]).map(normalizeAppointment);
+  const appointments = rows.map(normalizeAppointment);
   if (!searching) return appointments;
 
   // Search results: coming visits first in schedule order, then past ones newest first.

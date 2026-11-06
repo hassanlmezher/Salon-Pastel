@@ -17,3 +17,6 @@ graphify-out/
 
 # macOS Finder files
 .DS_Store
+
+# Local Wrangler secrets (database connections)
+.dev.vars
