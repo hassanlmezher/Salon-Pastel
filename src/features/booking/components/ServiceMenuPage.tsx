@@ -18,6 +18,12 @@ export function serviceImageUrl(imageSrc: string) {
   return decodeURIComponent(getOptimizedServiceImage(imageSrc));
 }
 
+/** The list shows photos at 72px, so it uses the 144px copies in /optimized/thumbs (sharp on 2x screens). */
+function serviceThumbUrl(imageSrc: string) {
+  const url = serviceImageUrl(imageSrc);
+  return url.startsWith("/optimized/") ? url.replace("/optimized/", "/optimized/thumbs/") : url;
+}
+
 /** One page for both service types: tabs on top, a compact tappable list below. */
 export function ServiceMenuPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -73,16 +79,18 @@ export function ServiceMenuPage() {
       </header>
 
       <ul className="mx-auto mt-3 grid max-w-3xl gap-2 px-4 sm:grid-cols-2" aria-label={`${groupId} services`}>
-        {services.map((service) => (
+        {services.map((service, index) => (
           <li key={service.slug}>
             <Link
               to={`/book/${groupId}/${service.slug}`}
               className="flex min-h-[5.5rem] items-center gap-3 border border-[#ead5cd] bg-[#fffaf6] p-2.5 pr-3 shadow-[0_6px_16px_rgba(97,58,24,0.06)] transition hover:border-[#bd736b] active:bg-[#f9e9e5]"
             >
               <img
-                src={serviceImageUrl(service.imageSrc)}
+                src={serviceThumbUrl(service.imageSrc)}
                 alt=""
-                loading="lazy"
+                // The first rows are on screen right away; the rest wait until scrolled near.
+                loading={index < 4 ? "eager" : "lazy"}
+                fetchPriority={index < 4 ? "high" : "low"}
                 width={72}
                 height={72}
                 className="h-[4.5rem] w-[4.5rem] flex-none object-cover"
