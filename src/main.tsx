@@ -3,6 +3,11 @@ import ReactDOM from "react-dom/client";
 import App from "./app/App";
 import "./index.css";
 
+import { captureInstallPrompt } from "./features/booking/components/InstallAppPrompt";
+
+// Chrome can offer installation before React has drawn the page, so the offer is caught here first.
+captureInstallPrompt();
+
 const DEV_SERVICE_WORKER_CLEANUP_KEY = "pastel-dev-service-worker-cleaned";
 
 async function configureServiceWorker() {

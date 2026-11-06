@@ -7,6 +7,21 @@ type BeforeInstallPromptEvent = Event & {
 
 type Mode = "android" | "android-steps" | "ios" | "in-app" | null;
 
+let earlyInstallEvent: BeforeInstallPromptEvent | null = null;
+const INSTALL_READY_EVENT = "pastel-install-ready";
+
+/** Called at startup: keeps Chrome's install offer until the card is ready to use it. */
+export function captureInstallPrompt() {
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    earlyInstallEvent = event as BeforeInstallPromptEvent;
+    window.dispatchEvent(new Event(INSTALL_READY_EVENT));
+  });
+  window.addEventListener("appinstalled", () => {
+    earlyInstallEvent = null;
+  });
+}
+
 const DISMISSED_KEY = "pastel-install-dismissed-at";
 const DISMISS_DAYS = 7;
 const SHOW_DELAY_MS = 1500;
@@ -82,18 +97,21 @@ export function InstallAppPrompt() {
     }
 
     // Android Chrome offers a real install prompt; other Android browsers get the menu steps.
-    const onInstallPrompt = (event: Event) => {
-      event.preventDefault();
-      setInstallEvent(event as BeforeInstallPromptEvent);
+    // Browsers that never offer installation get the menu steps after a few seconds instead.
+    const fallback = window.setTimeout(() => setMode((current) => current ?? "android-steps"), 4000);
+    const useInstallEvent = () => {
+      if (!earlyInstallEvent) return;
+      window.clearTimeout(fallback);
+      setInstallEvent(earlyInstallEvent);
       setMode("android");
     };
+    useInstallEvent();
     const onInstalled = () => setMode(null);
-    window.addEventListener("beforeinstallprompt", onInstallPrompt);
+    window.addEventListener(INSTALL_READY_EVENT, useInstallEvent);
     window.addEventListener("appinstalled", onInstalled);
-    const fallback = window.setTimeout(() => setMode((current) => current ?? "android-steps"), 4000);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", onInstallPrompt);
+      window.removeEventListener(INSTALL_READY_EVENT, useInstallEvent);
       window.removeEventListener("appinstalled", onInstalled);
       window.clearTimeout(fallback);
     };
@@ -111,6 +129,7 @@ export function InstallAppPrompt() {
     await installEvent.prompt();
     const choice = await installEvent.userChoice;
     if (choice.outcome === "dismissed") writeStorage(DISMISSED_KEY, String(Date.now()));
+    earlyInstallEvent = null;
     setInstallEvent(null);
     setMode(null);
   };
