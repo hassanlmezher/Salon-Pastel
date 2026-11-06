@@ -19,6 +19,7 @@ const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const START_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/;
 const STATUSES = ["booked", "confirmed", "cancelled"];
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 function json(body: unknown, status = 200, cookies: string[] = []) {
   const headers = new Headers({ "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
@@ -123,6 +124,32 @@ async function handleApi(request: Request, env: Env, url: URL) {
       return json(row?.list ?? []);
     }
 
+    if (path === "/api/hours" && request.method === "GET") {
+      const [row] = await sql.query("select admin_get_working_hours($1) as hours", [tokenHash]);
+      return json(row?.hours ?? []);
+    }
+
+    if (path === "/api/hours" && request.method === "POST") {
+      const body = await readJson(request);
+      const days = Array.isArray(body?.hours) ? body.hours : [];
+      const hours = days.map((item: Record<string, unknown>) => ({
+        day: Number(item?.day),
+        open: item?.open === true,
+        opensAt: typeof item?.opensAt === "string" ? item.opensAt : null,
+        closesAt: typeof item?.closesAt === "string" ? item.closesAt : null,
+      }));
+      const valid =
+        hours.length === 7 &&
+        new Set(hours.map((item: { day: number }) => item.day)).size === 7 &&
+        hours.every((item: { day: number; open: boolean; opensAt: string | null; closesAt: string | null }) =>
+          Number.isInteger(item.day) && item.day >= 0 && item.day <= 6 &&
+          (!item.open || (TIME_PATTERN.test(item.opensAt ?? "") && TIME_PATTERN.test(item.closesAt ?? ""))),
+        );
+      if (!valid) return json({ error: "Invalid opening hours." }, 400);
+      await sql.query("select admin_set_working_hours($1, $2::jsonb)", [tokenHash, JSON.stringify(hours)]);
+      return json({ ok: true });
+    }
+
     const match = path.match(/^\/api\/appointments\/([^/]+)\/(status|slots|reschedule)$/);
     if (!match || !UUID_PATTERN.test(match[1])) return json({ error: "Not found." }, 404);
     const [, appointmentId, action] = match;
@@ -154,7 +181,7 @@ async function handleApi(request: Request, env: Env, url: URL) {
   } catch (error) {
     if (isNotSignedIn(error)) return json({ error: "signed_out" }, 401, sessionCookies("", 0));
     const message = error instanceof Error ? error.message : "";
-    if (/not free|can be moved|not found|invalid appointment status/i.test(message)) return json({ error: message }, 409);
+    if (/not free|can be moved|not found|invalid appointment status|opening hours|closing time/i.test(message)) return json({ error: message }, 409);
     throw error;
   }
 }

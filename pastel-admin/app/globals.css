@@ -126,6 +126,24 @@ button:disabled {
   color: var(--muted);
   font-size: 0.9rem;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.adminTopbarActions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+/* Phones: the Hours and Log out buttons need the room more than the small "Admin" label. */
+@media (max-width: 419px) {
+  .adminTopbar .adminBrand small {
+    display: none;
+  }
+
+  .adminTopbarActions .adminLogout {
+    padding: 0 10px;
+  }
 }
 
 .adminNewButton {
@@ -931,4 +949,95 @@ button:disabled {
 .adminRetry {
   margin-top: 16px;
   padding: 0 24px;
+}
+
+/* ---------- Opening hours ---------- */
+
+.adminHoursTitle {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+}
+
+.adminHoursIntro {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.adminHoursList {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.adminHoursRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  min-height: 60px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.adminHoursRow[data-open="false"] {
+  background: transparent;
+}
+
+.adminHoursDay {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-weight: 600;
+}
+
+.adminHoursDay input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--accent);
+}
+
+.adminHoursTimes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.adminHoursTimes input {
+  min-height: 44px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 1rem;
+}
+
+.adminHoursClosed {
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.adminHoursSaved {
+  margin: 0 0 12px;
+  color: var(--confirmed);
+  font-weight: 600;
+}
+
+.adminHoursSave {
+  width: 100%;
+  border: 0;
+  cursor: pointer;
+}
+
+.adminHoursSave:disabled {
+  opacity: 0.6;
 }

@@ -79,3 +79,24 @@ export async function rescheduleAppointment(appointmentId: string, appointmentSt
     return { ok: false, message: taken ? "That time was just taken. Please pick another one." : "The appointment could not be moved. Please try again." };
   }
 }
+
+/** One weekday (0 = Sunday); times are "HH:MM" in salon time, null on a closed day. */
+export type OpeningDay = { day: number; open: boolean; opensAt: string | null; closesAt: string | null };
+
+export async function getOpeningHours() {
+  return adminApi<OpeningDay[]>("/api/hours");
+}
+
+export async function saveOpeningHours(hours: OpeningDay[]) {
+  try {
+    await adminApi("/api/hours", { method: "POST", body: { hours } });
+    return { ok: true, message: "" };
+  } catch (error) {
+    console.error("Unable to save opening hours", error);
+    if (error instanceof ApiError && error.status === 401) return { ok: false, message: "signed_out" };
+    const message = error instanceof ApiError && /closing time/i.test(error.code)
+      ? "Each closing time must be after the opening time."
+      : "The opening hours could not be saved. Please try again.";
+    return { ok: false, message };
+  }
+}

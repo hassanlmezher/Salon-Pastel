@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../../components/ui/Button";
+import { DEFAULT_HOURS_LABEL, fetchOpeningHoursLabel } from "../data/openingHours";
 
 const heroVideo = "/hero-banner.mp4";
 const heroPoster = "/hero-poster.webp";
@@ -28,6 +29,14 @@ export function LandingPage() {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLElement | null>(null);
   const reduceMotion = useReducedMotion();
+  const [hoursLabel, setHoursLabel] = useState(DEFAULT_HOURS_LABEL);
+
+  useEffect(() => {
+    fetchOpeningHoursLabel()
+      .then(setHoursLabel)
+      .catch((error: unknown) => console.error("Unable to load opening hours", error));
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start end", "end start"],
@@ -147,7 +156,7 @@ export function LandingPage() {
             <span lang="ar" dir="rtl">اتصل بنا</span>
           </a>
           <p className="flex min-h-12 items-center justify-between gap-3 px-1">
-            <span>Tue–Sun 8 am – 3 pm · Closed Mon</span>
+            <span>{hoursLabel}</span>
             <span lang="ar" dir="rtl">ساعات العمل</span>
           </p>
           <p className="flex min-h-12 items-center justify-between gap-3 px-1">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, LogOut, Plus, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock, LogOut, Plus, Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { logoutOwner } from "../actions";
@@ -181,12 +181,18 @@ export function AdminHome() {
           <span>Pastel</span>
           <small>Admin</small>
         </div>
-        <form action={logoutOwner}>
-          <button type="submit" className="adminLogout">
-            <LogOut size={18} strokeWidth={2} aria-hidden="true" />
-            Log out
-          </button>
-        </form>
+        <div className="adminTopbarActions">
+          <Link href="/hours" className="adminLogout">
+            <Clock size={18} strokeWidth={2} aria-hidden="true" />
+            Hours
+          </Link>
+          <form action={logoutOwner}>
+            <button type="submit" className="adminLogout">
+              <LogOut size={18} strokeWidth={2} aria-hidden="true" />
+              Log out
+            </button>
+          </form>
+        </div>
       </header>
 
       <a href={`${BOOKING_URL}?from=admin`} className="adminNewButton">
