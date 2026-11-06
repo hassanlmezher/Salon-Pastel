@@ -147,7 +147,7 @@ export function LandingPage() {
             <span lang="ar" dir="rtl">اتصل بنا</span>
           </a>
           <p className="flex min-h-12 items-center justify-between gap-3 px-1">
-            <span>Tue–Sun 8 am – 6 pm · Closed Mon</span>
+            <span>Tue–Sun 8 am – 3 pm · Closed Mon</span>
             <span lang="ar" dir="rtl">ساعات العمل</span>
           </p>
           <p className="flex min-h-12 items-center justify-between gap-3 px-1">
