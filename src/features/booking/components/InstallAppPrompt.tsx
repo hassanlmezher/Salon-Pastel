@@ -80,6 +80,14 @@ function ShareIcon() {
 export function InstallAppPrompt() {
   const [mode, setMode] = useState<Mode>(null);
   const [installEvent, setInstallEvent] = useState<BeforeInstallPromptEvent | null>(null);
+  const [top, setTop] = useState(12);
+
+  // Sits just under the page header so the logo button stays tappable.
+  useEffect(() => {
+    if (!mode) return;
+    const header = document.querySelector("header");
+    setTop(Math.max(12, Math.round((header?.getBoundingClientRect().bottom ?? 0) + 8)));
+  }, [mode]);
 
   useEffect(() => {
     if (isInstalled() || recentlyDismissed()) return;
@@ -139,7 +147,8 @@ export function InstallAppPrompt() {
       role="dialog"
       aria-modal="false"
       aria-labelledby="install-title"
-      className="fixed inset-x-3 top-[max(0.75rem,env(safe-area-inset-top))] z-40 mx-auto max-w-md motion-safe:animate-[install-in_260ms_ease-out]"
+      style={{ top }}
+      className="fixed inset-x-3 z-40 mx-auto max-w-md motion-safe:animate-[install-in_260ms_ease-out]"
     >
       <div className="border border-[#e7c9c2] bg-[#fffaf6] p-4 text-[#231814] shadow-[0_18px_44px_rgba(97,58,24,0.22)]">
         <div className="flex items-start gap-3">
