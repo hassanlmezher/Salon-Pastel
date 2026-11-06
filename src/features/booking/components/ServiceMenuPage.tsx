@@ -48,13 +48,16 @@ export function ServiceMenuPage() {
         ) : null}
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 pt-3">
           <div className="flex items-center gap-3">
-            <Link
-              to="/"
-              aria-label="Back to home page"
-              className="grid h-11 w-11 flex-none place-items-center border border-[#e7c9c2] bg-[#fffaf6] text-2xl leading-none text-[#6d3f1f]"
-            >
-              ‹
-            </Link>
+            {/* From the admin, "Back to admin" is the only way back; the home-page arrow would leave the admin flow. */}
+            {fromAdmin ? null : (
+              <Link
+                to="/"
+                aria-label="Back to home page"
+                className="grid h-11 w-11 flex-none place-items-center border border-[#e7c9c2] bg-[#fffaf6] text-2xl leading-none text-[#6d3f1f]"
+              >
+                ‹
+              </Link>
+            )}
             <Link to="/" className="inline-flex min-h-11 items-center font-display text-[2rem] font-semibold leading-none text-[#8a4f24]">
               Pastel
             </Link>
