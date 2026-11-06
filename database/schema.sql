@@ -40,6 +40,10 @@ create table if not exists employees (
   is_active boolean default true
 );
 
+-- A service done by one particular staff member (not the category's usual employee) points at
+-- them here, so its bookings only clash with that person's other bookings.
+alter table services add column if not exists employee_id uuid references employees(id);
+
 create table if not exists weekly_working_hours (
   id uuid primary key default gen_random_uuid(),
   day_of_week integer not null check (day_of_week between 0 and 6),
@@ -168,11 +172,11 @@ begin
 
   v_requested_duration_minutes := greatest(coalesce(p_duration_minutes, 0), coalesce(v_service_duration_minutes, 0), 1);
 
-  select e.id into v_employee_id
-  from employees e
-  where e.is_active = true and e.category_id = v_category_id
-  order by e.name
-  limit 1;
+  -- The service's own staff member if it has one, otherwise the category's first employee.
+  select coalesce(
+    (select s.employee_id from services s where s.id = p_service_id),
+    (select e.id from employees e where e.is_active = true and e.category_id = v_category_id order by e.name limit 1)
+  ) into v_employee_id;
 
   if v_employee_id is null then
     return;
@@ -274,11 +278,11 @@ begin
     raise exception 'Service is not available';
   end if;
 
-  select e.id into v_employee_id
-  from employees e
-  where e.is_active = true and e.category_id = v_category_id
-  order by e.name
-  limit 1;
+  -- The service's own staff member if it has one, otherwise the category's first employee.
+  select coalesce(
+    (select s.employee_id from services s where s.id = p_service_id),
+    (select e.id from employees e where e.is_active = true and e.category_id = v_category_id order by e.name limit 1)
+  ) into v_employee_id;
 
   if v_employee_id is null then
     raise exception 'No active employee is available';
