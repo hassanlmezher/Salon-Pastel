@@ -285,7 +285,7 @@ export async function fetchAvailableSlots(
   dateIso: string,
   durationMinutes?: number,
 ): Promise<AvailableSlot[]> {
-  if (dateIso < getTodayDateIso()) return [];
+  if (dateIso <= getTodayDateIso()) return [];
 
   const params = new URLSearchParams({ service: serviceId, date: dateIso });
   if (durationMinutes) params.set("duration", String(durationMinutes));
@@ -350,7 +350,7 @@ export function getBookingErrorMessage(error: unknown) {
   }
 
   if (normalized.includes("past") || normalized.includes("future")) {
-    return "Appointments must be booked for today or a future date.";
+    return "Appointments can be booked from tomorrow onward.";
   }
 
   return "Something went wrong while booking your appointment. Please try again.";

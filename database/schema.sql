@@ -157,7 +157,8 @@ declare
   v_opens_at time;
   v_closes_at time;
 begin
-  if p_date < (now() at time zone 'Asia/Beirut')::date then
+  -- Customers book from tomorrow on; same-day visits are arranged with the salon directly.
+  if p_date <= (now() at time zone 'Asia/Beirut')::date then
     return;
   end if;
 

@@ -238,7 +238,8 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
             available: slots.length,
             slots,
           };
-        }).filter((day) => day.dateIso >= todayDateIso);
+        // Booking opens from tomorrow, so today is not offered.
+        }).filter((day) => day.dateIso > todayDateIso);
 
       setDays(monthDays);
       setSelectedDateIso((currentDate) => {
@@ -321,8 +322,8 @@ export function ServiceDetailPage({ groupId, serviceSlug }: ServiceDetailPagePro
       return;
     }
 
-    if (selectedDateIso < getTodayDateIso()) {
-      setFormError("Appointments must be booked for today or a future date.");
+    if (selectedDateIso <= getTodayDateIso()) {
+      setFormError("Appointments can be booked from tomorrow onward.");
       await loadMonthAvailability();
       return;
     }
